@@ -1,0 +1,4 @@
+export const environment = {
+  production: false,
+  apiUrl: 'COLE_AQUI_SUA_URL_DO_RAILWAY'
+};

@@ -1,0 +1,6 @@
+// src/material-theme.scss
+// Versão mínima: só carrega o core (sem palettes custom para evitar erro)
+
+@use '@angular/material' as mat;
+
+@include mat.core();

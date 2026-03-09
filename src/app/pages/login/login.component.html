@@ -1,0 +1,17 @@
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Login CMMS</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <input matInput placeholder="Usuário" [(ngModel)]="username" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Senha" [(ngModel)]="password" required>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">Entrar</button>
+    </form>
+  </mat-card-content>
+</mat-card>
