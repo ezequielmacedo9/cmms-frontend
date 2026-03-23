@@ -1,0 +1,33 @@
+.page-container { padding: 24px; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 { margin: 0; font-size: 24px; color: #1e293b; }
+
+.form-card { margin-bottom: 24px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+mat-form-field { width: 100%; }
+table { width: 100%; }
+
+.qtd-ok { color: #16a34a; font-weight: 600; }
+.qtd-baixa { color: #dc2626; font-weight: 600; }
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: #94a3b8;
+}
+
+.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }

@@ -1,0 +1,89 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Máquinas</h2>
+    <button mat-raised-button color="primary" (click)="novoRegistro()">
+      <mat-icon>add</mat-icon>
+      Nova Máquina
+    </button>
+  </div>
+
+  <mat-card *ngIf="showForm" class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editando ? 'Editar' : 'Nova' }} Máquina</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput [(ngModel)]="form.nome" name="nome" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Setor</mat-label>
+          <input matInput [(ngModel)]="form.setor" name="setor" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="form.status" name="status">
+            <mat-option value="ATIVO">Ativo</mat-option>
+            <mat-option value="INATIVO">Inativo</mat-option>
+            <mat-option value="EM_MANUTENCAO">Em Manutenção</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Intervalo Preventiva (dias)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.intervaloPreventivaDias" name="intervalo" />
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+      <button mat-button (click)="cancelar()">Cancelar</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="maquinas">
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let m">{{ m.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="setor">
+        <th mat-header-cell *matHeaderCellDef>Setor</th>
+        <td mat-cell *matCellDef="let m">{{ m.setor }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let m">
+          <span class="status-badge" [ngClass]="m.status.toLowerCase()">
+            {{ m.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let m">
+          <button mat-icon-button color="primary" (click)="editar(m)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deletar(m.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="maquinas.length === 0">
+      <mat-icon>precision_manufacturing</mat-icon>
+      <p>Nenhuma máquina cadastrada</p>
+    </div>
+  </mat-card>
+</div>

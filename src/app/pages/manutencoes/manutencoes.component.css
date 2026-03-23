@@ -1,0 +1,42 @@
+.page-container { padding: 24px; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 { margin: 0; font-size: 24px; color: #1e293b; }
+
+.form-card { margin-bottom: 24px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+mat-form-field { width: 100%; }
+
+table { width: 100%; }
+
+.tipo-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tipo-badge.preventiva { background: #dbeafe; color: #1d4ed8; }
+.tipo-badge.corretiva { background: #fee2e2; color: #dc2626; }
+.tipo-badge.preditiva { background: #f3e8ff; color: #7c3aed; }
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: #94a3b8;
+}
+
+.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }

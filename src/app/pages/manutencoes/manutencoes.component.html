@@ -1,0 +1,87 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>Manutenções</h2>
+    <button mat-raised-button color="primary" (click)="novoRegistro()">
+      <mat-icon>add</mat-icon>
+      Nova Manutenção
+    </button>
+  </div>
+
+  <mat-card *ngIf="showForm" class="form-card">
+    <mat-card-header>
+      <mat-card-title>Registrar Manutenção</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-grid">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Máquina</mat-label>
+          <mat-select [(ngModel)]="maquinaIdSelecionada" name="maquina">
+            <mat-option *ngFor="let m of maquinas" [value]="m.id">
+              {{ m.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="form.tipo" name="tipo">
+            <mat-option value="PREVENTIVA">Preventiva</mat-option>
+            <mat-option value="CORRETIVA">Corretiva</mat-option>
+            <mat-option value="PREDITIVA">Preditiva</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Técnico</mat-label>
+          <input matInput [(ngModel)]="form.tecnico" name="tecnico" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput [(ngModel)]="form.descricao" name="descricao" rows="3"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+      <button mat-button (click)="cancelar()">Cancelar</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="manutencoes">
+
+      <ng-container matColumnDef="maquina">
+        <th mat-header-cell *matHeaderCellDef>Máquina</th>
+        <td mat-cell *matCellDef="let m">{{ m.maquina?.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let m">
+          <span class="tipo-badge" [ngClass]="m.tipo.toLowerCase()">{{ m.tipo }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tecnico">
+        <th mat-header-cell *matHeaderCellDef>Técnico</th>
+        <td mat-cell *matCellDef="let m">{{ m.tecnico }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="data">
+        <th mat-header-cell *matHeaderCellDef>Data</th>
+        <td mat-cell *matCellDef="let m">{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="manutencoes.length === 0">
+      <mat-icon>build</mat-icon>
+      <p>Nenhuma manutenção registrada</p>
+    </div>
+  </mat-card>
+</div>

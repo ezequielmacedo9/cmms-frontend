@@ -1,0 +1,48 @@
+.page-container { padding: 24px; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #1e293b;
+}
+
+.form-card { margin-bottom: 24px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+mat-form-field { width: 100%; }
+
+.table-card { overflow: hidden; }
+
+table { width: 100%; }
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.ativo { background: #dcfce7; color: #16a34a; }
+.status-badge.inativo { background: #fee2e2; color: #dc2626; }
+.status-badge.em_manutencao { background: #fef9c3; color: #ca8a04; }
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: #94a3b8;
+}
+
+.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }

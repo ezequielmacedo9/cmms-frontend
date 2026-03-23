@@ -1,0 +1,246 @@
+<div class="app-shell">
+
+  
+  <aside class="sidebar" [class.expanded]="sidebarExpanded"
+         (mouseenter)="sidebarExpanded=true"
+         (mouseleave)="sidebarExpanded=false">
+
+    <div class="sidebar-top">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">CMMS</span>
+          <span class="brand-sub">Industrial Suite</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+          <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
+          <span class="nav-text">Dashboard</span>
+          <span class="nav-dot"></span>
+        </a>
+        <a class="nav-link" routerLink="/maquinas" routerLinkActive="active">
+          <span class="nav-icon"><mat-icon>precision_manufacturing</mat-icon></span>
+          <span class="nav-text">Machines</span>
+          <span class="nav-dot"></span>
+        </a>
+        <a class="nav-link" routerLink="/manutencoes" routerLinkActive="active">
+          <span class="nav-icon"><mat-icon>build</mat-icon></span>
+          <span class="nav-text">Maintenance</span>
+          <span class="nav-dot"></span>
+        </a>
+        <a class="nav-link" routerLink="/estoque" routerLinkActive="active">
+          <span class="nav-icon"><mat-icon>inventory_2</mat-icon></span>
+          <span class="nav-text">Inventory</span>
+          <span class="nav-dot"></span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-link" (click)="logout()">
+        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
+        <span class="nav-text">Sign out</span>
+      </button>
+    </div>
+  </aside>
+
+  
+  <main class="main">
+
+    
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-label">Overview</div>
+        <h1 class="page-title">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          Live
+        </div>
+        <div class="user-pill">
+          <div class="user-ava">A</div>
+          <span>admin</span>
+          <mat-icon class="user-chevron">expand_more</mat-icon>
+        </div>
+      </div>
+    </header>
+
+    <div class="scroll-area">
+
+      
+      <section class="kpi-grid">
+
+        <div class="kpi-card kpi-blue" routerLink="/maquinas">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <mat-icon>precision_manufacturing</mat-icon>
+            </div>
+            <span class="kpi-tag">Active</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-number">{{ totalMaquinas }}</div>
+            <div class="kpi-label">Total Machines</div>
+          </div>
+          <div class="kpi-footer">
+            <span class="kpi-sub">View all machines →</span>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card kpi-amber" routerLink="/manutencoes">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <mat-icon>build</mat-icon>
+            </div>
+            <span class="kpi-tag">Logged</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-number">{{ totalManutencoes }}</div>
+            <div class="kpi-label">Maintenance Orders</div>
+          </div>
+          <div class="kpi-footer">
+            <span class="kpi-sub">View all orders →</span>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card kpi-green" routerLink="/estoque">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <mat-icon>inventory_2</mat-icon>
+            </div>
+            <span class="kpi-tag">In Stock</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-number">{{ totalPecas }}</div>
+            <div class="kpi-label">Parts Available</div>
+          </div>
+          <div class="kpi-footer">
+            <span class="kpi-sub">View inventory →</span>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card kpi-rose">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <mat-icon>warning_amber</mat-icon>
+            </div>
+            <span class="kpi-tag">Pending</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-number">{{ totalPendencias }}</div>
+            <div class="kpi-label">Open Issues</div>
+          </div>
+          <div class="kpi-footer">
+            <span class="kpi-sub">No pending issues</span>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+      </section>
+
+      
+      <section class="bottom-row">
+
+        
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Quick Actions</span>
+            <span class="panel-chip">shortcuts</span>
+          </div>
+          <div class="actions-grid">
+            <a class="act" routerLink="/maquinas">
+              <div class="act-icon act-blue"><mat-icon>add</mat-icon></div>
+              <span>New Machine</span>
+              <mat-icon class="act-arrow">arrow_forward</mat-icon>
+            </a>
+            <a class="act" routerLink="/manutencoes">
+              <div class="act-icon act-amber"><mat-icon>assignment_add</mat-icon></div>
+              <span>Create Work Order</span>
+              <mat-icon class="act-arrow">arrow_forward</mat-icon>
+            </a>
+            <a class="act" routerLink="/estoque">
+              <div class="act-icon act-green"><mat-icon>add_box</mat-icon></div>
+              <span>Add Part</span>
+              <mat-icon class="act-arrow">arrow_forward</mat-icon>
+            </a>
+            <a class="act" routerLink="/maquinas">
+              <div class="act-icon act-violet"><mat-icon>list_alt</mat-icon></div>
+              <span>Machine List</span>
+              <mat-icon class="act-arrow">arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
+
+    
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">System Status</span>
+            <span class="panel-chip online">● all systems go</span>
+          </div>
+          <div class="status-list">
+            <div class="status-item">
+              <div class="status-left">
+                <div class="status-dot green"></div>
+                <span class="status-name">API Backend</span>
+              </div>
+              <div class="status-bar-wrap">
+                <div class="status-bar" style="width:98%"></div>
+              </div>
+              <span class="status-val">98%</span>
+            </div>
+            <div class="status-item">
+              <div class="status-left">
+                <div class="status-dot green"></div>
+                <span class="status-name">Database</span>
+              </div>
+              <div class="status-bar-wrap">
+                <div class="status-bar" style="width:100%"></div>
+              </div>
+              <span class="status-val">100%</span>
+            </div>
+            <div class="status-item">
+              <div class="status-left">
+                <div class="status-dot green"></div>
+                <span class="status-name">JWT Auth</span>
+              </div>
+              <div class="status-bar-wrap">
+                <div class="status-bar" style="width:100%"></div>
+              </div>
+              <span class="status-val">100%</span>
+            </div>
+            <div class="status-item">
+              <div class="status-left">
+                <div class="status-dot amber"></div>
+                <span class="status-name">Notifications</span>
+              </div>
+              <div class="status-bar-wrap">
+                <div class="status-bar amber" style="width:60%"></div>
+              </div>
+              <span class="status-val">60%</span>
+            </div>
+          </div>
+          <div class="sys-meta">
+            <span>v1.0.0</span>
+            <span>Spring Boot + Angular</span>
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="footer">
+        <span>Built by <strong>ezequiel</strong> · CMMS Industrial Suite · 2026</span>
+      </footer>
+
+    </div>
+  </main>
+</div>
