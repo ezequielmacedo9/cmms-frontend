@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth/login';
+  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/auth/login';
 
   constructor(private http: HttpClient) {}
 
