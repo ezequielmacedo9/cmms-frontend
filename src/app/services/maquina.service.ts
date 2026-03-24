@@ -7,7 +7,8 @@ import { Maquina } from '../models/maquina.model';
 export class MaquinaService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/maquinas';
+  
+  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/maquinas';
 
   listar(): Observable<Maquina[]> {
     return this.http.get<Maquina[]>(this.apiUrl);

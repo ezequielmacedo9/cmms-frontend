@@ -7,7 +7,8 @@ import { Manutencao } from '../models/manutencao.model';
 export class ManutencaoService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/manutencoes';
+  
+  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/manutencoes';
 
   listar(): Observable<Manutencao[]> {
     return this.http.get<Manutencao[]>(this.apiUrl);
