@@ -1,43 +1,57 @@
 <div class="estoque-container">
   <div class="header">
     <h1>Estoque de Peças</h1>
-    <button mat-raised-button color="primary" (click)="showForm = !showForm">
-      + Nova Peça
-    </button>
+    <button mat-raised-button color="primary" (click)="novoRegistro()">+ Nova Peça</button>
   </div>
 
-  <div class="form-card" *ngIf="showForm">
+  <mat-card *ngIf="showForm" class="form-card">
     <h2>{{ editando ? 'Editar Peça' : 'Nova Peça' }}</h2>
     <mat-form-field appearance="outline">
+      <mat-label>Código</mat-label>
+      <input matInput [(ngModel)]="form.codigo" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Nome</mat-label>
-      <input matInput [(ngModel)]="novaPeca.nome" />
+      <input matInput [(ngModel)]="form.nome" />
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Quantidade</mat-label>
-      <input matInput type="number" [(ngModel)]="novaPeca.quantidade" />
+      <mat-label>Quantidade em Estoque</mat-label>
+      <input matInput type="number" [(ngModel)]="form.quantidadeEmEstoque" />
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Unidade</mat-label>
-      <input matInput [(ngModel)]="novaPeca.unidade" />
+      <mat-label>Custo Unitário</mat-label>
+      <input matInput type="number" [(ngModel)]="form.custoUnitario" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Vida Útil (horas)</mat-label>
+      <input matInput type="number" [(ngModel)]="form.vidaUtilHoras" />
     </mat-form-field>
     <div class="form-actions">
       <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
       <button mat-button (click)="cancelar()">Cancelar</button>
     </div>
-  </div>
+  </mat-card>
 
   <table mat-table [dataSource]="pecas" class="mat-elevation-z2">
+    <ng-container matColumnDef="codigo">
+      <th mat-header-cell *matHeaderCellDef>Código</th>
+      <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
+    </ng-container>
     <ng-container matColumnDef="nome">
       <th mat-header-cell *matHeaderCellDef>Nome</th>
       <td mat-cell *matCellDef="let p">{{ p.nome }}</td>
     </ng-container>
     <ng-container matColumnDef="quantidade">
       <th mat-header-cell *matHeaderCellDef>Quantidade</th>
-      <td mat-cell *matCellDef="let p">{{ p.quantidade }}</td>
+      <td mat-cell *matCellDef="let p">{{ p.quantidadeEmEstoque }}</td>
     </ng-container>
-    <ng-container matColumnDef="unidade">
-      <th mat-header-cell *matHeaderCellDef>Unidade</th>
-      <td mat-cell *matCellDef="let p">{{ p.unidade }}</td>
+    <ng-container matColumnDef="custo">
+      <th mat-header-cell *matHeaderCellDef>Custo</th>
+      <td mat-cell *matCellDef="let p">{{ p.custoUnitario }}</td>
+    </ng-container>
+    <ng-container matColumnDef="vidaUtil">
+      <th mat-header-cell *matHeaderCellDef>Vida Útil (h)</th>
+      <td mat-cell *matCellDef="let p">{{ p.vidaUtilHoras }}</td>
     </ng-container>
     <ng-container matColumnDef="acoes">
       <th mat-header-cell *matHeaderCellDef>Ações</th>
@@ -46,7 +60,7 @@
         <button mat-icon-button (click)="deletar(p.id)">🗑️</button>
       </td>
     </ng-container>
-    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
-    <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </div>
