@@ -7,6 +7,7 @@ import { PecaRequest, PecaResponse } from '../models/peca.model';
 export class PecaService {
 
   private http = inject(HttpClient);
+  
   private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/pecas';
 
   listar(): Observable<PecaResponse[]> {
