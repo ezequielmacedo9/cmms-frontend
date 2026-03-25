@@ -1,0 +1,27 @@
+import { Component, signal, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App implements OnInit {
+  protected readonly title = signal('cmms-frontend');
+
+  private apiUrl = 'https://cmms-backend-8y7h.onrender.com';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.keepAlive();
+    setInterval(() => this.keepAlive(), 10 * 60 * 1000); // a cada 10 min
+  }
+
+  private keepAlive() {
+    this.http.get(`${this.apiUrl}/ping`, { responseType: 'text' })
+      .subscribe({ error: () => {} }); // ignora erro silenciosamente
+  }
+}
