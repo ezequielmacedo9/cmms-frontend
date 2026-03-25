@@ -1,17 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/auth/login';
+  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 
   login(email: string, senha: string): Observable<any> {
-    return this.http.post<any>(this.apiUrl, { email, senha });
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+        }
+      })
+    );
+  }
+
+  refreshToken(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/refresh`, {});
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
   }
 }
