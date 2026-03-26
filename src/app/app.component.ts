@@ -9,19 +9,18 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  protected readonly title = signal('cmms-frontend');
-
+  protected readonly title = signal('CMMS Industrial Suite');
   private apiUrl = 'https://cmms-backend-8y7h.onrender.com';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.keepAlive();
-    setInterval(() => this.keepAlive(), 10 * 60 * 1000); // a cada 10 min
+    setInterval(() => this.keepAlive(), 8 * 60 * 1000); // a cada 8 min
   }
 
   private keepAlive() {
-    this.http.get(`${this.apiUrl}/ping`, { responseType: 'text' })
-      .subscribe({ error: () => {} }); // ignora erro silenciosamente
+    this.http.get(`${this.apiUrl}/api/maquinas`, { responseType: 'text' })
+      .subscribe({ error: () => {} });
   }
 }
