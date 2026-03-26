@@ -14,12 +14,10 @@
         <div class="brand-tagline">Industrial Suite</div>
       </div>
     </div>
-
     <div class="hero-text">
       <h1>Industrial<br><span>Maintenance</span><br>Platform</h1>
       <p>Gerencie máquinas, manutenções e estoque com precisão. Sistema profissional para operações industriais.</p>
     </div>
-
     <div class="features">
       <div class="feature">
         <div class="feature-dot"></div>
@@ -43,43 +41,40 @@
         <p>Entre com suas credenciais para continuar</p>
       </div>
 
+      <div class="backend-status" *ngIf="!backendPronto">
+        <mat-spinner diameter="16"></mat-spinner>
+        <span>Conectando ao servidor...</span>
+      </div>
+      <div class="backend-status pronto" *ngIf="backendPronto">
+        <span class="dot-pronto"></span>
+        <span>Servidor conectado</span>
+      </div>
+
       <form (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label>Email</label>
           <div class="input-wrap">
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              placeholder="admin@email.com"
-              required
-            />
+            <input type="email" [(ngModel)]="email" name="email"
+              placeholder="admin@email.com" required [disabled]="carregando" />
             <mat-icon class="input-icon">mail</mat-icon>
           </div>
         </div>
-
         <div class="form-group">
           <label>Senha</label>
           <div class="input-wrap">
-            <input
-              type="password"
-              [(ngModel)]="senha"
-              name="senha"
-              placeholder="••••••••"
-              required
-            />
+            <input type="password" [(ngModel)]="senha" name="senha"
+              placeholder="••••••••" required [disabled]="carregando" />
             <mat-icon class="input-icon">lock</mat-icon>
           </div>
         </div>
-
         <div class="divider">
           <div class="divider-line"></div>
           <span class="divider-text">CMMS v1.0</span>
           <div class="divider-line"></div>
         </div>
-
-        <button class="submit-btn" type="submit">
-          Entrar no Sistema
+        <button class="submit-btn" type="submit" [disabled]="carregando">
+          <mat-spinner *ngIf="carregando" diameter="20" style="display:inline-block; margin-right:8px;"></mat-spinner>
+          <span>{{ carregando ? 'Entrando...' : 'Entrar no Sistema' }}</span>
         </button>
       </form>
 
