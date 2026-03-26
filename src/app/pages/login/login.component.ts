@@ -1,71 +1,45 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+// v2 - fixed imports
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  @ViewChild('particleCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
-
-  email = '';
-  senha = '';
-  loading = false;
-
-  constructor(private authService: AuthService, private router: Router) {}
-
-  ngOnInit() {}
-
-  ngAfterViewInit() {
-    this.initParticles();
-  }
+  email: string = '';
+  senha: string = '';
 
   onSubmit() {
-    this.loading = true;
     this.authService.login(this.email, this.senha).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: () => { this.loading = false; alert('Credenciais inválidas'); }
+      next: (response: any) => {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        this.router.navigate(['/dashboard']);
+      },
+      error: () => {
+        alert('Email ou senha inválidos');
+      }
     });
-  }
-
-  private initParticles() {
-    const canvas = this.canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d')!;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles: any[] = [];
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5 + 0.5,
-        dx: (Math.random() - 0.5) * 0.3,
-        dy: -Math.random() * 0.4 - 0.1,
-        o: Math.random() * 0.5 + 0.1,
-        color: Math.random() > 0.5 ? '99,102,241' : '16,185,129'
-      });
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color},${p.o})`;
-        ctx.fill();
-        p.x += p.dx; p.y += p.dy;
-        if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
-      });
-      requestAnimationFrame(animate);
-    };
-    animate();
   }
 }
