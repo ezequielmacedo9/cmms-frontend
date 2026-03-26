@@ -37,19 +37,22 @@ export class LoginComponent implements OnInit {
   }
 
   acordarBackend() {
-    this.http.get('https://cmms-backend-8y7h.onrender.com/api/maquinas', { responseType: 'text' })
-      .subscribe({
-        next: () => { this.backendPronto = true; },
-        error: () => {
-          if (this.tentativas < 5) {
-            this.tentativas++;
-            setTimeout(() => this.acordarBackend(), 4000);
-          } else {
-            this.backendPronto = true;
-          }
+  this.http.post('https://cmms-backend-8y7h.onrender.com/api/auth/login',
+    { email: '', senha: '' }, { responseType: 'text' })
+    .subscribe({
+      next: () => { this.backendPronto = true; },
+      error: (err) => {
+        if (err.status === 400 || err.status === 401 || err.status === 403) {
+          this.backendPronto = true;
+        } else if (this.tentativas < 5) {
+          this.tentativas++;
+          setTimeout(() => this.acordarBackend(), 4000);
+        } else {
+          this.backendPronto = true;
         }
-      });
-  }
+      }
+    });
+}
 
   onSubmit() {
     if (this.carregando) return;
