@@ -8,7 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MaquinaService } from '../../services/maquina.service';
 import { Maquina } from '../../models/maquina.model';
 
@@ -16,38 +17,23 @@ import { Maquina } from '../../models/maquina.model';
   selector: 'app-maquinas',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCardModule,
-    MatDialogModule,
+    CommonModule, FormsModule, MatTableModule, MatButtonModule,
+    MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatCardModule, MatDialogModule, MatProgressSpinnerModule
   ],
   templateUrl: './maquinas.component.html',
   styleUrl: './maquinas.component.css'
 })
 export class MaquinasComponent implements OnInit {
-
   private maquinaService = inject(MaquinaService);
-
   maquinas: Maquina[] = [];
   displayedColumns = ['nome', 'setor', 'status', 'acoes'];
   showForm = false;
   editando = false;
+  salvando = false;
+  form: Maquina = { nome: '', setor: '', status: 'ATIVO' };
 
-  form: Maquina = {
-    nome: '',
-    setor: '',
-    status: 'ATIVO'
-  };
-
-  ngOnInit() {
-    this.carregar();
-  }
+  ngOnInit() { this.carregar(); }
 
   carregar() {
     this.maquinaService.listar().subscribe(data => this.maquinas = data);
@@ -66,17 +52,23 @@ export class MaquinasComponent implements OnInit {
   }
 
   salvar() {
-    if (this.editando && this.form.id) {
-      this.maquinaService.atualizar(this.form.id, this.form).subscribe(() => {
-        this.carregar();
+    this.salvando = true;
+    const op = this.editando && this.form.id
+      ? this.maquinaService.atualizar(this.form.id, this.form)
+      : this.maquinaService.cadastrar(this.form);
+
+    op.subscribe({
+      next: () => {
+        this.salvando = false;
         this.showForm = false;
-      });
-    } else {
-      this.maquinaService.cadastrar(this.form).subscribe(() => {
         this.carregar();
+      },
+      error: () => {
+        this.salvando = false;
+        setTimeout(() => this.carregar(), 1000);
         this.showForm = false;
-      });
-    }
+      }
+    });
   }
 
   deletar(id: number) {
@@ -85,7 +77,5 @@ export class MaquinasComponent implements OnInit {
     }
   }
 
-  cancelar() {
-    this.showForm = false;
-  }
+  cancelar() { this.showForm = false; }
 }

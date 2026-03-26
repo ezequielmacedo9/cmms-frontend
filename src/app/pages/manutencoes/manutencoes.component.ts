@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { MaquinaService } from '../../services/maquina.service';
 import { Manutencao } from '../../models/manutencao.model';
@@ -18,21 +19,20 @@ import { Maquina } from '../../models/maquina.model';
   standalone: true,
   imports: [
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
-    MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCardModule
+    MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatCardModule, MatProgressSpinnerModule
   ],
   templateUrl: './manutencoes.component.html',
   styleUrl: './manutencoes.component.css'
 })
 export class ManutencoesComponent implements OnInit {
-
   private manutencaoService = inject(ManutencaoService);
   private maquinaService = inject(MaquinaService);
-
   manutencoes: Manutencao[] = [];
   maquinas: Maquina[] = [];
   displayedColumns = ['maquina', 'tipo', 'tecnico', 'data'];
   showForm = false;
-
+  salvando = false;
   maquinaIdSelecionada: number | null = null;
   form: Manutencao = { tipo: '', tecnico: '' };
 
@@ -53,13 +53,20 @@ export class ManutencoesComponent implements OnInit {
 
   salvar() {
     if (!this.maquinaIdSelecionada) return;
-    this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe(() => {
-      this.carregar();
-      this.showForm = false;
+    this.salvando = true;
+    this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe({
+      next: () => {
+        this.salvando = false;
+        this.showForm = false;
+        this.carregar();
+      },
+      error: () => {
+        this.salvando = false;
+        this.showForm = false;
+        setTimeout(() => this.carregar(), 1000);
+      }
     });
   }
 
-  cancelar() {
-    this.showForm = false;
-  }
+  cancelar() { this.showForm = false; }
 }
