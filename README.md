@@ -1,59 +1,236 @@
-# CmmsFrontend
+# ⚙️ CMMS Industrial Suite
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+> **Computerized Maintenance Management System** — Sistema profissional de gestão de manutenção industrial com autenticação JWT, CRUD completo e deploy em nuvem.
 
-## Development server
+![Status](https://img.shields.io/badge/status-production-brightgreen)
+![Backend](https://img.shields.io/badge/backend-Spring%20Boot%203.5-brightgreen)
+![Frontend](https://img.shields.io/badge/frontend-Angular%2017+-red)
+![Database](https://img.shields.io/badge/database-PostgreSQL-blue)
+![Deploy](https://img.shields.io/badge/deploy-Render%20%2B%20Vercel-black)
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
+## 🌐 Live Demo
+
+| Serviço | URL |
+|---|---|
+| 🖥️ Frontend | [cmms-frontend-sr11.vercel.app](https://cmms-frontend-sr11.vercel.app) |
+| 🔧 Backend API | [cmms-backend-8y7h.onrender.com](https://cmms-backend-8y7h.onrender.com) |
+
+**Credenciais de demonstração:**
+```
+Email: admin@email.com
+Senha: 123456
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 📋 Sobre o Projeto
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+O **CMMS Industrial Suite** é uma aplicação full-stack para controle de manutenção industrial. Permite o gerenciamento completo de máquinas, ordens de manutenção e estoque de peças, com autenticação segura via JWT e interface dark premium com Angular Material.
 
-```bash
-ng generate component component-name
+### Funcionalidades
+
+- 🔐 **Autenticação JWT** com Access Token + Refresh Token
+- 🏭 **Gestão de Máquinas** — cadastro, edição, exclusão e controle de status
+- 🔧 **Ordens de Manutenção** — preventiva, corretiva e preditiva vinculadas à máquina
+- 📦 **Estoque de Peças** — controle de quantidade, custo unitário e vida útil
+- 📊 **Dashboard** — KPIs em tempo real com sidebar animada e quick actions
+- 🌙 **Dark Theme Premium** — glassmorphism, animações e layout responsivo
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Backend
+| Tecnologia | Versão | Uso |
+|---|---|---|
+| Java | 17 | Linguagem principal |
+| Spring Boot | 3.5.9 | Framework principal |
+| Spring Security | 6.x | Autenticação e autorização |
+| Spring Data JPA | 6.x | Persistência de dados |
+| JJWT | 0.11.5 | Geração e validação de tokens JWT |
+| PostgreSQL | 15 | Banco de dados em produção |
+| H2 | - | Banco de dados em desenvolvimento |
+| SpringDoc OpenAPI | - | Documentação Swagger |
+| Maven | 3.x | Gerenciamento de dependências |
+
+### Frontend
+| Tecnologia | Versão | Uso |
+|---|---|---|
+| Angular | 17+ | Framework principal (standalone) |
+| TypeScript | 5.x | Linguagem principal |
+| Angular Material | 17+ | Componentes UI |
+| RxJS | 7.x | Programação reativa |
+| HTTP Interceptor | - | Injeção automática do JWT |
+| Auth Guard | - | Proteção de rotas |
+
+### DevOps & Infraestrutura
+| Serviço | Uso |
+|---|---|
+| Render | Deploy do backend + PostgreSQL |
+| Vercel | Deploy do frontend |
+| Docker | Containerização do backend |
+| GitHub | Controle de versão |
+
+---
+
+## 🏗️ Arquitetura
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    CMMS Industrial Suite                  │
+├──────────────────────────┬──────────────────────────────┤
+│   Frontend (Vercel)      │    Backend (Render)           │
+│   Angular 17+ SPA        │    Spring Boot 3.5            │
+│                          │                               │
+│  ┌─────────────────┐     │   ┌─────────────────────┐    │
+│  │   Auth Guard    │     │   │  Spring Security     │    │
+│  │   JWT Intercept │────▶│   │  JWT Filter          │    │
+│  │   Services      │     │   │  Controllers         │    │
+│  │   Components    │     │   │  Services            │    │
+│  └─────────────────┘     │   │  Repositories        │    │
+│                          │   └──────────┬──────────┘    │
+│                          │              │                │
+│                          │   ┌──────────▼──────────┐    │
+│                          │   │  PostgreSQL (Render) │    │
+│                          │   └─────────────────────┘    │
+└──────────────────────────┴──────────────────────────────┘
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+## 📁 Estrutura do Projeto
+
+### Backend
+```
+br.com.cmms.cmms
+├── Security/
+│   ├── JwtAuthFilter.java
+│   ├── JwtService.java
+│   ├── SecurityConfig.java
+│   └── UserDetailsServiceImpl.java
+├── controller/
+│   ├── AuthController.java
+│   ├── MaquinaController.java
+│   ├── ManutencaoController.java
+│   └── PecaController.java
+├── model/
+│   ├── Usuario.java
+│   ├── Maquina.java
+│   ├── Manutencao.java
+│   └── Peca.java
+├── service/
+└── repository/
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
+### Frontend
+```
+src/app
+├── guards/
+│   └── auth-guard.ts
+├── interceptors/
+│   └── auth-interceptor.ts
+├── models/
+├── pages/
+│   ├── login/
+│   ├── dashboard/
+│   ├── maquinas/
+│   ├── manutencoes/
+│   └── estoque/
+└── services/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 🔌 API Endpoints
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+```
+POST   /api/auth/login              → Autenticação
+POST   /api/auth/refresh            → Renovar token
 
-```bash
-ng test
+GET    /api/maquinas                → Listar máquinas
+POST   /api/maquinas                → Cadastrar máquina
+PUT    /api/maquinas/{id}           → Atualizar máquina
+DELETE /api/maquinas/{id}           → Remover máquina
+
+GET    /api/manutencoes             → Listar manutenções
+POST   /api/manutencoes/{maquinaId} → Registrar manutenção
+
+GET    /api/pecas                   → Listar peças
+POST   /api/pecas                   → Cadastrar peça
+PUT    /api/pecas/{id}              → Atualizar peça
+DELETE /api/pecas/{id}              → Remover peça
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 🚀 Como Rodar Localmente
 
+### Pré-requisitos
+- Java 17+
+- Node.js 18+
+- Maven
+
+### Backend
 ```bash
-ng e2e
+cd cmms-backend
+./mvnw spring-boot:run
+# Disponível em: http://localhost:8080
+# H2 Console: http://localhost:8080/h2-console
+# Swagger: http://localhost:8080/swagger-ui.html
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Frontend
+```bash
+cd cmms-frontend
+npm install --legacy-peer-deps
+npx ng serve
+# Disponível em: http://localhost:4200
+```
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## ⚙️ Variáveis de Ambiente (Produção)
+
+```properties
+SERVER_PORT=10000
+SPRING_PROFILES_ACTIVE=prod
+DATABASE_URL=jdbc:postgresql://...
+SPRING_DATASOURCE_USERNAME=...
+SPRING_DATASOURCE_PASSWORD=...
+jwt.secret=...
+```
+
+---
+
+## 🔐 Segurança
+
+- Tokens JWT com expiração de 24h
+- Refresh Token para renovação automática
+- Spring Security com filtro JWT em todas as rotas protegidas
+- CORS configurado para domínios autorizados
+- Senhas armazenadas com BCrypt
+- Variáveis sensíveis via environment variables (nunca hardcoded em produção)
+
+---
+
+## 📌 Roadmap
+
+- [ ] Refresh automático do token no frontend
+- [ ] Paginação nas listagens
+- [ ] Relatórios e gráficos no dashboard
+- [ ] Notificações de manutenção preventiva
+- [ ] Exportação de relatórios em PDF
+- [ ] App mobile (Angular + Capacitor)
+
+---
+
+## 👨‍💻 Autor
+
+**Ezequiel Macedo**
+- GitHub: [@ezequielmacedo9](https://github.com/ezequielmacedo9)
+
+---
+
+> CMMS Industrial Suite v1.0.0 · Desenvolvido com ☕ Java + ⚡ Angular
