@@ -1,23 +1,91 @@
-<div class="login-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Login CMMS</mat-card-title>
-    </mat-card-header>
+<div class="login-wrapper">
+  <div class="bg-effects">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
 
-    <mat-card-content>
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon">⚙️</div>
+      <div>
+        <div class="brand-name">CMMS</div>
+        <div class="brand-tagline">Industrial Suite</div>
+      </div>
+    </div>
+
+    <div class="hero-text">
+      <h1>Industrial<br><span>Maintenance</span><br>Platform</h1>
+      <p>Gerencie máquinas, manutenções e estoque com precisão. Sistema profissional para operações industriais.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-dot"></div>
+        <span>Controle completo de máquinas e equipamentos</span>
+      </div>
+      <div class="feature">
+        <div class="feature-dot"></div>
+        <span>Ordens de manutenção preventiva e corretiva</span>
+      </div>
+      <div class="feature">
+        <div class="feature-dot"></div>
+        <span>Gestão de estoque de peças em tempo real</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="card-header">
+        <h2>Welcome back</h2>
+        <p>Entre com suas credenciais para continuar</p>
+      </div>
+
       <form (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="fill">
-          <mat-label>Email</mat-label>
-          <input matInput type="email" [(ngModel)]="email" name="email" required />
-        </mat-form-field>
+        <div class="form-group">
+          <label>Email</label>
+          <div class="input-wrap">
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="admin@email.com"
+              required
+            />
+            <mat-icon class="input-icon">mail</mat-icon>
+          </div>
+        </div>
 
-        <mat-form-field appearance="fill">
-          <mat-label>Senha</mat-label>
-          <input matInput type="password" [(ngModel)]="senha" name="senha" required />
-        </mat-form-field>
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-wrap">
+            <input
+              type="password"
+              [(ngModel)]="senha"
+              name="senha"
+              placeholder="••••••••"
+              required
+            />
+            <mat-icon class="input-icon">lock</mat-icon>
+          </div>
+        </div>
 
-        <button mat-raised-button color="primary" type="submit">Entrar</button>
+        <div class="divider">
+          <div class="divider-line"></div>
+          <span class="divider-text">CMMS v1.0</span>
+          <div class="divider-line"></div>
+        </div>
+
+        <button class="submit-btn" type="submit">
+          Entrar no Sistema
+        </button>
       </form>
-    </mat-card-content>
-  </mat-card>
+
+      <div class="card-footer">
+        developed by ezequiel · industrial suite 2026
+      </div>
+    </div>
+  </div>
 </div>
