@@ -27,6 +27,7 @@ export class EstoqueComponent implements OnInit {
   pecas: PecaResponse[] = [];
   displayedColumns = ['codigo', 'nome', 'quantidade', 'custo', 'vidaUtil', 'acoes'];
   showForm = false;
+  salvando = false;
   editando = false;
   editandoId: number | null = null;
 
@@ -63,18 +64,24 @@ export class EstoqueComponent implements OnInit {
   }
 
   salvar() {
-    if (this.editando && this.editandoId) {
-      this.pecaService.atualizar(this.editandoId, this.form).subscribe(() => {
-        this.carregar();
-        this.showForm = false;
-      });
-    } else {
-      this.pecaService.cadastrar(this.form).subscribe(() => {
-        this.carregar();
-        this.showForm = false;
-      });
+  this.salvando = true;
+  const op = this.editando && this.editandoId
+    ? this.pecaService.atualizar(this.editandoId, this.form)
+    : this.pecaService.cadastrar(this.form);
+
+  op.subscribe({
+    next: () => {
+      this.salvando = false;
+      this.showForm = false;
+      this.carregar();
+    },
+    error: () => {
+      this.salvando = false;
+      this.showForm = false;
+      setTimeout(() => this.carregar(), 1000);
     }
-  }
+  });
+}
 
   deletar(id: number) {
     if (confirm('Deseja excluir esta peça?')) {

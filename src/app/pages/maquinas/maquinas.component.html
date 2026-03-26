@@ -39,7 +39,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando"><span *ngIf="!salvando">Salvar</span><span *ngIf="salvando">Salvando...</span></button>
       <button mat-button (click)="cancelar()">Cancelar</button>
     </mat-card-actions>
   </mat-card>

@@ -27,8 +27,11 @@
       <input matInput type="number" [(ngModel)]="form.vidaUtilHoras" />
     </mat-form-field>
     <div class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
-      <button mat-button (click)="cancelar()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando">
+        <span *ngIf="!salvando">Salvar</span>
+        <span *ngIf="salvando">Salvando...</span>
+      </button>
+      <button mat-button (click)="cancelar()" [disabled]="salvando">Cancelar</button>
     </div>
   </mat-card>
 
@@ -56,8 +59,12 @@
     <ng-container matColumnDef="acoes">
       <th mat-header-cell *matHeaderCellDef>Ações</th>
       <td mat-cell *matCellDef="let p">
-        <button mat-icon-button (click)="editar(p)">✏️</button>
-        <button mat-icon-button (click)="deletar(p.id)">🗑️</button>
+        <button mat-icon-button color="primary" (click)="editar(p)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deletar(p.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
