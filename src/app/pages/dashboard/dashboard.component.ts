@@ -52,13 +52,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.bar1.nativeElement.style.width = '98%';
-      this.bar2.nativeElement.style.width = '100%';
-      this.bar3.nativeElement.style.width = '100%';
-      this.bar4.nativeElement.style.width = '60%';
-    }, 400);
-  }
+  setTimeout(() => {
+    if (this.bar1) this.bar1.nativeElement.style.width = '98%';
+    if (this.bar2) this.bar2.nativeElement.style.width = '100%';
+    if (this.bar3) this.bar3.nativeElement.style.width = '100%';
+    if (this.bar4) this.bar4.nativeElement.style.width = '60%';
+  }, 600);
+}
 
   private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayPendencias', target: number) {
     const duration = 1000;
