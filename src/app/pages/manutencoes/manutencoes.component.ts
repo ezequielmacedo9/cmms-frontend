@@ -13,6 +13,7 @@ import { ManutencaoService } from '../../services/manutencao.service';
 import { MaquinaService } from '../../services/maquina.service';
 import { Manutencao } from '../../models/manutencao.model';
 import { Maquina } from '../../models/maquina.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-manutencoes',
@@ -69,4 +70,10 @@ export class ManutencoesComponent implements OnInit {
   }
 
   cancelar() { this.showForm = false; }
+
+  private router = inject(Router);
+
+  voltar() {
+   this.router.navigate(['/dashboard']);
+}
 }
