@@ -1,45 +1,43 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PecaService } from '../../services/peca.service';
+import { NotificationService } from '../../services/notification.service';
 import { PecaRequest, PecaResponse } from '../../models/peca.model';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-estoque',
   standalone: true,
   imports: [
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
-    MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule
+    MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './estoque.component.html',
   styleUrl: './estoque.component.css'
 })
 export class EstoqueComponent implements OnInit {
-
   private pecaService = inject(PecaService);
+  private notify = inject(NotificationService);
   private router = inject(Router);
 
   pecas: PecaResponse[] = [];
   displayedColumns = ['codigo', 'nome', 'quantidade', 'custo', 'vidaUtil', 'acoes'];
   showForm = false;
-  salvando = false;
   editando = false;
+  salvando = false;
   editandoId: number | null = null;
+  form: PecaRequest = { nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 };
 
-  form: PecaRequest = {
-    nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0
-  };
-
-  ngOnInit() {
-    this.carregar();
-  }
+  ngOnInit() { this.carregar(); }
 
   carregar() {
     this.pecaService.listar().subscribe(data => this.pecas = data);
@@ -54,8 +52,7 @@ export class EstoqueComponent implements OnInit {
 
   editar(peca: PecaResponse) {
     this.form = {
-      nome: peca.nome,
-      codigo: peca.codigo,
+      nome: peca.nome, codigo: peca.codigo,
       quantidadeEmEstoque: peca.quantidadeEmEstoque,
       custoUnitario: peca.custoUnitario,
       vidaUtilHoras: peca.vidaUtilHoras
@@ -66,33 +63,39 @@ export class EstoqueComponent implements OnInit {
   }
 
   salvar() {
-  this.salvando = true;
-  const op = this.editando && this.editandoId
-    ? this.pecaService.atualizar(this.editandoId, this.form)
-    : this.pecaService.cadastrar(this.form);
+    if (this.salvando) return;
+    this.salvando = true;
+    const op = this.editando && this.editandoId
+      ? this.pecaService.atualizar(this.editandoId, this.form)
+      : this.pecaService.cadastrar(this.form);
 
-  op.subscribe({
-    next: () => {
-      this.salvando = false;
-      this.showForm = false;
-      this.carregar();
-    },
-    error: () => {
-      this.salvando = false;
-      this.showForm = false;
-      setTimeout(() => this.carregar(), 1000);
-    }
-  });
-}
+    op.subscribe({
+      next: () => {
+        this.salvando = false;
+        this.showForm = false;
+        this.notify.success(this.editando ? 'Peça atualizada!' : 'Peça cadastrada!');
+        this.carregar();
+      },
+      error: () => {
+        this.salvando = false;
+        this.notify.error('Erro ao salvar. Tente novamente.');
+        setTimeout(() => this.carregar(), 1000);
+      }
+    });
+  }
 
   deletar(id: number) {
     if (confirm('Deseja excluir esta peça?')) {
-      this.pecaService.deletar(id).subscribe(() => this.carregar());
+      this.pecaService.deletar(id).subscribe({
+        next: () => {
+          this.notify.success('Peça removida!');
+          this.carregar();
+        },
+        error: () => this.notify.error('Erro ao excluir.')
+      });
     }
   }
 
   voltar() { this.router.navigate(['/dashboard']); }
-  cancelar() {
-    this.showForm = false;
-  }
+  cancelar() { this.showForm = false; }
 }

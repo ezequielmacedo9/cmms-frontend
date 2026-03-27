@@ -1,58 +1,144 @@
-.page-container { padding: 24px; }
+* { box-sizing: border-box; }
+
+.page-container {
+  padding: 24px 28px;
+  background: #05080f;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-btn {
+  color: rgba(255,255,255,0.3) !important;
+  transition: color 0.2s !important;
+}
+
+.back-btn:hover { color: rgba(255,255,255,0.7) !important; }
 
 .page-header h2 {
   margin: 0;
-  font-size: 24px;
-  color: #1e293b;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
 }
 
-.form-card { margin-bottom: 24px; }
+.form-card {
+  background: rgba(12,18,32,0.95) !important;
+  border: 1px solid rgba(99,102,241,0.2) !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  margin-bottom: 20px;
+  box-shadow: 0 0 40px rgba(99,102,241,0.05) !important;
+}
+
+.form-card mat-card-title {
+  color: white !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 mat-form-field { width: 100%; }
 
-.table-card { overflow: hidden; }
+::ng-deep .form-card .mat-mdc-text-field-wrapper {
+  background: rgba(255,255,255,0.03) !important;
+  border-radius: 10px !important;
+}
+
+::ng-deep .form-card .mdc-notched-outline__leading,
+::ng-deep .form-card .mdc-notched-outline__notch,
+::ng-deep .form-card .mdc-notched-outline__trailing {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+::ng-deep .form-card .mat-mdc-form-field-label,
+::ng-deep .form-card .mdc-floating-label {
+  color: rgba(255,255,255,0.4) !important;
+}
+
+::ng-deep .form-card input.mat-mdc-input-element,
+::ng-deep .form-card .mat-mdc-select-value {
+  color: white !important;
+}
+
+.form-actions-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.table-card {
+  background: rgba(12,18,32,0.95) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
 
 table { width: 100%; }
+
+::ng-deep .table-card th.mat-mdc-header-cell {
+  background: rgba(255,255,255,0.02) !important;
+  color: rgba(255,255,255,0.3) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+::ng-deep .table-card td.mat-mdc-cell {
+  color: rgba(255,255,255,0.7) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  font-size: 13px !important;
+}
+
+::ng-deep .table-card tr.mat-mdc-row:hover td {
+  background: rgba(99,102,241,0.05) !important;
+}
 
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-.status-badge.ativo { background: #dcfce7; color: #16a34a; }
-.status-badge.inativo { background: #fee2e2; color: #dc2626; }
-.status-badge.em_manutencao { background: #fef9c3; color: #ca8a04; }
+.status-badge.ativo { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.status-badge.inativo { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+.status-badge.em_manutencao { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
 
 .empty-state {
   text-align: center;
-  padding: 48px;
-  color: #94a3b8;
+  padding: 56px;
+  color: rgba(255,255,255,0.2);
 }
 
-.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-btn {
-  color: rgba(255,255,255,0.6);
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  display: block;
 }
