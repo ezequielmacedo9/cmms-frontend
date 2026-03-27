@@ -29,6 +29,7 @@ import { Router } from '@angular/router';
 export class ManutencoesComponent implements OnInit {
   private manutencaoService = inject(ManutencaoService);
   private maquinaService = inject(MaquinaService);
+  private router = inject(Router);
   manutencoes: Manutencao[] = [];
   maquinas: Maquina[] = [];
   displayedColumns = ['maquina', 'tipo', 'tecnico', 'data'];
@@ -71,7 +72,6 @@ export class ManutencoesComponent implements OnInit {
 
   cancelar() { this.showForm = false; }
 
-  private router = inject(Router);
 
   voltar() {
    this.router.navigate(['/dashboard']);
