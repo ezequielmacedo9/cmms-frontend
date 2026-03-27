@@ -1,81 +1,136 @@
 <div class="page-container">
-  <div class="page-header">
-    <div class="header-left">
-      <button mat-icon-button (click)="voltar()" class="back-btn">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h2>Estoque de Peças</h2>
+
+  <div class="page-hero">
+    <div class="breadcrumb">
+      <mat-icon>home</mat-icon>
+      Dashboard
+      <mat-icon>chevron_right</mat-icon>
+      <span>Estoque</span>
     </div>
-    <button mat-raised-button color="primary" (click)="novoRegistro()">
-      <mat-icon>add</mat-icon>
-      Nova Peça
-    </button>
+    <div class="hero-row">
+      <div class="hero-left">
+        <button mat-icon-button (click)="voltar()" style="color:rgba(255,255,255,0.3)">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="hero-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div>
+          <div class="hero-title">Estoque</div>
+          <div class="hero-sub">Controle de peças e componentes</div>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="novoRegistro()" style="border-radius:12px;font-weight:600">
+        <mat-icon>add</mat-icon>
+        Nova Peça
+      </button>
+    </div>
   </div>
 
-  <mat-card *ngIf="showForm" class="form-card">
-    <h2>{{ editando ? 'Editar Peça' : 'Nova Peça' }}</h2>
-    <mat-form-field appearance="outline">
-      <mat-label>Código</mat-label>
-      <input matInput [(ngModel)]="form.codigo" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Nome</mat-label>
-      <input matInput [(ngModel)]="form.nome" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Quantidade em Estoque</mat-label>
-      <input matInput type="number" [(ngModel)]="form.quantidadeEmEstoque" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Custo Unitário</mat-label>
-      <input matInput type="number" [(ngModel)]="form.custoUnitario" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Vida Útil (horas)</mat-label>
-      <input matInput type="number" [(ngModel)]="form.vidaUtilHoras" />
-    </mat-form-field>
-    <div class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando">
-        <span *ngIf="!salvando">Salvar</span>
-        <span *ngIf="salvando">Salvando...</span>
-      </button>
-      <button mat-button (click)="cancelar()" [disabled]="salvando">Cancelar</button>
-    </div>
-  </mat-card>
+  <div class="page-body">
 
-  <table mat-table [dataSource]="pecas" class="mat-elevation-z2">
-    <ng-container matColumnDef="codigo">
-      <th mat-header-cell *matHeaderCellDef>Código</th>
-      <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
-    </ng-container>
-    <ng-container matColumnDef="nome">
-      <th mat-header-cell *matHeaderCellDef>Nome</th>
-      <td mat-cell *matCellDef="let p">{{ p.nome }}</td>
-    </ng-container>
-    <ng-container matColumnDef="quantidade">
-      <th mat-header-cell *matHeaderCellDef>Quantidade</th>
-      <td mat-cell *matCellDef="let p">{{ p.quantidadeEmEstoque }}</td>
-    </ng-container>
-    <ng-container matColumnDef="custo">
-      <th mat-header-cell *matHeaderCellDef>Custo</th>
-      <td mat-cell *matCellDef="let p">{{ p.custoUnitario }}</td>
-    </ng-container>
-    <ng-container matColumnDef="vidaUtil">
-      <th mat-header-cell *matHeaderCellDef>Vida Útil (h)</th>
-      <td mat-cell *matCellDef="let p">{{ p.vidaUtilHoras }}</td>
-    </ng-container>
-    <ng-container matColumnDef="acoes">
-      <th mat-header-cell *matHeaderCellDef>Ações</th>
-      <td mat-cell *matCellDef="let p">
-        <button mat-icon-button color="primary" (click)="editar(p)">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="deletar(p.id)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+    <div class="form-wrapper" *ngIf="showForm">
+      <div class="form-card">
+        <div class="form-header">
+          <div class="form-header-left">
+            <div class="form-header-icon">
+              <mat-icon>{{ editando ? 'edit' : 'add_box' }}</mat-icon>
+            </div>
+            <div>
+              <div class="form-title">{{ editando ? 'Editar Peça' : 'Nova Peça' }}</div>
+              <div class="form-sub">{{ editando ? 'Atualize os dados da peça' : 'Cadastre um novo item no estoque' }}</div>
+            </div>
+          </div>
+          <button mat-icon-button (click)="cancelar()" style="color:rgba(255,255,255,0.3)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Código</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">qr_code</mat-icon>
+              <input matInput [(ngModel)]="form.codigo" placeholder="Ex: PCA-001" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Nome da Peça</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">settings</mat-icon>
+              <input matInput [(ngModel)]="form.nome" placeholder="Ex: Rolamento 6205" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Quantidade em Estoque</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">inventory</mat-icon>
+              <input matInput type="number" [(ngModel)]="form.quantidadeEmEstoque" placeholder="0" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Custo Unitário (R$)</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">attach_money</mat-icon>
+              <input matInput type="number" [(ngModel)]="form.custoUnitario" placeholder="0.00" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Vida Útil (horas)</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">timer</mat-icon>
+              <input matInput type="number" [(ngModel)]="form.vidaUtilHoras" placeholder="0" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button mat-button class="cancel-btn" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+          <button mat-raised-button color="primary" class="save-btn" (click)="salvar()" [disabled]="salvando">
+            <mat-icon *ngIf="!salvando" style="font-size:16px;width:16px;height:16px;margin-right:6px">save</mat-icon>
+            <mat-spinner *ngIf="salvando" diameter="16" style="display:inline-block;margin-right:6px"></mat-spinner>
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Itens em Estoque</span>
+        <span class="count-badge">{{ pecas.length }} itens</span>
+      </div>
+      <table mat-table [dataSource]="pecas">
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef>Código</th>
+          <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Peça</th>
+          <td mat-cell *matCellDef="let p">{{ p.nome }}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantidade">
+          <th mat-header-cell *matHeaderCellDef>Qtd</th>
+          <td mat-cell *matCellDef="let p">{{ p.quantidadeEmEstoque }}</td>
+        </ng-container>
+        <ng-container matColumnDef="custo">
+          <th mat-header-cell *matHeaderCellDef>Custo Unit.</th>
+          <td mat-cell *matCellDef="let p">R$ {{ p.custoUnitario | number:'1.2-2' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="vidaUtil">
+          <th mat-header-cell *matHeaderCellDef>Vida Útil</th>
+          <td mat-cell *matCellDef="let p">{{ p.vidaUtilHoras }}h</td>
+        </ng-container>
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let p">
+            <button mat-icon-button class="action-btn" style="color:#818cf8" (click)="editar(p)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="deletar(p.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div class="empty-state" *ngIf="pecas.length === 0">
+        <div class="empty-icon"><mat-icon>inventory_2</mat-icon></div>
+        <p>Nenhum item no estoque</p>
+        <small>Clique em "Nova Peça" para adicionar</small>
+      </div>
+    </div>
+
+  </div>
 </div>
