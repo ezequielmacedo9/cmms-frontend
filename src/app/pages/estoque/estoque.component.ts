@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { PecaService } from '../../services/peca.service';
 import { PecaRequest, PecaResponse } from '../../models/peca.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-estoque',
@@ -23,6 +24,7 @@ import { PecaRequest, PecaResponse } from '../../models/peca.model';
 export class EstoqueComponent implements OnInit {
 
   private pecaService = inject(PecaService);
+  private router = inject(Router);
 
   pecas: PecaResponse[] = [];
   displayedColumns = ['codigo', 'nome', 'quantidade', 'custo', 'vidaUtil', 'acoes'];
@@ -89,6 +91,7 @@ export class EstoqueComponent implements OnInit {
     }
   }
 
+  voltar() { this.router.navigate(['/dashboard']); }
   cancelar() {
     this.showForm = false;
   }

@@ -12,6 +12,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MaquinaService } from '../../services/maquina.service';
 import { Maquina } from '../../models/maquina.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-maquinas',
@@ -26,6 +27,7 @@ import { Maquina } from '../../models/maquina.model';
 })
 export class MaquinasComponent implements OnInit {
   private maquinaService = inject(MaquinaService);
+  private router = inject(Router);
   maquinas: Maquina[] = [];
   displayedColumns = ['nome', 'setor', 'status', 'acoes'];
   showForm = false;
@@ -77,5 +79,6 @@ export class MaquinasComponent implements OnInit {
     }
   }
 
+  voltar() { this.router.navigate(['/dashboard']); }
   cancelar() { this.showForm = false; }
 }
