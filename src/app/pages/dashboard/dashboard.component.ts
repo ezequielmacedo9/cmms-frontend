@@ -37,6 +37,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   displayPendencias = 0;
 
   ngOnInit() {
+    this.carregarDados();
+    setInterval(() => this.carregarDados(), 30000);
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.bar1) this.bar1.nativeElement.style.width = '98%';
+      if (this.bar2) this.bar2.nativeElement.style.width = '100%';
+      if (this.bar3) this.bar3.nativeElement.style.width = '100%';
+      if (this.bar4) this.bar4.nativeElement.style.width = '60%';
+    }, 600);
+  }
+
+  carregarDados() {
     this.maquinaService.listar().subscribe(m => {
       this.totalMaquinas = m.length;
       this.animateNumber('displayMaquinas', m.length);
@@ -50,15 +64,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.animateNumber('displayPecas', p.length);
     });
   }
-
-  ngAfterViewInit() {
-  setTimeout(() => {
-    if (this.bar1) this.bar1.nativeElement.style.width = '98%';
-    if (this.bar2) this.bar2.nativeElement.style.width = '100%';
-    if (this.bar3) this.bar3.nativeElement.style.width = '100%';
-    if (this.bar4) this.bar4.nativeElement.style.width = '60%';
-  }, 600);
-}
 
   private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayPendencias', target: number) {
     const duration = 1000;
