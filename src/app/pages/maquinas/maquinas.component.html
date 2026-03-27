@@ -1,18 +1,16 @@
-<div class="page-container">
+﻿<div class="page-container">
   <div class="page-header">
     <div class="header-left">
       <button mat-icon-button (click)="voltar()" class="back-btn">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h2>M�quinas</h2>
-    </div>
+      <h2>Máquinas</h2>
     </div>
     <button mat-raised-button color="primary" (click)="novoRegistro()">
       <mat-icon>add</mat-icon>
       Nova Máquina
     </button>
   </div>
-
   <mat-card *ngIf="showForm" class="form-card">
     <mat-card-header>
       <mat-card-title>{{ editando ? 'Editar' : 'Nova' }} Máquina</mat-card-title>
@@ -49,7 +47,6 @@
       <button mat-button (click)="cancelar()" [disabled]="salvando">Cancelar</button>
     </mat-card-actions>
   </mat-card>
-
   <mat-card class="table-card">
     <table mat-table [dataSource]="maquinas">
       <ng-container matColumnDef="nome">
