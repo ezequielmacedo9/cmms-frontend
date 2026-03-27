@@ -1,7 +1,15 @@
-<div class="estoque-container">
-  <div class="header">
-    <h1>Estoque de Peças</h1>
-    <button mat-raised-button color="primary" (click)="novoRegistro()">+ Nova Peça</button>
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="voltar()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Estoque de Peças</h2>
+    </div>
+    <button mat-raised-button color="primary" (click)="novoRegistro()">
+      <mat-icon>add</mat-icon>
+      Nova Peça
+    </button>
   </div>
 
   <mat-card *ngIf="showForm" class="form-card">
