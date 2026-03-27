@@ -1,6 +1,11 @@
 <div class="page-container">
   <div class="page-header">
-    <h2>Manutenções</h2>
+    <div class="header-left">
+      <button mat-icon-button (click)="voltar()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Manutenções</h2>
+    </div>
     <button mat-raised-button color="primary" (click)="novoRegistro()">
       <mat-icon>add</mat-icon>
       Nova Manutenção
