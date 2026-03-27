@@ -1,85 +1,122 @@
 <div class="page-container">
-  <div class="page-header">
-    <div class="header-left">
-      <button mat-icon-button (click)="voltar()" class="back-btn">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h2>Manutenções</h2>
+
+  <div class="page-hero">
+    <div class="breadcrumb">
+      <mat-icon>home</mat-icon>
+      Dashboard
+      <mat-icon>chevron_right</mat-icon>
+      <span>Manutenções</span>
     </div>
-    <button mat-raised-button color="primary" (click)="novoRegistro()">
-      <mat-icon>add</mat-icon>
-      Nova Manutenção
-    </button>
+    <div class="hero-row">
+      <div class="hero-left">
+        <button mat-icon-button (click)="voltar()" style="color:rgba(255,255,255,0.3)">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="hero-icon">
+          <mat-icon>build</mat-icon>
+        </div>
+        <div>
+          <div class="hero-title">Manutenções</div>
+          <div class="hero-sub">Registre e acompanhe as ordens de serviço</div>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="novoRegistro()" style="border-radius:12px;font-weight:600">
+        <mat-icon>add</mat-icon>
+        Nova Manutenção
+      </button>
+    </div>
   </div>
 
-  <mat-card *ngIf="showForm" class="form-card">
-    <mat-card-header>
-      <mat-card-title>Registrar Manutenção</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Máquina</mat-label>
-          <mat-select [(ngModel)]="maquinaIdSelecionada" name="maquina">
-            <mat-option *ngIf="maquinas.length === 0" disabled>Carregando máquinas...</mat-option>
-            <mat-option *ngFor="let m of maquinas" [value]="m.id">
-              {{ m.nome }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo</mat-label>
-          <mat-select [(ngModel)]="form.tipo" name="tipo">
-            <mat-option value="PREVENTIVA">Preventiva</mat-option>
-            <mat-option value="CORRETIVA">Corretiva</mat-option>
-            <mat-option value="PREDITIVA">Preditiva</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Técnico</mat-label>
-          <input matInput [(ngModel)]="form.tecnico" name="tecnico" required />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Descrição</mat-label>
-          <textarea matInput [(ngModel)]="form.descricao" name="descricao" rows="3"></textarea>
-        </mat-form-field>
-      </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando">
-        <span *ngIf="!salvando">Salvar</span>
-        <span *ngIf="salvando">Salvando...</span>
-      </button>
-      <button mat-button (click)="cancelar()" [disabled]="salvando">Cancelar</button>
-    </mat-card-actions>
-  </mat-card>
+  <div class="page-body">
 
-  <mat-card class="table-card">
-    <table mat-table [dataSource]="manutencoes">
-      <ng-container matColumnDef="maquina">
-        <th mat-header-cell *matHeaderCellDef>Máquina</th>
-        <td mat-cell *matCellDef="let m">{{ m.maquina?.nome }}</td>
-      </ng-container>
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef>Tipo</th>
-        <td mat-cell *matCellDef="let m">
-          <span class="tipo-badge" [ngClass]="m.tipo.toLowerCase()">{{ m.tipo }}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="tecnico">
-        <th mat-header-cell *matHeaderCellDef>Técnico</th>
-        <td mat-cell *matCellDef="let m">{{ m.tecnico }}</td>
-      </ng-container>
-      <ng-container matColumnDef="data">
-        <th mat-header-cell *matHeaderCellDef>Data</th>
-        <td mat-cell *matCellDef="let m">{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    <div class="empty-state" *ngIf="manutencoes.length === 0">
-      <mat-icon>build</mat-icon>
-      <p>Nenhuma manutenção registrada</p>
+    <div class="form-wrapper" *ngIf="showForm">
+      <div class="form-card">
+        <div class="form-header">
+          <div class="form-header-left">
+            <div class="form-header-icon">
+              <mat-icon>assignment_add</mat-icon>
+            </div>
+            <div>
+              <div class="form-title">Registrar Manutenção</div>
+              <div class="form-sub">Preencha os dados da ordem de serviço</div>
+            </div>
+          </div>
+          <button mat-icon-button (click)="cancelar()" style="color:rgba(255,255,255,0.3)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="form-body">
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Máquina</mat-label>
+              <mat-select [(ngModel)]="maquinaIdSelecionada" name="maquina">
+                <mat-option *ngIf="maquinas.length === 0" disabled>Carregando...</mat-option>
+                <mat-option *ngFor="let m of maquinas" [value]="m.id">{{ m.nome }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Tipo de Manutenção</mat-label>
+              <mat-select [(ngModel)]="form.tipo" name="tipo">
+                <mat-option value="PREVENTIVA">🟢 Preventiva</mat-option>
+                <mat-option value="CORRETIVA">🔴 Corretiva</mat-option>
+                <mat-option value="PREDITIVA">🔵 Preditiva</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Técnico Responsável</mat-label>
+              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">person</mat-icon>
+              <input matInput [(ngModel)]="form.tecnico" name="tecnico" placeholder="Nome do técnico" required />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="dark-field">
+              <mat-label>Descrição</mat-label>
+              <textarea matInput [(ngModel)]="form.descricao" name="descricao" rows="1" placeholder="Descreva o serviço..."></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button mat-button class="cancel-btn" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+          <button mat-raised-button color="primary" class="save-btn" (click)="salvar()" [disabled]="salvando">
+            <mat-icon *ngIf="!salvando" style="font-size:16px;width:16px;height:16px;margin-right:6px">save</mat-icon>
+            <mat-spinner *ngIf="salvando" diameter="16" style="display:inline-block;margin-right:6px"></mat-spinner>
+            {{ salvando ? 'Salvando...' : 'Registrar' }}
+          </button>
+        </div>
+      </div>
     </div>
-  </mat-card>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Ordens de Serviço</span>
+        <span class="count-badge">{{ manutencoes.length }} registros</span>
+      </div>
+      <table mat-table [dataSource]="manutencoes">
+        <ng-container matColumnDef="maquina">
+          <th mat-header-cell *matHeaderCellDef>Máquina</th>
+          <td mat-cell *matCellDef="let m">{{ m.maquina?.nome }}</td>
+        </ng-container>
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let m">
+            <span class="tipo-badge" [ngClass]="m.tipo.toLowerCase()">{{ m.tipo }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="tecnico">
+          <th mat-header-cell *matHeaderCellDef>Técnico</th>
+          <td mat-cell *matCellDef="let m">{{ m.tecnico }}</td>
+        </ng-container>
+        <ng-container matColumnDef="data">
+          <th mat-header-cell *matHeaderCellDef>Data</th>
+          <td mat-cell *matCellDef="let m">{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div class="empty-state" *ngIf="manutencoes.length === 0">
+        <div class="empty-icon"><mat-icon>build</mat-icon></div>
+        <p>Nenhuma manutenção registrada</p>
+        <small>Clique em "Nova Manutenção" para começar</small>
+      </div>
+    </div>
+
+  </div>
 </div>
