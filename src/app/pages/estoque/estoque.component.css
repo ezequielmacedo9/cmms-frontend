@@ -1,33 +1,79 @@
-.page-container { padding: 24px; }
+* { box-sizing: border-box; }
+
+.page-container {
+  padding: 24px 28px;
+  background: #05080f;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
-.page-header h2 { margin: 0; font-size: 24px; color: #1e293b; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.back-btn { color: rgba(255,255,255,0.3) !important; transition: color 0.2s !important; }
+.back-btn:hover { color: rgba(255,255,255,0.7) !important; }
 
-.form-card { margin-bottom: 24px; }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 16px;
+.page-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
 }
+
+.form-card {
+  background: rgba(12,18,32,0.95) !important;
+  border: 1px solid rgba(16,185,129,0.2) !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  margin-bottom: 20px;
+  box-shadow: 0 0 40px rgba(16,185,129,0.04) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-card h2 { color: white; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
 
 mat-form-field { width: 100%; }
-table { width: 100%; }
 
-.qtd-ok { color: #16a34a; font-weight: 600; }
-.qtd-baixa { color: #dc2626; font-weight: 600; }
-
-.empty-state {
-  text-align: center;
-  padding: 48px;
-  color: #94a3b8;
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
-.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }
+table {
+  width: 100%;
+  background: rgba(12,18,32,0.95);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+::ng-deep .mat-mdc-table th.mat-mdc-header-cell {
+  background: rgba(255,255,255,0.02) !important;
+  color: rgba(255,255,255,0.3) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+::ng-deep .mat-mdc-table td.mat-mdc-cell {
+  color: rgba(255,255,255,0.7) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  font-size: 13px !important;
+}
+
+::ng-deep .mat-mdc-table tr.mat-mdc-row:hover td {
+  background: rgba(16,185,129,0.04) !important;
+}

@@ -1,52 +1,100 @@
-.page-container { padding: 24px; }
+* { box-sizing: border-box; }
+
+.page-container {
+  padding: 24px 28px;
+  background: #05080f;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
-.page-header h2 { margin: 0; font-size: 24px; color: #1e293b; }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-.form-card { margin-bottom: 24px; }
+.back-btn { color: rgba(255,255,255,0.3) !important; transition: color 0.2s !important; }
+.back-btn:hover { color: rgba(255,255,255,0.7) !important; }
+
+.page-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.form-card {
+  background: rgba(12,18,32,0.95) !important;
+  border: 1px solid rgba(245,158,11,0.2) !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  margin-bottom: 20px;
+  box-shadow: 0 0 40px rgba(245,158,11,0.04) !important;
+}
+
+.form-card mat-card-title { color: white !important; font-size: 15px !important; font-weight: 600 !important; }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 mat-form-field { width: 100%; }
 
+.table-card {
+  background: rgba(12,18,32,0.95) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
 table { width: 100%; }
+
+::ng-deep .table-card th.mat-mdc-header-cell {
+  background: rgba(255,255,255,0.02) !important;
+  color: rgba(255,255,255,0.3) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+::ng-deep .table-card td.mat-mdc-cell {
+  color: rgba(255,255,255,0.7) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  font-size: 13px !important;
+}
+
+::ng-deep .table-card tr.mat-mdc-row:hover td {
+  background: rgba(245,158,11,0.04) !important;
+}
 
 .tipo-badge {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
-.tipo-badge.preventiva { background: #dbeafe; color: #1d4ed8; }
-.tipo-badge.corretiva { background: #fee2e2; color: #dc2626; }
-.tipo-badge.preditiva { background: #f3e8ff; color: #7c3aed; }
+.tipo-badge.preventiva { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.tipo-badge.corretiva { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+.tipo-badge.preditiva { background: rgba(99,102,241,0.1); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); }
 
 .empty-state {
   text-align: center;
-  padding: 48px;
-  color: #94a3b8;
+  padding: 56px;
+  color: rgba(255,255,255,0.2);
 }
 
-.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; }
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-btn {
-  color: rgba(255,255,255,0.6);
-}
+.empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; margin-bottom: 12px; display: block; }
