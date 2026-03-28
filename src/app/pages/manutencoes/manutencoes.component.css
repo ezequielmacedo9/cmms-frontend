@@ -140,3 +140,39 @@ table { width: 100%; }
 .empty-icon mat-icon { font-size:28px; width:28px; height:28px; color:rgba(255,255,255,0.15); }
 .empty-state p { font-size:14px; color:rgba(255,255,255,0.2); }
 .empty-state small { font-size:12px; color:rgba(255,255,255,0.1); margin-top:4px; display:block; }
+/* Hero actions */
+.hero-actions { display: flex; align-items: center; gap: 10px; }
+.csv-btn { border-color: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.4) !important; border-radius: 10px !important; font-size: 13px !important; font-weight: 600 !important; }
+.csv-btn:hover { border-color: rgba(245,158,11,0.3) !important; color: #fbbf24 !important; }
+.new-btn { background: linear-gradient(135deg, #f59e0b, #f97316) !important; border-radius: 10px !important; font-weight: 600 !important; }
+
+/* Filter bar */
+.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.search-wrap { flex: 1; position: relative; display: flex; align-items: center; background: rgba(12,18,32,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0 14px; height: 42px; transition: border-color 0.2s; }
+.search-wrap:focus-within { border-color: rgba(245,158,11,0.3); }
+.search-icon { font-size: 17px !important; width: 17px !important; height: 17px !important; color: rgba(255,255,255,0.2); flex-shrink: 0; }
+.search-input { flex: 1; background: none; border: none; outline: none; color: white; font-size: 13px; margin-left: 8px; font-family: inherit; }
+.search-input::placeholder { color: rgba(255,255,255,0.2); }
+.clear-btn { width: 28px !important; height: 28px !important; color: rgba(255,255,255,0.2) !important; }
+.status-filter { background: rgba(12,18,32,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0 14px; height: 42px; color: rgba(255,255,255,0.5); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s; }
+.status-filter:focus { border-color: rgba(245,158,11,0.3); }
+
+/* Action buttons */
+.action-btn { width: 32px !important; height: 32px !important; }
+
+/* Delete modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); animation: fadeIn 0.15s ease; }
+.confirm-dialog { background: rgba(12,18,32,0.99); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px; text-align: center; max-width: 340px; width: 90%; box-shadow: 0 40px 80px rgba(0,0,0,0.6); animation: dialogPop 0.2s cubic-bezier(0.16,1,0.3,1); }
+.confirm-icon { font-size: 40px !important; width: 40px !important; height: 40px !important; color: #f59e0b; margin-bottom: 12px; }
+.confirm-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 6px; }
+.confirm-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 24px; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
+.delete-confirm-btn { background: linear-gradient(135deg, #ef4444, #dc2626) !important; border-radius: 10px !important; font-weight: 600 !important; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialogPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.page-btn { color: rgba(255,255,255,0.3) !important; }
+.page-btn:not([disabled]):hover { color: #fbbf24 !important; }
+.page-info { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'JetBrains Mono', monospace; min-width: 50px; text-align: center; }

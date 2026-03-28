@@ -19,4 +19,8 @@ export class ManutencaoService {
   cadastrar(maquinaId: number, manutencao: Manutencao): Observable<Manutencao> {
     return this.http.post<Manutencao>(`${this.apiUrl}/${maquinaId}`, manutencao);
   }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

@@ -73,6 +73,25 @@
     <div class="scroll-area">
 
       <section class="kpi-grid">
+        <!-- Skeleton state -->
+        <ng-container *ngIf="loading">
+          <div class="kpi-card kpi-blue skeleton-card" *ngFor="let i of [1,2,3,4]">
+            <div class="kpi-header">
+              <div class="sk-box" style="width:40px;height:40px;border-radius:11px"></div>
+              <div class="sk-box" style="width:50px;height:18px;border-radius:10px"></div>
+            </div>
+            <div class="kpi-body">
+              <div class="sk-box" style="width:80px;height:48px;border-radius:8px;margin-bottom:8px"></div>
+              <div class="sk-box" style="width:120px;height:12px;border-radius:6px"></div>
+            </div>
+            <div class="kpi-footer">
+              <div class="sk-box" style="width:160px;height:11px;border-radius:6px"></div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Loaded state -->
+        <ng-container *ngIf="!loading">
         <div class="kpi-card kpi-blue" routerLink="/maquinas"
              (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
           <div class="kpi-header">
@@ -136,6 +155,7 @@
           </div>
           <div class="kpi-glow"></div>
         </div>
+        </ng-container>
       </section>
 
       <section class="bottom-row">
