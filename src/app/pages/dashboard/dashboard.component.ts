@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { MaquinaService } from '../../services/maquina.service';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { PecaService } from '../../services/peca.service';
@@ -13,7 +15,7 @@ import { PecaService } from '../../services/peca.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('bar1') bar1!: ElementRef;
   @ViewChild('bar2') bar2!: ElementRef;
@@ -24,6 +26,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private maquinaService = inject(MaquinaService);
   private manutencaoService = inject(ManutencaoService);
   private pecaService = inject(PecaService);
+  private pollingInterval: any;
 
   totalMaquinas = 0;
   totalManutencoes = 0;
@@ -38,7 +41,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.carregarDados();
-    setInterval(() => this.carregarDados(), 30000);
+    this.pollingInterval = setInterval(() => this.carregarDados(), 30000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.pollingInterval);
   }
 
   ngAfterViewInit() {
@@ -51,15 +58,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   carregarDados() {
-    this.maquinaService.listar().subscribe(m => {
+    this.maquinaService.listar().pipe(catchError(() => of([]))).subscribe(m => {
       this.totalMaquinas = m.length;
       this.animateNumber('displayMaquinas', m.length);
     });
-    this.manutencaoService.listar().subscribe(m => {
+    this.manutencaoService.listar().pipe(catchError(() => of([]))).subscribe(m => {
       this.totalManutencoes = m.length;
       this.animateNumber('displayManutencoes', m.length);
     });
-    this.pecaService.listar().subscribe(p => {
+    this.pecaService.listar().pipe(catchError(() => of([]))).subscribe(p => {
       this.totalPecas = p.length;
       this.animateNumber('displayPecas', p.length);
     });
