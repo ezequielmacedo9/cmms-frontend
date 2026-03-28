@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -27,13 +27,15 @@ import { Router } from '@angular/router';
     MatCardModule, MatDialogModule, MatProgressSpinnerModule
   ],
   templateUrl: './maquinas.component.html',
-  styleUrl: './maquinas.component.css'
+  styleUrl: './maquinas.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MaquinasComponent implements OnInit, OnDestroy {
   private maquinaService = inject(MaquinaService);
   private manutencaoService = inject(ManutencaoService);
   private notify = inject(NotificationService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
 
   maquinas: Maquina[] = [];
@@ -117,12 +119,19 @@ export class MaquinasComponent implements OnInit, OnDestroy {
       ? this.maquinaService.atualizar(this.form.id, this.form)
       : this.maquinaService.cadastrar(this.form);
 
+    const isEditing = this.editando;
     const sub = op.subscribe({
-      next: () => {
+      next: (saved) => {
         this.salvando = false;
         this.showForm = false;
-        this.notify.success(this.editando ? 'Máquina atualizada!' : 'Máquina cadastrada!');
-        this.carregar();
+        this.notify.success(isEditing ? 'Máquina atualizada!' : 'Máquina cadastrada!');
+        if (isEditing) {
+          this.maquinas = this.maquinas.map(m => m.id === saved.id ? saved : m);
+        } else {
+          this.maquinas = [...this.maquinas, saved];
+        }
+        this.applyFilter();
+        this.cdr.markForCheck();
       },
       error: () => {
         this.salvando = false;
@@ -141,7 +150,9 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     const sub = this.maquinaService.deletar(id).subscribe({
       next: () => {
         this.notify.success('Máquina removida!');
-        this.carregar();
+        this.maquinas = this.maquinas.filter(m => m.id !== id);
+        this.applyFilter();
+        this.cdr.markForCheck();
       },
       error: () => this.notify.error('Erro ao excluir.')
     });

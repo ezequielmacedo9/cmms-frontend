@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,13 +26,15 @@ import { Maquina } from '../../models/maquina.model';
     MatCardModule, MatProgressSpinnerModule
   ],
   templateUrl: './manutencoes.component.html',
-  styleUrl: './manutencoes.component.css'
+  styleUrl: './manutencoes.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ManutencoesComponent implements OnInit, OnDestroy {
   private manutencaoService = inject(ManutencaoService);
   private maquinaService = inject(MaquinaService);
   private notify = inject(NotificationService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
 
   manutencoes: Manutencao[] = [];
@@ -108,11 +110,12 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
     if (this.salvando) return;
     this.salvando = true;
     const sub = this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe({
-      next: () => {
+      next: (saved) => {
         this.salvando = false;
         this.showForm = false;
         this.notify.success('Manutenção registrada!');
-        this.carregar();
+        this.manutencoes = [...this.manutencoes, saved];
+        this.cdr.markForCheck();
       },
       error: () => {
         this.salvando = false;
@@ -130,7 +133,8 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
     const sub = this.manutencaoService.deletar(id).subscribe({
       next: () => {
         this.notify.success('Manutenção removida!');
-        this.carregar();
+        this.manutencoes = this.manutencoes.filter(m => m.id !== id);
+        this.cdr.markForCheck();
       },
       error: () => this.notify.error('Erro ao excluir.')
     });

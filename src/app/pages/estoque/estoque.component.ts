@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,12 +23,14 @@ import { PecaRequest, PecaResponse } from '../../models/peca.model';
     MatProgressSpinnerModule
   ],
   templateUrl: './estoque.component.html',
-  styleUrl: './estoque.component.css'
+  styleUrl: './estoque.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EstoqueComponent implements OnInit, OnDestroy {
   private pecaService = inject(PecaService);
   private notify = inject(NotificationService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
 
   pecas: PecaResponse[] = [];
@@ -98,12 +100,18 @@ export class EstoqueComponent implements OnInit, OnDestroy {
       ? this.pecaService.atualizar(this.editandoId, this.form)
       : this.pecaService.cadastrar(this.form);
 
+    const isEditing = this.editando;
     const sub = op.subscribe({
-      next: () => {
+      next: (saved) => {
         this.salvando = false;
         this.showForm = false;
-        this.notify.success(this.editando ? 'Peça atualizada!' : 'Peça cadastrada!');
-        this.carregar();
+        this.notify.success(isEditing ? 'Peça atualizada!' : 'Peça cadastrada!');
+        if (isEditing) {
+          this.pecas = this.pecas.map(p => p.id === saved.id ? saved : p);
+        } else {
+          this.pecas = [...this.pecas, saved];
+        }
+        this.cdr.markForCheck();
       },
       error: () => {
         this.salvando = false;
@@ -122,7 +130,8 @@ export class EstoqueComponent implements OnInit, OnDestroy {
     const sub = this.pecaService.deletar(id).subscribe({
       next: () => {
         this.notify.success('Peça removida!');
-        this.carregar();
+        this.pecas = this.pecas.filter(p => p.id !== id);
+        this.cdr.markForCheck();
       },
       error: () => this.notify.error('Erro ao excluir.')
     });
