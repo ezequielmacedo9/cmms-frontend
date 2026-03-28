@@ -1,16 +1,42 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('accessToken');
+  const router = inject(Router);
 
-  if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(authReq).pipe(
+    catchError((err: HttpErrorResponse) => {
+      if (err.status === 401 && !req.url.includes('/auth/')) {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          const http = inject(HttpClient);
+          return http.post<any>('https://cmms-backend-8y7h.onrender.com/api/auth/refresh', { refreshToken }).pipe(
+            switchMap((res) => {
+              localStorage.setItem('accessToken', res.accessToken);
+              const retried = req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } });
+              return next(retried);
+            }),
+            catchError(() => {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              router.navigate(['/login']);
+              return throwError(() => err);
+            })
+          );
+        }
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        router.navigate(['/login']);
       }
-    });
-    return next(cloned);
-  }
-
-  return next(req);
+      return throwError(() => err);
+    })
+  );
 };

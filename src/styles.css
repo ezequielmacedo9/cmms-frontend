@@ -1,3 +1,27 @@
+:root {
+  --bg-base:        #030712;
+  --bg-surface:     #0a0f1e;
+  --bg-elevated:    #0f1629;
+  --border:         rgba(255,255,255,0.06);
+  --border-hover:   rgba(99,102,241,0.3);
+  --accent:         #6366f1;
+  --accent-violet:  #8b5cf6;
+  --accent-glow:    rgba(99,102,241,0.25);
+  --text-primary:   rgba(255,255,255,0.92);
+  --text-secondary: rgba(255,255,255,0.45);
+  --text-muted:     rgba(255,255,255,0.2);
+  --green:          #10b981;
+  --amber:          #f59e0b;
+  --red:            #ef4444;
+  --radius-card:    16px;
+  --radius-input:   12px;
+  --radius-badge:   8px;
+  --transition:     cubic-bezier(0.4, 0, 0.2, 1);
+  --font-body:      'Inter', -apple-system, sans-serif;
+  --font-display:   'Syne', sans-serif;
+  --font-mono:      'JetBrains Mono', monospace;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
