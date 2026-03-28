@@ -1,9 +1,60 @@
 <div class="page-container">
 
+  <!-- History Modal -->
+  <div class="modal-overlay" *ngIf="showHistory" (click)="fecharHistorico()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <mat-icon class="modal-icon">history</mat-icon>
+          <div>
+            <div class="modal-title">Histórico de Manutenções</div>
+            <div class="modal-sub">{{ historyMaquina?.nome }} — {{ historyMaquina?.setor }}</div>
+          </div>
+        </div>
+        <button mat-icon-button (click)="fecharHistorico()" style="color:rgba(255,255,255,0.4)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="carregandoHistorico" class="history-loading">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+        <div *ngIf="!carregandoHistorico && historicoManutencoes.length === 0" class="history-empty">
+          <mat-icon>build_circle</mat-icon>
+          <p>Nenhuma manutenção registrada</p>
+        </div>
+        <div *ngIf="!carregandoHistorico && historicoManutencoes.length > 0" class="history-list">
+          <div *ngFor="let m of historicoManutencoes; trackBy: trackById" class="history-item">
+            <div class="history-dot" [ngClass]="m.tipo === 'PREVENTIVA' ? 'green' : 'amber'"></div>
+            <div class="history-info">
+              <div class="history-tipo">{{ m.tipo }}</div>
+              <div class="history-desc">{{ m.descricao || '—' }}</div>
+              <div class="history-meta">{{ m.tecnico }} · {{ m.dataManutencao | date:'dd/MM/yyyy' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation -->
+  <div class="modal-overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
+    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <mat-icon class="confirm-icon">warning_amber</mat-icon>
+      <div class="confirm-title">Excluir máquina?</div>
+      <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
+      <div class="confirm-actions">
+        <button mat-button class="cancel-btn" (click)="cancelarDelete()">Cancelar</button>
+        <button mat-raised-button class="delete-confirm-btn" (click)="deletar(deletandoId!)">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="page-hero">
     <div class="breadcrumb">
-      <mat-icon>home</mat-icon>
-      Dashboard
+      <mat-icon>home</mat-icon> Dashboard
       <mat-icon>chevron_right</mat-icon>
       <span>Máquinas</span>
     </div>
@@ -12,30 +63,48 @@
         <button mat-icon-button (click)="voltar()" class="back-btn" style="color:rgba(255,255,255,0.3)">
           <mat-icon>arrow_back</mat-icon>
         </button>
-        <div class="hero-icon">
-          <mat-icon>precision_manufacturing</mat-icon>
-        </div>
+        <div class="hero-icon"><mat-icon>precision_manufacturing</mat-icon></div>
         <div>
           <div class="hero-title">Máquinas</div>
           <div class="hero-sub">Gerencie os equipamentos industriais</div>
         </div>
       </div>
-      <button mat-raised-button class="new-btn" (click)="novoRegistro()">
-        <mat-icon>add</mat-icon>
-        Nova Máquina
-      </button>
+      <div class="hero-actions">
+        <button mat-stroked-button class="csv-btn" (click)="exportarCSV()" title="Exportar CSV">
+          <mat-icon>download</mat-icon> CSV
+        </button>
+        <button mat-raised-button class="new-btn" (click)="novoRegistro()">
+          <mat-icon>add</mat-icon> Nova Máquina
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="page-body">
 
+    <!-- Search & Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="search-input" type="text" placeholder="Buscar por nome ou setor..."
+          [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <select class="status-filter" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
+        <option value="">Todos os status</option>
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+        <option value="EM_MANUTENCAO">Em Manutenção</option>
+      </select>
+    </div>
+
     <div class="form-wrapper" *ngIf="showForm">
       <div class="form-card">
         <div class="form-header">
           <div class="form-header-left">
-            <div class="form-header-icon">
-              <mat-icon>{{ editando ? 'edit' : 'add_circle' }}</mat-icon>
-            </div>
+            <div class="form-header-icon"><mat-icon>{{ editando ? 'edit' : 'add_circle' }}</mat-icon></div>
             <div>
               <div class="form-title">{{ editando ? 'Editar Máquina' : 'Nova Máquina' }}</div>
               <div class="form-sub">{{ editando ? 'Atualize os dados do equipamento' : 'Preencha os dados do novo equipamento' }}</div>
@@ -86,7 +155,7 @@
     <div class="table-card">
       <div class="table-header">
         <span class="table-title">Lista de Equipamentos</span>
-        <span class="count-badge">{{ maquinas.length }} registros</span>
+        <span class="count-badge">{{ dataSource.data.length }} registros</span>
       </div>
       <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="nome">
@@ -106,21 +175,24 @@
         <ng-container matColumnDef="acoes">
           <th mat-header-cell *matHeaderCellDef>Ações</th>
           <td mat-cell *matCellDef="let m">
+            <button mat-icon-button class="action-btn" style="color:rgba(255,255,255,0.3)" (click)="verHistorico(m)" title="Ver histórico">
+              <mat-icon>history</mat-icon>
+            </button>
             <button mat-icon-button class="action-btn" style="color:#818cf8" (click)="editar(m)" title="Editar">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="deletar(m.id!)" title="Excluir">
+            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="confirmarDelete(m.id!)" title="Excluir">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [trackBy]="trackById"></tr>
       </table>
-      <div class="empty-state" *ngIf="maquinas.length === 0">
+      <div class="empty-state" *ngIf="dataSource.data.length === 0">
         <div class="empty-icon"><mat-icon>precision_manufacturing</mat-icon></div>
-        <p>Nenhuma máquina cadastrada</p>
-        <small>Clique em "Nova Máquina" para começar</small>
+        <p>{{ searchTerm || filterStatus ? 'Nenhum resultado encontrado' : 'Nenhuma máquina cadastrada' }}</p>
+        <small>{{ searchTerm || filterStatus ? 'Tente outros filtros' : 'Clique em "Nova Máquina" para começar' }}</small>
       </div>
     </div>
 
