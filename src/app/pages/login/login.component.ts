@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   carregando = false;
   backendPronto = false;
   tentativas = 0;
+  errorMessage = '';
 
   ngOnInit() {
     this.acordarBackend();
@@ -138,6 +139,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   onSubmit() {
     if (this.carregando || !this.email || !this.senha) return;
     this.carregando = true;
+    this.errorMessage = '';
     this.authService.login(this.email, this.senha).subscribe({
       next: (response: any) => {
         localStorage.setItem('accessToken', response.accessToken);
@@ -146,9 +148,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }
         this.router.navigate(['/dashboard']);
       },
-      error: () => {
+      error: (error: any) => {
+        if (error.status === 400 || error.status === 401) {
+          this.errorMessage = 'Email ou senha incorretos.';
+        } else if (error.status === 0) {
+          this.errorMessage = 'Servidor indisponível. Tente em instantes.';
+        } else {
+          this.errorMessage = 'Erro inesperado. Tente novamente.';
+        }
         this.carregando = false;
-        this.notify.error('Email ou senha inválidos');
       }
     });
   }

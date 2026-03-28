@@ -52,6 +52,7 @@
           <mat-spinner *ngIf="carregando" diameter="16"></mat-spinner>
           {{ carregando ? 'Entrando...' : 'Entrar' }}
         </button>
+        <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
       </form>
 
       <div class="card-footer">developed by ezequiel · industrial suite 2026</div>
