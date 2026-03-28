@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X POST https://cmms-backend-8y7h.onrender.com/api/auth/login -H \"Content-Type: application/json\" -d \"{\"\"email\"\":\"\"admin@email.com\"\",\"\"senha\"\":\"\"123456\"\"}\")",
-      "Bash(npx ng:*)"
+      "Bash(npx ng:*)",
+      "Bash(find /c/Users/USER/Projetos/cmms/cmms/src/main/java -name *.java -type f)",
+      "Bash(find /c/Users/USER/Desktop/projetos/cmms-frontend/src -name *login* -o -name *sidebar*)",
+      "Bash(xargs grep:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://cmms-backend-8y7h.onrender.com/ping\")"
     ]
   }
 }
