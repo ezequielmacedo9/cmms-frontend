@@ -482,3 +482,99 @@
 }
 
 .footer strong { color: rgba(255,255,255,0.2); font-weight: 600; }
+
+/* Sidebar badge */
+.nav-badge {
+  font-size: 9px; font-weight: 700;
+  background: #6366f1; color: white;
+  padding: 1px 6px; border-radius: 10px;
+  margin-left: auto; margin-right: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 18px; text-align: center;
+  box-shadow: 0 0 8px rgba(99,102,241,0.5);
+  opacity: 0; transition: opacity 0.22s;
+}
+.sidebar.expanded .nav-badge { opacity: 1; }
+
+/* Próximas Manutenções */
+.proximas-empty {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 0;
+  color: rgba(255,255,255,0.2);
+  font-size: 12px; font-family: 'JetBrains Mono', monospace;
+}
+.proximas-empty mat-icon { font-size: 16px; width: 16px; height: 16px; color: #34d399; }
+
+.proximas-list { display: flex; flex-direction: column; gap: 0; }
+
+.proximas-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+.proximas-item:last-child { border-bottom: none; }
+.proximas-item.urgente { background: rgba(239,68,68,0.03); border-radius: 8px; padding-left: 6px; margin: 0 -6px; }
+
+.proximas-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.proximas-dot.red  { background: #f87171; box-shadow: 0 0 6px rgba(248,113,113,0.6); animation: livePulse 1.6s infinite; }
+.proximas-dot.amber { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.5); }
+
+.proximas-info { flex: 1; overflow: hidden; }
+.proximas-nome { display: block; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proximas-setor { display: block; font-size: 10px; color: rgba(255,255,255,0.25); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+
+.proximas-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.badge-red    { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+.badge-amber  { background: rgba(245,158,11,0.10); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+.badge-yellow { background: rgba(234,179,8,0.08);  color: #facc15; border: 1px solid rgba(234,179,8,0.15); }
+
+.chip-alert { background: rgba(239,68,68,0.1) !important; color: #f87171 !important; border-color: rgba(239,68,68,0.2) !important; }
+
+/* Mini Bar Chart */
+.bar-chart {
+  display: flex; align-items: flex-end; gap: 8px;
+  height: 110px; padding-top: 20px;
+}
+
+.bar-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; height: 100%;
+}
+
+.bar-count {
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  height: 14px; line-height: 14px;
+}
+
+.bar-track {
+  flex: 1; width: 100%;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px 4px 0 0;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
+  min-height: 4px;
+}
+
+.bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #818cf8, #6366f1);
+  border-radius: 4px 4px 0 0;
+  transition: height 1s cubic-bezier(0.16,1,0.3,1);
+  min-height: 3px;
+}
+
+.bar-label {
+  font-size: 9px; color: rgba(255,255,255,0.2);
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center; white-space: nowrap;
+}
