@@ -1,5 +1,20 @@
 <div class="page-container">
 
+  <!-- Delete Confirmation -->
+  <div class="modal-overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
+    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <mat-icon class="confirm-icon">warning_amber</mat-icon>
+      <div class="confirm-title">Excluir manutenção?</div>
+      <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
+      <div class="confirm-actions">
+        <button mat-button class="cancel-btn" (click)="cancelarDelete()">Cancelar</button>
+        <button mat-raised-button class="delete-confirm-btn" (click)="deletar(deletandoId!)">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="page-hero">
     <div class="breadcrumb">
       <mat-icon>home</mat-icon>
@@ -20,14 +35,35 @@
           <div class="hero-sub">Registre e acompanhe as ordens de serviço</div>
         </div>
       </div>
-      <button mat-raised-button color="primary" (click)="novoRegistro()" style="border-radius:12px;font-weight:600">
-        <mat-icon>add</mat-icon>
-        Nova Manutenção
-      </button>
+      <div class="hero-actions">
+        <button mat-stroked-button class="csv-btn" (click)="exportarCSV()" title="Exportar CSV">
+          <mat-icon>download</mat-icon> CSV
+        </button>
+        <button mat-raised-button class="new-btn" (click)="novoRegistro()">
+          <mat-icon>add</mat-icon> Nova Manutenção
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="page-body">
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="search-input" type="text" placeholder="Buscar por máquina, técnico ou descrição..."
+          [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <select class="status-filter" [(ngModel)]="filterTipo" (ngModelChange)="applyFilter()">
+        <option value="">Todos os tipos</option>
+        <option value="PREVENTIVA">Preventiva</option>
+        <option value="CORRETIVA">Corretiva</option>
+        <option value="PREDITIVA">Preditiva</option>
+      </select>
+    </div>
 
     <div class="form-wrapper" *ngIf="showForm">
       <div class="form-card">
@@ -87,9 +123,9 @@
     <div class="table-card">
       <div class="table-header">
         <span class="table-title">Ordens de Serviço</span>
-        <span class="count-badge">{{ manutencoes.length }} registros</span>
+        <span class="count-badge">{{ manutencoesFiltradas.length }} registros</span>
       </div>
-      <table mat-table [dataSource]="manutencoes">
+      <table mat-table [dataSource]="pagedManutencoes">
         <ng-container matColumnDef="maquina">
           <th mat-header-cell *matHeaderCellDef>Máquina</th>
           <td mat-cell *matCellDef="let m">{{ m.maquina?.nome }}</td>
@@ -108,13 +144,30 @@
           <th mat-header-cell *matHeaderCellDef>Data</th>
           <td mat-cell *matCellDef="let m">{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
         </ng-container>
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let m">
+            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="confirmarDelete(m.id!)" title="Excluir">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <div class="empty-state" *ngIf="manutencoes.length === 0">
+      <div class="empty-state" *ngIf="manutencoesFiltradas.length === 0">
         <div class="empty-icon"><mat-icon>build</mat-icon></div>
-        <p>Nenhuma manutenção registrada</p>
-        <small>Clique em "Nova Manutenção" para começar</small>
+        <p>{{ searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada' }}</p>
+        <small>{{ searchTerm || filterTipo ? 'Tente outros filtros' : 'Clique em "Nova Manutenção" para começar' }}</small>
+      </div>
+      <div class="pagination" *ngIf="manutencoesFiltradas.length > pageSize">
+        <button mat-icon-button (click)="prevPage()" [disabled]="currentPage === 0" class="page-btn">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+        <button mat-icon-button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
       </div>
     </div>
 

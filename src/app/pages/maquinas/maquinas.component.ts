@@ -45,9 +45,10 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   deletandoId: number | null = null;
   form: Maquina = { nome: '', setor: '', status: 'ATIVO' };
 
-  // Search
   searchTerm = '';
   filterStatus = '';
+  pageSize = 10;
+  currentPage = 0;
 
   // History modal
   showHistory = false;
@@ -79,7 +80,20 @@ export class MaquinasComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(m => m.status === this.filterStatus);
     }
     this.dataSource.data = filtered;
+    this.currentPage = 0;
   }
+
+  get totalPages(): number {
+    return Math.ceil(this.dataSource.data.length / this.pageSize) || 1;
+  }
+
+  get pagedMaquinas(): Maquina[] {
+    const start = this.currentPage * this.pageSize;
+    return this.dataSource.data.slice(start, start + this.pageSize);
+  }
+
+  nextPage() { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+  prevPage() { if (this.currentPage > 0) this.currentPage--; }
 
   novoRegistro() {
     this.form = { nome: '', setor: '', status: 'ATIVO' };

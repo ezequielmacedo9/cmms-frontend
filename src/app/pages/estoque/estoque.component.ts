@@ -39,6 +39,8 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   editandoId: number | null = null;
   deletandoId: number | null = null;
   searchTerm = '';
+  pageSize = 10;
+  currentPage = 0;
   form: PecaRequest = { nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 };
 
   ngOnInit() { this.carregar(); }
@@ -51,6 +53,19 @@ export class EstoqueComponent implements OnInit, OnDestroy {
       p.nome.toLowerCase().includes(term) || p.codigo.toLowerCase().includes(term)
     );
   }
+
+  get totalPages(): number {
+    return Math.ceil(this.pecasFiltradas.length / this.pageSize) || 1;
+  }
+
+  get pagedPecas(): PecaResponse[] {
+    const start = this.currentPage * this.pageSize;
+    return this.pecasFiltradas.slice(start, start + this.pageSize);
+  }
+
+  applyFilter() { this.currentPage = 0; }
+  nextPage() { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+  prevPage() { if (this.currentPage > 0) this.currentPage--; }
 
   carregar() {
     const sub = this.pecaService.listar().subscribe(data => this.pecas = data);

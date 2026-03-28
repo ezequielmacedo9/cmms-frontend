@@ -578,3 +578,23 @@
   font-family: 'JetBrains Mono', monospace;
   text-align: center; white-space: nowrap;
 }
+
+/* Skeleton loaders */
+.skeleton-card { pointer-events: none; cursor: default; }
+.skeleton-card:hover { transform: none !important; box-shadow: none !important; }
+
+.sk-box {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skShimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+@keyframes skShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}

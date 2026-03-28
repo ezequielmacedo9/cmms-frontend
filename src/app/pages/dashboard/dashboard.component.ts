@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   proximasManutencoes: { nome: string; setor: string; diasRestantes: number; urgente: boolean }[] = [];
   barsUltimos6Meses: { mes: string; count: number; pct: number }[] = [];
+  loading = true;
 
   ngOnInit() {
     this.carregarDados();
@@ -63,19 +64,25 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   carregarDados() {
+    let loaded = 0;
+    const checkDone = () => { if (++loaded >= 3) this.loading = false; };
+
     this.maquinaService.listar().pipe(catchError(() => of([]))).subscribe(m => {
       this.totalMaquinas = m.length;
       this.animateNumber('displayMaquinas', m.length);
       this.computeProximas(m);
+      checkDone();
     });
     this.manutencaoService.listar().pipe(catchError(() => of([]))).subscribe(m => {
       this.totalManutencoes = m.length;
       this.animateNumber('displayManutencoes', m.length);
       this.computeBarChart(m);
+      checkDone();
     });
     this.pecaService.listar().pipe(catchError(() => of([]))).subscribe(p => {
       this.totalPecas = p.length;
       this.animateNumber('displayPecas', p.length);
+      checkDone();
     });
   }
 

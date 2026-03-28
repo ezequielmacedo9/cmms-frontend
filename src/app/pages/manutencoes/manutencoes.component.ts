@@ -37,11 +37,17 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
 
   manutencoes: Manutencao[] = [];
   maquinas: Maquina[] = [];
-  displayedColumns = ['maquina', 'tipo', 'tecnico', 'data'];
+  displayedColumns = ['maquina', 'tipo', 'tecnico', 'data', 'acoes'];
   showForm = false;
   salvando = false;
+  deletandoId: number | null = null;
   maquinaIdSelecionada: number | null = null;
   form: Manutencao = { tipo: '', tecnico: '' };
+
+  searchTerm = '';
+  filterTipo = '';
+  pageSize = 10;
+  currentPage = 0;
 
   ngOnInit() {
     this.carregar();
@@ -51,8 +57,40 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() { this.subs.unsubscribe(); }
 
+  get manutencoesFiltradas(): Manutencao[] {
+    let filtered = [...this.manutencoes];
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(m =>
+        m.maquina?.nome.toLowerCase().includes(term) ||
+        m.tecnico.toLowerCase().includes(term) ||
+        (m.descricao?.toLowerCase().includes(term) ?? false)
+      );
+    }
+    if (this.filterTipo) {
+      filtered = filtered.filter(m => m.tipo === this.filterTipo);
+    }
+    return filtered;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.manutencoesFiltradas.length / this.pageSize) || 1;
+  }
+
+  get pagedManutencoes(): Manutencao[] {
+    const start = this.currentPage * this.pageSize;
+    return this.manutencoesFiltradas.slice(start, start + this.pageSize);
+  }
+
+  applyFilter() { this.currentPage = 0; }
+  nextPage() { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+  prevPage() { if (this.currentPage > 0) this.currentPage--; }
+
   carregar() {
-    const sub = this.manutencaoService.listar().subscribe(data => this.manutencoes = data);
+    const sub = this.manutencaoService.listar().subscribe(data => {
+      this.manutencoes = data;
+      this.currentPage = 0;
+    });
     this.subs.add(sub);
   }
 
@@ -84,9 +122,41 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  trackById(_index: number, item: Manutencao): number {
-    return item.id!;
+  confirmarDelete(id: number) { this.deletandoId = id; }
+  cancelarDelete() { this.deletandoId = null; }
+
+  deletar(id: number) {
+    this.deletandoId = null;
+    const sub = this.manutencaoService.deletar(id).subscribe({
+      next: () => {
+        this.notify.success('Manutenção removida!');
+        this.carregar();
+      },
+      error: () => this.notify.error('Erro ao excluir.')
+    });
+    this.subs.add(sub);
   }
+
+  exportarCSV() {
+    const header = 'ID,Máquina,Tipo,Técnico,Descrição,Data';
+    const rows = this.manutencoesFiltradas.map(m =>
+      `${m.id ?? ''},${this.csvEscape(m.maquina?.nome ?? '')},${m.tipo},${this.csvEscape(m.tecnico)},${this.csvEscape(m.descricao ?? '')},${m.dataManutencao ?? ''}`
+    );
+    const blob = new Blob(['\uFEFF' + [header, ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'manutencoes.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private csvEscape(v: string): string {
+    if (v.includes(',') || v.includes('"') || v.includes('\n')) return `"${v.replace(/"/g, '""')}"`;
+    return v;
+  }
+
+  trackById(_index: number, item: Manutencao): number { return item.id!; }
 
   voltar() { this.router.navigate(['/dashboard']); }
   cancelar() { this.showForm = false; }
