@@ -40,6 +40,7 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   salvando = false;
   editandoId: number | null = null;
   deletandoId: number | null = null;
+  carregando = true;
   searchTerm = '';
   pageSize = 10;
   currentPage = 0;
@@ -70,7 +71,18 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   prevPage() { if (this.currentPage > 0) this.currentPage--; }
 
   carregar() {
-    const sub = this.pecaService.listar().subscribe(data => this.pecas = data);
+    this.carregando = true;
+    const sub = this.pecaService.listar().subscribe({
+      next: data => {
+        this.pecas = data;
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }
+    });
     this.subs.add(sub);
   }
 

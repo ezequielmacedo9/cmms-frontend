@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   totalManutencoes = 0;
   totalPecas = 0;
   totalPendencias = 0;
-  sidebarExpanded = false;
 
   displayMaquinas = 0;
   displayManutencoes = 0;
@@ -169,6 +168,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         (this as any)[prop] = current;
       }
     }, interval);
+  }
+
+  get greeting(): string {
+    const h = new Date().getHours();
+    if (h < 12) return 'Bom dia 👋';
+    if (h < 18) return 'Boa tarde 👋';
+    return 'Boa noite 👋';
   }
 
   logout() {
