@@ -5,7 +5,7 @@
 .login-page {
   min-height: 100vh;
   display: flex;
-  background: radial-gradient(ellipse at 20% 50%, #1a0a2e 0%, #0d0d1a 50%, #0a0a18 100%);
+  background: radial-gradient(ellipse at 20% 50%, #0d0118 0%, #07010f 50%, #050008 100%);
   position: relative;
   overflow: hidden;
 }
@@ -30,7 +30,7 @@
   left: -100px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -201,7 +201,7 @@
 .input-wrap input::placeholder { color: rgba(255,255,255,0.2); }
 .input-wrap input:focus {
   border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
 }
 .input-wrap input:disabled { opacity: 0.5; }
 .input-icon {
