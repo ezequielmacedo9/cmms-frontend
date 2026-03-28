@@ -1,5 +1,20 @@
 <div class="page-container">
 
+  <!-- Delete Confirmation -->
+  <div class="modal-overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
+    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <mat-icon class="confirm-icon">warning_amber</mat-icon>
+      <div class="confirm-title">Excluir peça?</div>
+      <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
+      <div class="confirm-actions">
+        <button mat-button class="cancel-btn" (click)="cancelarDelete()">Cancelar</button>
+        <button mat-raised-button class="delete-confirm-btn" (click)="deletar(deletandoId!)">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="page-hero">
     <div class="breadcrumb">
       <mat-icon>home</mat-icon>
@@ -20,14 +35,31 @@
           <div class="hero-sub">Controle de peças e componentes</div>
         </div>
       </div>
-      <button mat-raised-button color="primary" (click)="novoRegistro()" style="border-radius:12px;font-weight:600">
-        <mat-icon>add</mat-icon>
-        Nova Peça
-      </button>
+      <div class="hero-actions">
+        <button mat-stroked-button class="csv-btn" (click)="exportarCSV()" title="Exportar CSV">
+          <mat-icon>download</mat-icon> CSV
+        </button>
+        <button mat-raised-button color="primary" (click)="novoRegistro()" style="border-radius:12px;font-weight:600">
+          <mat-icon>add</mat-icon>
+          Nova Peça
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="page-body">
+
+    <!-- Search Bar -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="search-input" type="text" placeholder="Buscar por nome ou código..."
+          [(ngModel)]="searchTerm" />
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
 
     <div class="form-wrapper" *ngIf="showForm">
       <div class="form-card">
@@ -88,9 +120,9 @@
     <div class="table-card">
       <div class="table-header">
         <span class="table-title">Itens em Estoque</span>
-        <span class="count-badge">{{ pecas.length }} itens</span>
+        <span class="count-badge">{{ pecasFiltradas.length }} itens</span>
       </div>
-      <table mat-table [dataSource]="pecas">
+      <table mat-table [dataSource]="pecasFiltradas">
         <ng-container matColumnDef="codigo">
           <th mat-header-cell *matHeaderCellDef>Código</th>
           <td mat-cell *matCellDef="let p">{{ p.codigo }}</td>
@@ -117,18 +149,18 @@
             <button mat-icon-button class="action-btn" style="color:#818cf8" (click)="editar(p)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="deletar(p.id)">
+            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="confirmarDelete(p.id!)">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackById"></tr>
       </table>
-      <div class="empty-state" *ngIf="pecas.length === 0">
+      <div class="empty-state" *ngIf="pecasFiltradas.length === 0">
         <div class="empty-icon"><mat-icon>inventory_2</mat-icon></div>
-        <p>Nenhum item no estoque</p>
-        <small>Clique em "Nova Peça" para adicionar</small>
+        <p>{{ searchTerm ? 'Nenhum resultado encontrado' : 'Nenhum item no estoque' }}</p>
+        <small>{{ searchTerm ? 'Tente outro termo de busca' : 'Clique em "Nova Peça" para adicionar' }}</small>
       </div>
     </div>
 

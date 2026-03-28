@@ -8,9 +8,9 @@ import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-  { path: 'maquinas', component: MaquinasComponent, canActivate: [authGuard] },
-  { path: 'manutencoes', component: ManutencoesComponent, canActivate: [authGuard] },
-  { path: 'estoque', component: EstoqueComponent, canActivate: [authGuard] },
+  { path: 'login', component: LoginComponent, data: { animation: 'login' } },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard], data: { animation: 'dashboard' } },
+  { path: 'maquinas', component: MaquinasComponent, canActivate: [authGuard], data: { animation: 'maquinas' } },
+  { path: 'manutencoes', component: ManutencoesComponent, canActivate: [authGuard], data: { animation: 'manutencoes' } },
+  { path: 'estoque', component: EstoqueComponent, canActivate: [authGuard], data: { animation: 'estoque' } },
 ];

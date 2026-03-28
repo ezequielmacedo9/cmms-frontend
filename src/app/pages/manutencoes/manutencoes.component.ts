@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Subscription } from 'rxjs';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { MaquinaService } from '../../services/maquina.service';
 import { NotificationService } from '../../services/notification.service';
@@ -27,11 +28,12 @@ import { Maquina } from '../../models/maquina.model';
   templateUrl: './manutencoes.component.html',
   styleUrl: './manutencoes.component.css'
 })
-export class ManutencoesComponent implements OnInit {
+export class ManutencoesComponent implements OnInit, OnDestroy {
   private manutencaoService = inject(ManutencaoService);
   private maquinaService = inject(MaquinaService);
   private notify = inject(NotificationService);
   private router = inject(Router);
+  private subs = new Subscription();
 
   manutencoes: Manutencao[] = [];
   maquinas: Maquina[] = [];
@@ -43,11 +45,15 @@ export class ManutencoesComponent implements OnInit {
 
   ngOnInit() {
     this.carregar();
-    this.maquinaService.listar().subscribe(m => this.maquinas = m);
+    const sub = this.maquinaService.listar().subscribe(m => this.maquinas = m);
+    this.subs.add(sub);
   }
 
+  ngOnDestroy() { this.subs.unsubscribe(); }
+
   carregar() {
-    this.manutencaoService.listar().subscribe(data => this.manutencoes = data);
+    const sub = this.manutencaoService.listar().subscribe(data => this.manutencoes = data);
+    this.subs.add(sub);
   }
 
   novoRegistro() {
@@ -63,7 +69,7 @@ export class ManutencoesComponent implements OnInit {
     }
     if (this.salvando) return;
     this.salvando = true;
-    this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe({
+    const sub = this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe({
       next: () => {
         this.salvando = false;
         this.showForm = false;
@@ -73,9 +79,13 @@ export class ManutencoesComponent implements OnInit {
       error: () => {
         this.salvando = false;
         this.notify.error('Erro ao registrar. Tente novamente.');
-        setTimeout(() => this.carregar(), 1000);
       }
     });
+    this.subs.add(sub);
+  }
+
+  trackById(_index: number, item: Manutencao): number {
+    return item.id!;
   }
 
   voltar() { this.router.navigate(['/dashboard']); }

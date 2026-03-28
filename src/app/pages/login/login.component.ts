@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -25,9 +26,10 @@ export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private notify = inject(NotificationService);
 
-  email: string = '';
-  senha: string = '';
+  email = '';
+  senha = '';
   carregando = false;
   backendPronto = false;
   tentativas = 0;
@@ -37,35 +39,36 @@ export class LoginComponent implements OnInit {
   }
 
   acordarBackend() {
-  this.http.post('https://cmms-backend-8y7h.onrender.com/api/auth/login',
-    { email: '', senha: '' }, { responseType: 'text' })
-    .subscribe({
-      next: () => { this.backendPronto = true; },
-      error: (err) => {
-        if (err.status === 400 || err.status === 401 || err.status === 403) {
-          this.backendPronto = true;
-        } else if (this.tentativas < 5) {
-          this.tentativas++;
-          setTimeout(() => this.acordarBackend(), 4000);
-        } else {
-          this.backendPronto = true;
+    this.http.get('https://cmms-backend-8y7h.onrender.com/ping', { responseType: 'text' })
+      .subscribe({
+        next: () => { this.backendPronto = true; },
+        error: (err) => {
+          if (err.status >= 200 && err.status < 500) {
+            this.backendPronto = true;
+          } else if (this.tentativas < 8) {
+            this.tentativas++;
+            setTimeout(() => this.acordarBackend(), 5000);
+          } else {
+            this.backendPronto = true;
+          }
         }
-      }
-    });
-}
+      });
+  }
 
   onSubmit() {
-    if (this.carregando) return;
+    if (this.carregando || !this.email || !this.senha) return;
     this.carregando = true;
     this.authService.login(this.email, this.senha).subscribe({
       next: (response: any) => {
         localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
         this.router.navigate(['/dashboard']);
       },
       error: () => {
         this.carregando = false;
-        alert('Email ou senha inválidos');
+        this.notify.error('Email ou senha inválidos');
       }
     });
   }
