@@ -24,7 +24,7 @@
           <p>Nenhuma manutenção registrada</p>
         </div>
         <div *ngIf="!carregandoHistorico && historicoManutencoes.length > 0" class="history-list">
-          <div *ngFor="let m of historicoManutencoes; trackBy: trackById" class="history-item">
+          <div *ngFor="let m of historicoManutencoes" class="history-item">
             <div class="history-dot" [ngClass]="m.tipo === 'PREVENTIVA' ? 'green' : 'amber'"></div>
             <div class="history-info">
               <div class="history-tipo">{{ m.tipo }}</div>
@@ -187,7 +187,7 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [trackBy]="trackById"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
       <div class="empty-state" *ngIf="dataSource.data.length === 0">
         <div class="empty-icon"><mat-icon>precision_manufacturing</mat-icon></div>

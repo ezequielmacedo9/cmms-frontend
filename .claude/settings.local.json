@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X POST https://cmms-backend-8y7h.onrender.com/api/auth/login -H \"Content-Type: application/json\" -d \"{\"\"email\"\":\"\"admin@email.com\"\",\"\"senha\"\":\"\"123456\"\"}\")",
+      "Bash(npx ng:*)"
+    ]
+  }
+}
