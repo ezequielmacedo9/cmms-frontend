@@ -88,7 +88,7 @@
         <span class="table-title">Lista de Equipamentos</span>
         <span class="count-badge">{{ maquinas.length }} registros</span>
       </div>
-      <table mat-table [dataSource]="maquinas">
+      <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="nome">
           <th mat-header-cell *matHeaderCellDef>Equipamento</th>
           <td mat-cell *matCellDef="let m">{{ m.nome }}</td>
