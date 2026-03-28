@@ -47,6 +47,7 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   deletandoId: number | null = null;
   form: Maquina = { nome: '', setor: '', status: 'ATIVO' };
 
+  carregando = true;
   searchTerm = '';
   filterStatus = '';
   pageSize = 10;
@@ -63,9 +64,18 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   ngOnDestroy() { this.subs.unsubscribe(); }
 
   carregar() {
-    const sub = this.maquinaService.listar().subscribe(data => {
-      this.maquinas = data;
-      this.applyFilter();
+    this.carregando = true;
+    const sub = this.maquinaService.listar().subscribe({
+      next: data => {
+        this.maquinas = data;
+        this.applyFilter();
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }
     });
     this.subs.add(sub);
   }

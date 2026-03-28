@@ -1,301 +1,199 @@
-<div class="app-shell">
-  <div class="bg-grid"></div>
-  <div class="bg-glow-1"></div>
-  <div class="bg-glow-2"></div>
+<div class="shell">
 
-  <aside class="sidebar" [class.expanded]="sidebarExpanded"
-         (mouseenter)="sidebarExpanded=true"
-         (mouseleave)="sidebarExpanded=false">
-    <div class="sidebar-top">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">CMMS</span>
-          <span class="brand-sub">Industrial Suite</span>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+          <path d="M8 1L1 4.5l7 3.5 7-3.5L8 1z"/>
+          <path d="M1 11.5l7 3.5 7-3.5M1 8l7 3.5 7-3.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">CMMS</div>
+        <div class="logo-sub">Industrial Suite</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon> Dashboard
+      </a>
+      <a class="nav-item" routerLink="/maquinas" routerLinkActive="active">
+        <mat-icon>precision_manufacturing</mat-icon> Máquinas
+      </a>
+      <a class="nav-item" routerLink="/manutencoes" routerLinkActive="active">
+        <mat-icon>build</mat-icon> Manutenções
+        <span class="nav-badge" *ngIf="totalManutencoes > 0">{{ totalManutencoes > 99 ? '99+' : totalManutencoes }}</span>
+      </a>
+      <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
+        <mat-icon>inventory_2</mat-icon> Estoque
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-item" (click)="logout()">
+        <div class="user-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name">Administração</div>
+          <div class="user-role">Sair do sistema</div>
         </div>
       </div>
-      <nav class="nav">
-        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
-          <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
-          <span class="nav-text">Dashboard</span>
-          <span class="nav-dot"></span>
-        </a>
-        <a class="nav-link" routerLink="/maquinas" routerLinkActive="active">
-          <span class="nav-icon"><mat-icon>precision_manufacturing</mat-icon></span>
-          <span class="nav-text">Máquinas</span>
-          <span class="nav-dot"></span>
-        </a>
-        <a class="nav-link" routerLink="/manutencoes" routerLinkActive="active">
-          <span class="nav-icon"><mat-icon>build</mat-icon></span>
-          <span class="nav-text">Manutenções</span>
-          <span class="nav-badge" *ngIf="totalManutencoes > 0">{{ totalManutencoes > 99 ? '99+' : totalManutencoes }}</span>
-          <span class="nav-dot"></span>
-        </a>
-        <a class="nav-link" routerLink="/estoque" routerLinkActive="active">
-          <span class="nav-icon"><mat-icon>inventory_2</mat-icon></span>
-          <span class="nav-text">Estoque</span>
-          <span class="nav-dot"></span>
-        </a>
-      </nav>
-    </div>
-    <div class="sidebar-bottom">
-      <button class="logout-link" (click)="logout()">
-        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
-        <span class="nav-text">Sair</span>
-      </button>
     </div>
   </aside>
 
+  <!-- Main -->
   <main class="main">
     <header class="topbar">
-      <div class="topbar-left">
-        <div class="page-label">// visão geral</div>
-        <h1 class="page-title">Painel</h1>
-      </div>
+      <span class="topbar-title">Painel de Controle</span>
       <div class="topbar-right">
-        <div class="live-badge">
-          <span class="live-dot"></span>
-          Ao vivo
-        </div>
-        <div class="user-pill">
-          <div class="user-ava">A</div>
-          <span>Administração</span>
-          <mat-icon class="user-chevron">expand_more</mat-icon>
-        </div>
+        <span class="live"><span class="live-dot"></span>Ao vivo</span>
       </div>
     </header>
 
-    <div class="scroll-area">
+    <div class="content">
+      <div class="page-header">
+        <div class="greeting">{{ greeting }}</div>
+        <div class="greeting-sub">Aqui está o resumo operacional de hoje</div>
+      </div>
 
-      <section class="kpi-grid">
-        <!-- Skeleton state -->
-        <ng-container *ngIf="loading">
-          <div class="kpi-card kpi-blue skeleton-card" *ngFor="let i of [1,2,3,4]">
-            <div class="kpi-header">
-              <div class="sk-box" style="width:40px;height:40px;border-radius:11px"></div>
-              <div class="sk-box" style="width:50px;height:18px;border-radius:10px"></div>
-            </div>
-            <div class="kpi-body">
-              <div class="sk-box" style="width:80px;height:48px;border-radius:8px;margin-bottom:8px"></div>
-              <div class="sk-box" style="width:120px;height:12px;border-radius:6px"></div>
-            </div>
-            <div class="kpi-footer">
-              <div class="sk-box" style="width:160px;height:11px;border-radius:6px"></div>
-            </div>
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi" routerLink="/maquinas" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+          <div class="kpi-label">Máquinas</div>
+          <div class="kpi-value">
+            <span *ngIf="!loading">{{ displayMaquinas }}</span>
+            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
           </div>
-        </ng-container>
-
-        <!-- Loaded state -->
-        <ng-container *ngIf="!loading">
-        <div class="kpi-card kpi-blue" routerLink="/maquinas"
-             (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-header">
-            <div class="kpi-icon"><mat-icon>precision_manufacturing</mat-icon></div>
-            <span class="kpi-tag">Ativo</span>
-          </div>
-          <div class="kpi-body">
-            <div class="kpi-number">{{ displayMaquinas }}</div>
-            <div class="kpi-label">Máquinas Totais</div>
-          </div>
-          <div class="kpi-footer">
-            <span class="kpi-sub">Veja todas as máquinas →</span>
-          </div>
-          <div class="kpi-glow"></div>
+          <div class="kpi-sub" *ngIf="!loading">Total de equipamentos</div>
+          <div class="kpi-trend up" *ngIf="!loading">↗ Em operação</div>
         </div>
 
-        <div class="kpi-card kpi-amber" routerLink="/manutencoes"
-             (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-header">
-            <div class="kpi-icon"><mat-icon>build</mat-icon></div>
-            <span class="kpi-tag">Registrado</span>
+        <div class="kpi" routerLink="/manutencoes" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+          <div class="kpi-label">Manutenções</div>
+          <div class="kpi-value">
+            <span *ngIf="!loading">{{ displayManutencoes }}</span>
+            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
           </div>
-          <div class="kpi-body">
-            <div class="kpi-number">{{ displayManutencoes }}</div>
-            <div class="kpi-label">Ordens de Manutenção</div>
-          </div>
-          <div class="kpi-footer">
-            <span class="kpi-sub">Veja todos os pedidos →</span>
-          </div>
-          <div class="kpi-glow"></div>
+          <div class="kpi-sub" *ngIf="!loading">Ordens registradas</div>
+          <div class="kpi-trend up" *ngIf="!loading">↗ Histórico</div>
         </div>
 
-        <div class="kpi-card kpi-green" routerLink="/estoque"
-             (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-header">
-            <div class="kpi-icon"><mat-icon>inventory_2</mat-icon></div>
-            <span class="kpi-tag">Em Estoque</span>
+        <div class="kpi" routerLink="/estoque" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+          <div class="kpi-label">Estoque</div>
+          <div class="kpi-value">
+            <span *ngIf="!loading">{{ displayPecas }}</span>
+            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
           </div>
-          <div class="kpi-body">
-            <div class="kpi-number">{{ displayPecas }}</div>
-            <div class="kpi-label">Peças Disponíveis</div>
-          </div>
-          <div class="kpi-footer">
-            <span class="kpi-sub">Veja o inventário →</span>
-          </div>
-          <div class="kpi-glow"></div>
+          <div class="kpi-sub" *ngIf="!loading">Peças disponíveis</div>
+          <div class="kpi-trend up" *ngIf="!loading">↗ Inventário ativo</div>
         </div>
 
-        <div class="kpi-card kpi-rose"
-             (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-header">
-            <div class="kpi-icon"><mat-icon>warning_amber</mat-icon></div>
-            <span class="kpi-tag">Pendente</span>
+        <div class="kpi" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+          <div class="kpi-label">Prev. Vencendo</div>
+          <div class="kpi-value">
+            <span *ngIf="!loading">{{ proximasManutencoes.length }}</span>
+            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
           </div>
-          <div class="kpi-body">
-            <div class="kpi-number">{{ proximasManutencoes.length }}</div>
-            <div class="kpi-label">Prev. Vencendo (7d)</div>
+          <div class="kpi-sub" *ngIf="!loading">Nos próximos 7 dias</div>
+          <div class="kpi-trend" [class.warn]="proximasManutencoes.length > 0" [class.up]="proximasManutencoes.length === 0" *ngIf="!loading">
+            {{ proximasManutencoes.length === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
           </div>
-          <div class="kpi-footer">
-            <span class="kpi-sub">{{ proximasManutencoes.length === 0 ? 'Tudo em dia ✓' : 'Requer atenção ↓' }}</span>
-          </div>
-          <div class="kpi-glow"></div>
         </div>
-        </ng-container>
-      </section>
+      </div>
 
-      <section class="bottom-row">
+      <!-- Row 2: quick actions + system status -->
+      <div class="row-2">
         <div class="panel">
           <div class="panel-head">
             <span class="panel-title">Ações Rápidas</span>
-            <span class="panel-chip">atalhos</span>
           </div>
-          <div class="actions-grid">
-            <a class="act" routerLink="/maquinas">
-              <div class="act-icon act-blue"><mat-icon>add</mat-icon></div>
-              <span>Nova Máquina</span>
-              <mat-icon class="act-arrow">arrow_forward</mat-icon>
-            </a>
-            <a class="act" routerLink="/manutencoes">
-              <div class="act-icon act-amber"><mat-icon>assignment_add</mat-icon></div>
-              <span>Criar Ordem</span>
-              <mat-icon class="act-arrow">arrow_forward</mat-icon>
-            </a>
-            <a class="act" routerLink="/estoque">
-              <div class="act-icon act-green"><mat-icon>add_box</mat-icon></div>
-              <span>Adicionar Peça</span>
-              <mat-icon class="act-arrow">arrow_forward</mat-icon>
-            </a>
-            <a class="act" routerLink="/maquinas">
-              <div class="act-icon act-violet"><mat-icon>list_alt</mat-icon></div>
-              <span>Lista de Máquinas</span>
-              <mat-icon class="act-arrow">arrow_forward</mat-icon>
-            </a>
+          <div class="act-grid">
+            <a class="act" routerLink="/maquinas"><mat-icon>add</mat-icon> Nova Máquina</a>
+            <a class="act" routerLink="/manutencoes"><mat-icon>assignment_add</mat-icon> Criar Ordem</a>
+            <a class="act" routerLink="/estoque"><mat-icon>add_box</mat-icon> Adicionar Peça</a>
+            <a class="act" routerLink="/maquinas"><mat-icon>list_alt</mat-icon> Ver Máquinas</a>
           </div>
         </div>
 
         <div class="panel">
           <div class="panel-head">
             <span class="panel-title">Status do Sistema</span>
-            <span class="panel-chip online">● todos os sistemas funcionam</span>
+            <span class="panel-badge">● online</span>
           </div>
-          <div class="status-list">
-            <div class="status-item">
-              <div class="status-left">
-                <div class="status-dot green"></div>
-                <span class="status-name">API Backend</span>
-              </div>
-              <div class="status-bar-wrap">
-                <div class="status-bar" #bar1></div>
-              </div>
-              <span class="status-val">98%</span>
+          <div class="status-rows">
+            <div class="status-row">
+              <div class="status-dot-sm ok"></div>
+              <span class="status-name">API Backend</span>
+              <div class="status-track"><div class="status-fill ok" #bar1></div></div>
+              <span class="status-pct">98%</span>
             </div>
-            <div class="status-item">
-              <div class="status-left">
-                <div class="status-dot green"></div>
-                <span class="status-name">Banco de dados</span>
-              </div>
-              <div class="status-bar-wrap">
-                <div class="status-bar" #bar2></div>
-              </div>
-              <span class="status-val">100%</span>
+            <div class="status-row">
+              <div class="status-dot-sm ok"></div>
+              <span class="status-name">Banco de dados</span>
+              <div class="status-track"><div class="status-fill ok" #bar2></div></div>
+              <span class="status-pct">100%</span>
             </div>
-            <div class="status-item">
-              <div class="status-left">
-                <div class="status-dot green"></div>
-                <span class="status-name">Autorização JWT</span>
-              </div>
-              <div class="status-bar-wrap">
-                <div class="status-bar" #bar3></div>
-              </div>
-              <span class="status-val">100%</span>
+            <div class="status-row">
+              <div class="status-dot-sm ok"></div>
+              <span class="status-name">Autenticação JWT</span>
+              <div class="status-track"><div class="status-fill ok" #bar3></div></div>
+              <span class="status-pct">100%</span>
             </div>
-            <div class="status-item">
-              <div class="status-left">
-                <div class="status-dot amber"></div>
-                <span class="status-name">Notificações</span>
-              </div>
-              <div class="status-bar-wrap">
-                <div class="status-bar amber" #bar4></div>
-              </div>
-              <span class="status-val">60%</span>
+            <div class="status-row">
+              <div class="status-dot-sm warn"></div>
+              <span class="status-name">Notificações</span>
+              <div class="status-track"><div class="status-fill warn" #bar4></div></div>
+              <span class="status-pct">60%</span>
             </div>
-          </div>
-          <div class="sys-meta">
-            <span>v1.0.0</span>
-            <span>Spring Boot + Angular</span>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section class="bottom-row" style="animation-delay:0.45s">
-
-        <!-- Próximas Manutenções -->
+      <!-- Row 3: próximas manutenções + bar chart -->
+      <div class="row-3">
         <div class="panel">
           <div class="panel-head">
             <span class="panel-title">Próximas Manutenções</span>
-            <span class="panel-chip" [class.chip-alert]="proximasManutencoes.length > 0">
+            <span class="panel-badge" [class.warn]="proximasManutencoes.length > 0">
               {{ proximasManutencoes.length }} pendente{{ proximasManutencoes.length !== 1 ? 's' : '' }}
             </span>
           </div>
-          <div *ngIf="proximasManutencoes.length === 0" class="proximas-empty">
-            <mat-icon>check_circle</mat-icon>
-            <span>Nenhuma manutenção vencendo nos próximos 7 dias</span>
+          <div class="proxima-empty" *ngIf="proximasManutencoes.length === 0 && !loading">
+            <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
+            Nenhuma vencendo nos próximos 7 dias
           </div>
-          <div class="proximas-list" *ngIf="proximasManutencoes.length > 0">
-            <div *ngFor="let p of proximasManutencoes" class="proximas-item" [class.urgente]="p.urgente">
-              <div class="proximas-dot" [class.red]="p.urgente" [class.amber]="!p.urgente"></div>
-              <div class="proximas-info">
-                <span class="proximas-nome">{{ p.nome }}</span>
-                <span class="proximas-setor">{{ p.setor }}</span>
+          <div class="proximas" *ngIf="proximasManutencoes.length > 0">
+            <div *ngFor="let p of proximasManutencoes" class="proxima-item">
+              <div class="proxima-dot" [class.red]="p.diasRestantes < 0" [class.warn]="p.diasRestantes >= 0 && p.urgente" [class.ok]="!p.urgente && p.diasRestantes >= 0"></div>
+              <div class="proxima-body">
+                <div class="proxima-name">{{ p.nome }}</div>
+                <div class="proxima-setor">{{ p.setor }}</div>
               </div>
-              <span class="proximas-badge" [class.badge-red]="p.diasRestantes < 0" [class.badge-amber]="p.diasRestantes >= 0 && p.urgente" [class.badge-yellow]="!p.urgente">
+              <span class="proxima-chip" [class.chip-red]="p.diasRestantes < 0" [class.chip-warn]="p.diasRestantes >= 0 && p.urgente" [class.chip-ok]="!p.urgente && p.diasRestantes >= 0">
                 {{ p.diasRestantes < 0 ? 'Vencida' : p.diasRestantes === 0 ? 'Hoje' : p.diasRestantes + 'd' }}
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Mini Bar Chart -->
         <div class="panel">
           <div class="panel-head">
-            <span class="panel-title">Manutenções / Mês</span>
-            <span class="panel-chip">últimos 6 meses</span>
+            <span class="panel-title">Manutenções por Mês</span>
+            <span class="panel-badge">últimos 6 meses</span>
           </div>
           <div class="bar-chart" *ngIf="barsUltimos6Meses.length > 0">
-            <div *ngFor="let b of barsUltimos6Meses" class="bar-col">
-              <span class="bar-count">{{ b.count }}</span>
-              <div class="bar-track">
-                <div class="bar-fill" [style.height.%]="b.pct"></div>
-              </div>
-              <span class="bar-label">{{ b.mes }}</span>
+            <div *ngFor="let b of barsUltimos6Meses" class="bc">
+              <span class="bc-count">{{ b.count }}</span>
+              <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
+              <span class="bc-label">{{ b.mes }}</span>
             </div>
           </div>
-          <div *ngIf="barsUltimos6Meses.length === 0" class="proximas-empty">
-            <mat-icon>bar_chart</mat-icon>
-            <span>Carregando dados...</span>
-          </div>
         </div>
+      </div>
 
-      </section>
-
-      <footer class="footer">
-        <span>Construído por <strong>ezequiel</strong> · Suite Industrial CMMS · 2026</span>
-      </footer>
+      <div class="footer">Construído por <strong style="color:rgba(255,255,255,0.3)">ezequiel</strong> · Industrial CMMS Suite · 2026</div>
     </div>
   </main>
 </div>

@@ -46,6 +46,7 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   maquinaIdSelecionada: number | null = null;
   form: Manutencao = { tipo: '', tecnico: '' };
 
+  carregando = true;
   searchTerm = '';
   filterTipo = '';
   pageSize = 10;
@@ -89,9 +90,18 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   prevPage() { if (this.currentPage > 0) this.currentPage--; }
 
   carregar() {
-    const sub = this.manutencaoService.listar().subscribe(data => {
-      this.manutencoes = data;
-      this.currentPage = 0;
+    this.carregando = true;
+    const sub = this.manutencaoService.listar().subscribe({
+      next: data => {
+        this.manutencoes = data;
+        this.currentPage = 0;
+        this.carregando = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }
     });
     this.subs.add(sub);
   }

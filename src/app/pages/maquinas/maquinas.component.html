@@ -1,35 +1,33 @@
 <div class="page-container">
 
   <!-- History Modal -->
-  <div class="modal-overlay" *ngIf="showHistory" (click)="fecharHistorico()">
+  <div class="overlay" *ngIf="showHistory" (click)="fecharHistorico()">
     <div class="modal-panel" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title-group">
-          <mat-icon class="modal-icon">history</mat-icon>
+      <div class="modal-head">
+        <div class="modal-head-left">
+          <mat-icon class="modal-head-icon">history</mat-icon>
           <div>
-            <div class="modal-title">Histórico de Manutenções</div>
-            <div class="modal-sub">{{ historyMaquina?.nome }} — {{ historyMaquina?.setor }}</div>
+            <div class="modal-head-title">Histórico de Manutenções</div>
+            <div class="modal-head-sub">{{ historyMaquina?.nome }} — {{ historyMaquina?.setor }}</div>
           </div>
         </div>
-        <button mat-icon-button (click)="fecharHistorico()" style="color:rgba(255,255,255,0.4)">
-          <mat-icon>close</mat-icon>
-        </button>
+        <button mat-icon-button (click)="fecharHistorico()" class="form-close"><mat-icon>close</mat-icon></button>
       </div>
       <div class="modal-body">
-        <div *ngIf="carregandoHistorico" class="history-loading">
-          <mat-spinner diameter="32"></mat-spinner>
+        <div *ngIf="carregandoHistorico" style="padding:24px;text-align:center">
+          <mat-spinner diameter="24"></mat-spinner>
         </div>
-        <div *ngIf="!carregandoHistorico && historicoManutencoes.length === 0" class="history-empty">
-          <mat-icon>build_circle</mat-icon>
-          <p>Nenhuma manutenção registrada</p>
+        <div class="hist-empty" *ngIf="!carregandoHistorico && historicoManutencoes.length === 0">
+          <mat-icon style="font-size:15px;width:15px;height:15px">build_circle</mat-icon>
+          Nenhuma manutenção registrada
         </div>
-        <div *ngIf="!carregandoHistorico && historicoManutencoes.length > 0" class="history-list">
-          <div *ngFor="let m of historicoManutencoes" class="history-item">
-            <div class="history-dot" [ngClass]="m.tipo === 'PREVENTIVA' ? 'green' : 'amber'"></div>
-            <div class="history-info">
-              <div class="history-tipo">{{ m.tipo }}</div>
-              <div class="history-desc">{{ m.descricao || '—' }}</div>
-              <div class="history-meta">{{ m.tecnico }} · {{ m.dataManutencao | date:'dd/MM/yyyy' }}</div>
+        <div class="hist-list" *ngIf="!carregandoHistorico && historicoManutencoes.length > 0">
+          <div *ngFor="let m of historicoManutencoes" class="hist-item">
+            <div class="hist-dot" [class.prev]="m.tipo === 'PREVENTIVA'" [class.corr]="m.tipo !== 'PREVENTIVA'"></div>
+            <div>
+              <div class="hist-tipo">{{ m.tipo }}</div>
+              <div class="hist-desc">{{ m.descricao || '—' }}</div>
+              <div class="hist-meta">{{ m.tecnico }} · {{ m.dataManutencao | date:'dd/MM/yyyy' }}</div>
             </div>
           </div>
         </div>
@@ -38,20 +36,19 @@
   </div>
 
   <!-- Delete Confirmation -->
-  <div class="modal-overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
-    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+  <div class="overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
+    <div class="confirm-box" (click)="$event.stopPropagation()">
       <mat-icon class="confirm-icon">warning_amber</mat-icon>
       <div class="confirm-title">Excluir máquina?</div>
       <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
-      <div class="confirm-actions">
-        <button mat-button class="cancel-btn" (click)="cancelarDelete()">Cancelar</button>
-        <button mat-raised-button class="delete-confirm-btn" (click)="deletar(deletandoId!)">
-          <mat-icon>delete</mat-icon> Excluir
-        </button>
+      <div class="confirm-btns">
+        <button class="btn-cancel" (click)="cancelarDelete()">Cancelar</button>
+        <button class="btn-del" (click)="deletar(deletandoId!)"><mat-icon style="font-size:14px;width:14px;height:14px">delete</mat-icon>Excluir</button>
       </div>
     </div>
   </div>
 
+  <!-- Hero -->
   <div class="page-hero">
     <div class="breadcrumb">
       <mat-icon>home</mat-icon> Dashboard
@@ -60,20 +57,17 @@
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button (click)="voltar()" class="back-btn" style="color:rgba(255,255,255,0.3)">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <div class="hero-icon"><mat-icon>precision_manufacturing</mat-icon></div>
+        <button mat-icon-button class="back-btn" (click)="voltar()"><mat-icon>arrow_back</mat-icon></button>
         <div>
           <div class="hero-title">Máquinas</div>
           <div class="hero-sub">Gerencie os equipamentos industriais</div>
         </div>
       </div>
       <div class="hero-actions">
-        <button mat-stroked-button class="csv-btn" (click)="exportarCSV()" title="Exportar CSV">
+        <button class="btn-ghost" (click)="exportarCSV()">
           <mat-icon>download</mat-icon> CSV
         </button>
-        <button mat-raised-button class="new-btn" (click)="novoRegistro()">
+        <button class="btn-primary" (click)="novoRegistro()">
           <mat-icon>add</mat-icon> Nova Máquina
         </button>
       </div>
@@ -82,7 +76,7 @@
 
   <div class="page-body">
 
-    <!-- Search & Filter Bar -->
+    <!-- Filter bar -->
     <div class="filter-bar">
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
@@ -92,7 +86,7 @@
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <select class="status-filter" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
+      <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
         <option value="">Todos os status</option>
         <option value="ATIVO">Ativo</option>
         <option value="INATIVO">Inativo</option>
@@ -100,108 +94,112 @@
       </select>
     </div>
 
-    <div class="form-wrapper" *ngIf="showForm">
-      <div class="form-card">
-        <div class="form-header">
-          <div class="form-header-left">
-            <div class="form-header-icon"><mat-icon>{{ editando ? 'edit' : 'add_circle' }}</mat-icon></div>
-            <div>
-              <div class="form-title">{{ editando ? 'Editar Máquina' : 'Nova Máquina' }}</div>
-              <div class="form-sub">{{ editando ? 'Atualize os dados do equipamento' : 'Preencha os dados do novo equipamento' }}</div>
-            </div>
-          </div>
-          <button mat-icon-button (click)="cancelar()" style="color:rgba(255,255,255,0.3)">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-        <div class="form-body">
-          <div class="form-grid">
-            <mat-form-field appearance="outline" class="dark-field">
-              <mat-label>Nome do Equipamento</mat-label>
-              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">precision_manufacturing</mat-icon>
-              <input matInput [(ngModel)]="form.nome" name="nome" placeholder="Ex: Torno CNC 01" required />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="dark-field">
-              <mat-label>Setor</mat-label>
-              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">location_on</mat-icon>
-              <input matInput [(ngModel)]="form.setor" name="setor" placeholder="Ex: Produção A" required />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="dark-field">
-              <mat-label>Status</mat-label>
-              <mat-select [(ngModel)]="form.status" name="status">
-                <mat-option value="ATIVO">✅ Ativo</mat-option>
-                <mat-option value="INATIVO">⛔ Inativo</mat-option>
-                <mat-option value="EM_MANUTENCAO">⚠️ Em Manutenção</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="dark-field">
-              <mat-label>Intervalo Preventiva (dias)</mat-label>
-              <mat-icon matPrefix style="color:rgba(255,255,255,0.2);margin-right:8px;font-size:18px">schedule</mat-icon>
-              <input matInput type="number" [(ngModel)]="form.intervaloPreventivaDias" name="intervalo" placeholder="Ex: 30" />
-            </mat-form-field>
+    <!-- Inline form -->
+    <div class="form-wrap" *ngIf="showForm">
+      <div class="form-head">
+        <div class="form-head-left">
+          <div>
+            <div class="form-head-title">{{ editando ? 'Editar Máquina' : 'Nova Máquina' }}</div>
+            <div class="form-head-sub">{{ editando ? 'Atualize os dados do equipamento' : 'Preencha os dados do novo equipamento' }}</div>
           </div>
         </div>
-        <div class="form-footer">
-          <button mat-button class="cancel-btn" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
-          <button mat-raised-button color="primary" class="save-btn" (click)="salvar()" [disabled]="salvando">
-            <mat-icon *ngIf="!salvando" style="font-size:16px;width:16px;height:16px;margin-right:6px">save</mat-icon>
-            <mat-spinner *ngIf="salvando" diameter="16" style="display:inline-block;margin-right:6px"></mat-spinner>
-            {{ salvando ? 'Salvando...' : 'Salvar' }}
-          </button>
-        </div>
+        <button mat-icon-button class="form-close" (click)="cancelar()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="form-fields">
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Nome do Equipamento</mat-label>
+          <input matInput [(ngModel)]="form.nome" name="nome" placeholder="Ex: Torno CNC 01" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Setor</mat-label>
+          <input matInput [(ngModel)]="form.setor" name="setor" placeholder="Ex: Produção A" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="form.status" name="status">
+            <mat-option value="ATIVO">Ativo</mat-option>
+            <mat-option value="INATIVO">Inativo</mat-option>
+            <mat-option value="EM_MANUTENCAO">Em Manutenção</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Intervalo Preventiva (dias)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.intervaloPreventivaDias" name="intervalo" placeholder="Ex: 30" />
+        </mat-form-field>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+        <button class="btn-save" (click)="salvar()" [disabled]="salvando">
+          <mat-spinner *ngIf="salvando" diameter="14"></mat-spinner>
+          {{ salvando ? 'Salvando...' : 'Salvar' }}
+        </button>
       </div>
     </div>
 
+    <!-- Table -->
     <div class="table-card">
-      <div class="table-header">
-        <span class="table-title">Lista de Equipamentos</span>
+      <div class="table-head">
+        <span class="table-head-title">Lista de Equipamentos</span>
         <span class="count-badge">{{ dataSource.data.length }} registros</span>
       </div>
-      <table mat-table [dataSource]="pagedMaquinas">
-        <ng-container matColumnDef="nome">
-          <th mat-header-cell *matHeaderCellDef>Equipamento</th>
-          <td mat-cell *matCellDef="let m">{{ m.nome }}</td>
-        </ng-container>
-        <ng-container matColumnDef="setor">
-          <th mat-header-cell *matHeaderCellDef>Setor</th>
-          <td mat-cell *matCellDef="let m">{{ m.setor }}</td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let m">
-            <span class="status-badge" [ngClass]="m.status.toLowerCase()">{{ m.status }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="acoes">
-          <th mat-header-cell *matHeaderCellDef>Ações</th>
-          <td mat-cell *matCellDef="let m">
-            <button mat-icon-button class="action-btn" style="color:rgba(255,255,255,0.3)" (click)="verHistorico(m)" title="Ver histórico">
-              <mat-icon>history</mat-icon>
-            </button>
-            <button mat-icon-button class="action-btn" style="color:#818cf8" (click)="editar(m)" title="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button class="action-btn" style="color:#f87171" (click)="confirmarDelete(m.id!)" title="Excluir">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Equipamento</th>
+            <th>Setor</th>
+            <th>Status</th>
+            <th>Intervalo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="carregando">
+            <tr class="sk-row" *ngFor="let s of [1,2,3,4,5]">
+              <td><div class="sk" style="width:120px;height:13px"></div></td>
+              <td><div class="sk" style="width:80px;height:13px"></div></td>
+              <td><div class="sk" style="width:60px;height:18px;border-radius:6px"></div></td>
+              <td><div class="sk" style="width:40px;height:13px"></div></td>
+              <td></td>
+            </tr>
+          </ng-container>
+          <ng-container *ngIf="!carregando">
+            <tr *ngFor="let m of pagedMaquinas; trackBy: trackById" [class.row-new]="m.id && m.id < 0">
+              <td>{{ m.nome }}</td>
+              <td>{{ m.setor }}</td>
+              <td>
+                <span class="badge"
+                  [class.badge-green]="m.status === 'ATIVO'"
+                  [class.badge-red]="m.status === 'INATIVO'"
+                  [class.badge-amber]="m.status === 'EM_MANUTENCAO'">
+                  {{ m.status === 'EM_MANUTENCAO' ? 'Em Manutenção' : m.status === 'ATIVO' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td>{{ m.intervaloPreventivaDias ? m.intervaloPreventivaDias + 'd' : '—' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button mat-icon-button class="action-icon" (click)="verHistorico(m)" title="Histórico">
+                    <mat-icon>history</mat-icon>
+                  </button>
+                  <button mat-icon-button class="action-icon" (click)="editar(m)" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(m.id!)" title="Excluir">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
       </table>
-      <div class="empty-state" *ngIf="dataSource.data.length === 0">
-        <div class="empty-icon"><mat-icon>precision_manufacturing</mat-icon></div>
+      <div class="empty-state" *ngIf="!carregando && dataSource.data.length === 0">
         <p>{{ searchTerm || filterStatus ? 'Nenhum resultado encontrado' : 'Nenhuma máquina cadastrada' }}</p>
         <small>{{ searchTerm || filterStatus ? 'Tente outros filtros' : 'Clique em "Nova Máquina" para começar' }}</small>
       </div>
       <div class="pagination" *ngIf="dataSource.data.length > pageSize">
-        <button mat-icon-button (click)="prevPage()" [disabled]="currentPage === 0" class="page-btn">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
+        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-        <button mat-icon-button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
+        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 
