@@ -14,8 +14,8 @@ export class AuthService {
   login(email: string, senha: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).pipe(
       tap((res: any) => {
-        if (res.token) {
-          localStorage.setItem('token', res.token);
+        if (res.accessToken) {
+          localStorage.setItem('accessToken', res.accessToken);
         }
       })
     );
@@ -26,11 +26,12 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem('accessToken');
   }
 
   isLoggedIn(): boolean {
