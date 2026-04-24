@@ -28,7 +28,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private maquinaService = inject(MaquinaService);
   private manutencaoService = inject(ManutencaoService);
   private pecaService = inject(PecaService);
-  private pollingInterval: any;
+  private pollingInterval: ReturnType<typeof setInterval> | null = null;
+  private animTimers: Map<string, ReturnType<typeof setInterval>> = new Map();
 
   totalMaquinas = 0;
   totalManutencoes = 0;
@@ -50,7 +51,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    clearInterval(this.pollingInterval);
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
+    this.animTimers.forEach(t => clearInterval(t));
+    this.animTimers.clear();
   }
 
   ngAfterViewInit() {
@@ -155,19 +158,28 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayPendencias', target: number) {
-    const duration = 1000;
+    const existing = this.animTimers.get(prop);
+    if (existing) clearInterval(existing);
+
+    if (target === 0) {
+      (this as any)[prop] = 0;
+      return;
+    }
+
     const steps = 40;
-    const interval = duration / steps;
+    const interval = 1000 / steps;
     let current = 0;
     const timer = setInterval(() => {
       current += Math.ceil(target / steps);
       if (current >= target) {
         (this as any)[prop] = target;
         clearInterval(timer);
+        this.animTimers.delete(prop);
       } else {
         (this as any)[prop] = current;
       }
     }, interval);
+    this.animTimers.set(prop, timer);
   }
 
   get greeting(): string {

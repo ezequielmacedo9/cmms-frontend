@@ -25,10 +25,15 @@
       <div class="card-title">Entrar no sistema</div>
       <div class="card-sub">Use suas credenciais para acessar</div>
 
-      <div class="server-status" [class.ready]="backendPronto">
-        <mat-spinner *ngIf="!backendPronto" diameter="12"></mat-spinner>
-        <span class="status-dot" *ngIf="backendPronto"></span>
-        {{ backendPronto ? 'Servidor conectado' : 'Conectando ao servidor...' }}
+      <div class="server-status"
+           [class.ready]="serverStatus === 'online'"
+           [class.error]="serverStatus === 'offline'">
+        <mat-spinner *ngIf="serverStatus === 'checking'" diameter="12"></mat-spinner>
+        <span class="status-dot" *ngIf="serverStatus === 'online'"></span>
+        <span class="status-dot error" *ngIf="serverStatus === 'offline'"></span>
+        <span *ngIf="serverStatus === 'checking'">Verificando servidor...</span>
+        <span *ngIf="serverStatus === 'online'">Servidor conectado</span>
+        <span *ngIf="serverStatus === 'offline'">Servidor iniciando — login ainda disponível</span>
       </div>
 
       <form (ngSubmit)="onSubmit()">
@@ -48,7 +53,7 @@
             <mat-icon class="input-icon">lock</mat-icon>
           </div>
         </div>
-        <button class="btn-primary" type="submit" [disabled]="carregando || !backendPronto">
+        <button class="btn-primary" type="submit" [disabled]="carregando">
           <mat-spinner *ngIf="carregando" diameter="16"></mat-spinner>
           {{ carregando ? 'Entrando...' : 'Entrar' }}
         </button>

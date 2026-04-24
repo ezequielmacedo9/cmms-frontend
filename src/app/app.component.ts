@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { ToastComponent } from './components/toast/toast.component';
+import { WakeupService } from './services/wakeup.service';
 
 @Component({
   selector: 'app-root',
@@ -10,21 +10,15 @@ import { ToastComponent } from './components/toast/toast.component';
   styleUrl: './app.css'
 })
 export class App implements OnInit, OnDestroy {
-  private pingUrl = 'https://cmms-backend-8y7h.onrender.com/ping';
-  private intervalId: any;
-
-  constructor(private http: HttpClient) {}
+  private wakeup = inject(WakeupService);
+  private intervalId: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
-    this.ping();
-    this.intervalId = setInterval(() => this.ping(), 14 * 60 * 1000);
+    this.wakeup.ping().subscribe();
+    this.intervalId = setInterval(() => this.wakeup.ping().subscribe(), 14 * 60 * 1000);
   }
 
   ngOnDestroy() {
-    clearInterval(this.intervalId);
-  }
-
-  private ping() {
-    this.http.get(this.pingUrl, { responseType: 'text' }).subscribe({ error: () => {} });
+    if (this.intervalId) clearInterval(this.intervalId);
   }
 }

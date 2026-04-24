@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('accessToken');
@@ -18,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
           const http = inject(HttpClient);
-          return http.post<any>('https://cmms-backend-8y7h.onrender.com/api/auth/refresh', { refreshToken }).pipe(
+          return http.post<any>(`${environment.apiUrl}/api/auth/refresh`, { refreshToken }).pipe(
             switchMap((res) => {
               localStorage.setItem('accessToken', res.accessToken);
               const retried = req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } });

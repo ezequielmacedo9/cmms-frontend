@@ -1,6 +1,5 @@
-import { Component, inject, OnInit, AfterViewInit } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +10,9 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../services/notification.service';
+import { WakeupService } from '../../services/wakeup.service';
+
+type ServerStatus = 'checking' | 'online' | 'offline';
 
 @Component({
   selector: 'app-login',
@@ -22,21 +24,26 @@ import { NotificationService } from '../../services/notification.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private http = inject(HttpClient);
   private notify = inject(NotificationService);
+  private wakeup = inject(WakeupService);
 
   email = '';
   senha = '';
   carregando = false;
-  backendPronto = false;
-  tentativas = 0;
+  serverStatus: ServerStatus = 'checking';
   errorMessage = '';
 
+  private retryTimeouts: ReturnType<typeof setTimeout>[] = [];
+  private animFrameId: number | null = null;
+  private retryCount = 0;
+  private readonly MAX_RETRIES = 5;
+  private readonly RETRY_DELAY_MS = 4000;
+
   ngOnInit() {
-    this.acordarBackend();
+    this.checkServer();
   }
 
   ngAfterViewInit() {
@@ -54,6 +61,37 @@ export class LoginComponent implements OnInit, AfterViewInit {
       card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) translateZ(0)';
       card.style.transition = 'transform 0.5s ease';
     });
+  }
+
+  ngOnDestroy() {
+    this.retryTimeouts.forEach(t => clearTimeout(t));
+    if (this.animFrameId !== null) cancelAnimationFrame(this.animFrameId);
+  }
+
+  private checkServer() {
+    this.wakeup.ping().subscribe({
+      next: (res) => {
+        this.serverStatus = res !== null ? 'online' : 'offline';
+        if (this.serverStatus === 'offline' && this.retryCount < this.MAX_RETRIES) {
+          this.scheduleRetry();
+        }
+      },
+      error: () => {
+        this.serverStatus = 'offline';
+        if (this.retryCount < this.MAX_RETRIES) {
+          this.scheduleRetry();
+        }
+      }
+    });
+  }
+
+  private scheduleRetry() {
+    this.retryCount++;
+    const id = setTimeout(() => {
+      this.serverStatus = 'checking';
+      this.checkServer();
+    }, this.RETRY_DELAY_MS);
+    this.retryTimeouts.push(id);
   }
 
   initParticles() {
@@ -114,26 +152,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
           }
         }
       }
-      requestAnimationFrame(animate);
+      this.animFrameId = requestAnimationFrame(animate);
     };
-    animate();
-  }
-
-  acordarBackend() {
-    this.http.get('https://cmms-backend-8y7h.onrender.com/ping', { responseType: 'text' })
-      .subscribe({
-        next: () => { this.backendPronto = true; },
-        error: (err) => {
-          if (err.status >= 200 && err.status < 500) {
-            this.backendPronto = true;
-          } else if (this.tentativas < 8) {
-            this.tentativas++;
-            setTimeout(() => this.acordarBackend(), 5000);
-          } else {
-            this.backendPronto = true;
-          }
-        }
-      });
+    this.animFrameId = requestAnimationFrame(animate);
   }
 
   onSubmit() {
@@ -141,18 +162,18 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.carregando = true;
     this.errorMessage = '';
     this.authService.login(this.email, this.senha).subscribe({
-      next: (response: any) => {
-        localStorage.setItem('accessToken', response.accessToken);
-        if (response.refreshToken) {
-          localStorage.setItem('refreshToken', response.refreshToken);
-        }
+      next: () => {
         this.router.navigate(['/dashboard']);
       },
       error: (error: any) => {
         if (error.status === 400 || error.status === 401) {
           this.errorMessage = 'Email ou senha incorretos.';
         } else if (error.status === 0) {
-          this.errorMessage = 'Servidor indisponível. Tente em instantes.';
+          this.errorMessage = 'Servidor indisponível. Aguarde e tente novamente.';
+          this.serverStatus = 'offline';
+          if (this.retryCount < this.MAX_RETRIES) {
+            this.scheduleRetry();
+          }
         } else {
           this.errorMessage = 'Erro inesperado. Tente novamente.';
         }
