@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PecaRequest, PecaResponse } from '../models/peca.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PecaService {
 
   private http = inject(HttpClient);
-  
-  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/pecas';
+
+  private apiUrl = `${environment.apiUrl}/api/pecas`;
 
   listar(): Observable<PecaResponse[]> {
     return this.http.get<PecaResponse[]>(this.apiUrl);

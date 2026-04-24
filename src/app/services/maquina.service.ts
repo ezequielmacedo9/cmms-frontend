@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Maquina } from '../models/maquina.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class MaquinaService {
 
   private http = inject(HttpClient);
-  
-  private apiUrl = 'https://cmms-backend-8y7h.onrender.com/api/maquinas';
+
+  private apiUrl = `${environment.apiUrl}/api/maquinas`;
 
   listar(): Observable<Maquina[]> {
     return this.http.get<Maquina[]>(this.apiUrl);
