@@ -6,11 +6,12 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { DashboardService, DashboardStats } from '../../services/dashboard.service';
 import { ThemeService } from '../../services/theme.service';
+import { AuthService } from '../../services/auth.service';
 import { MaquinaService } from '../../services/maquina.service';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { PecaService } from '../../services/peca.service';
 import { Maquina } from '../../models/maquina.model';
-import { Manutencao } from '../../models/manutencao.model';
+import { ROLE_LABELS, ROLE_CSS } from '../../models/user.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,31 +27,38 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('bar3') bar3!: ElementRef;
   @ViewChild('bar4') bar4!: ElementRef;
 
-  private router = inject(Router);
+  private router           = inject(Router);
   private dashboardService = inject(DashboardService);
-  private maquinaService = inject(MaquinaService);
-  private manutencaoService = inject(ManutencaoService);
-  private pecaService = inject(PecaService);
-  readonly theme = inject(ThemeService);
+  private maquinaService   = inject(MaquinaService);
+  private manutencaoService= inject(ManutencaoService);
+  private pecaService      = inject(PecaService);
+  readonly theme           = inject(ThemeService);
+  readonly auth            = inject(AuthService);
+
+  readonly ROLE_LABELS = ROLE_LABELS;
+  readonly ROLE_CSS    = ROLE_CSS;
 
   private pollingInterval: ReturnType<typeof setInterval> | null = null;
   private animTimers: Map<string, ReturnType<typeof setInterval>> = new Map();
 
   stats: DashboardStats | null = null;
 
-  totalMaquinas = 0;
-  totalManutencoes = 0;
-  totalPecas = 0;
-
-  displayMaquinas = 0;
+  displayMaquinas    = 0;
   displayManutencoes = 0;
-  displayPecas = 0;
-  displayVencidas = 0;
+  displayPecas       = 0;
+  displayVencidas    = 0;
 
   proximasManutencoes: { nome: string; setor: string; diasRestantes: number; urgente: boolean }[] = [];
   barsUltimos6Meses: { mes: string; count: number; pct: number }[] = [];
-  loading = true;
+  loading      = true;
   statsLoading = true;
+
+  get userName()  { return this.auth.getNome(); }
+  get userRole()  { return this.auth.getRole(); }
+  get userRoleLabel() { return this.userRole ? (ROLE_LABELS[this.userRole] ?? this.userRole) : ''; }
+  get userRoleCSS()   { return this.userRole ? (ROLE_CSS[this.userRole] ?? '') : ''; }
+  get userInitial()   { return this.userName.charAt(0).toUpperCase(); }
+  get canManageUsers(){ return this.auth.canManageUsers(); }
 
   ngOnInit() {
     this.carregarDados();
@@ -76,19 +84,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dashboardService.getStats().pipe(catchError(() => of(null))).subscribe(s => {
       if (s) {
         this.stats = s;
-        this.animateNumber('displayMaquinas', s.totalMaquinas);
+        this.animateNumber('displayMaquinas',    s.totalMaquinas);
         this.animateNumber('displayManutencoes', s.totalManutencoes);
-        this.animateNumber('displayPecas', s.totalPecas);
-        this.animateNumber('displayVencidas', s.manutencoesVencidas);
-        this.barsUltimos6Meses = s.ultimosSeisMeses.map(m => ({
-          mes: m.label,
-          count: m.total,
-          pct: 0
-        }));
+        this.animateNumber('displayPecas',       s.totalPecas);
+        this.animateNumber('displayVencidas',    s.manutencoesVencidas);
         const maxCount = Math.max(...s.ultimosSeisMeses.map(m => m.total), 1);
         this.barsUltimos6Meses = s.ultimosSeisMeses.map(m => ({
-          mes: m.label,
-          count: m.total,
+          mes: m.label, count: m.total,
           pct: Math.round((m.total / maxCount) * 100)
         }));
         this.statsLoading = false;
@@ -104,13 +106,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private computeProximas(maquinas: Maquina[]) {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-
     this.proximasManutencoes = maquinas
       .filter(m => m.intervaloPreventivaDias && m.intervaloPreventivaDias > 0)
       .map(m => {
         let diasRestantes: number;
         if (m.dataUltimaManutencao) {
-          const ultima = new Date(m.dataUltimaManutencao);
+          const ultima  = new Date(m.dataUltimaManutencao);
           const proxima = new Date(ultima);
           proxima.setDate(proxima.getDate() + m.intervaloPreventivaDias!);
           diasRestantes = Math.ceil((proxima.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
@@ -127,10 +128,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   onKpiTilt(event: MouseEvent) {
     const card = event.currentTarget as HTMLElement;
     const rect = card.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const rx = ((y - rect.height / 2) / (rect.height / 2)) * -7;
-    const ry = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+    const rx = ((event.clientY - rect.top  - rect.height / 2) / (rect.height / 2)) * -7;
+    const ry = ((event.clientX - rect.left - rect.width  / 2) / (rect.width  / 2)) *  7;
     card.style.transform = `translateY(-6px) perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
   }
 
@@ -138,14 +137,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     (event.currentTarget as HTMLElement).style.transform = '';
   }
 
-  private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayVencidas', target: number) {
+  private animateNumber(
+    prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayVencidas',
+    target: number
+  ) {
     const existing = this.animTimers.get(prop);
     if (existing) clearInterval(existing);
-
     if (target === 0) { (this as any)[prop] = 0; return; }
-
     const steps = 40;
-    const interval = 1000 / steps;
     let current = 0;
     const timer = setInterval(() => {
       current += Math.ceil(target / steps);
@@ -156,7 +155,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         (this as any)[prop] = current;
       }
-    }, interval);
+    }, 1000 / steps);
     this.animTimers.set(prop, timer);
   }
 
@@ -172,8 +171,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   logout() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }

@@ -29,6 +29,12 @@
       <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
         <mat-icon>inventory_2</mat-icon> Estoque
       </a>
+      @if (canManageUsers) {
+        <div class="nav-label" style="margin-top:8px">Administração</div>
+        <a class="nav-item" routerLink="/usuarios" routerLinkActive="active">
+          <mat-icon>manage_accounts</mat-icon> Usuários
+        </a>
+      }
     </nav>
 
     <div class="sidebar-footer">
@@ -37,10 +43,12 @@
         {{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}
       </button>
       <div class="user-item" (click)="logout()">
-        <div class="user-avatar">A</div>
+        <div class="user-avatar">{{ userInitial }}</div>
         <div class="user-info">
-          <div class="user-name">Administração</div>
-          <div class="user-role">Sair do sistema</div>
+          <div class="user-name">{{ userName }}</div>
+          <div class="user-role">
+            <span class="sidebar-role-badge" [class]="userRoleCSS">{{ userRoleLabel }}</span>
+          </div>
         </div>
       </div>
     </div>
