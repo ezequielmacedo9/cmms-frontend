@@ -1,0 +1,43 @@
+{
+  "name": "CMMS Industrial Suite",
+  "short_name": "CMMS",
+  "description": "Sistema de Gerenciamento de Manutenção Industrial",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a18",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "Painel de controle"
+    },
+    {
+      "name": "Manutenções",
+      "url": "/manutencoes",
+      "description": "Ordens de serviço"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}
