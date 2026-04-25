@@ -1,4 +1,4 @@
-<div class="shell">
+<div class="shell" [class.light]="!theme.isDark()">
 
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -25,7 +25,9 @@
       </a>
       <a class="nav-item" routerLink="/manutencoes" routerLinkActive="active">
         <mat-icon>build</mat-icon> Manutenções
-        <span class="nav-badge" *ngIf="totalManutencoes > 0">{{ totalManutencoes > 99 ? '99+' : totalManutencoes }}</span>
+        @if (!statsLoading && (stats?.totalManutencoes ?? 0) > 0) {
+          <span class="nav-badge">{{ (stats?.totalManutencoes ?? 0) > 99 ? '99+' : stats?.totalManutencoes }}</span>
+        }
       </a>
       <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
         <mat-icon>inventory_2</mat-icon> Estoque
@@ -33,6 +35,10 @@
     </nav>
 
     <div class="sidebar-footer">
+      <button class="theme-toggle" (click)="theme.toggle()" [title]="theme.isDark() ? 'Modo claro' : 'Modo escuro'">
+        <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        {{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}
+      </button>
       <div class="user-item" (click)="logout()">
         <div class="user-avatar">A</div>
         <div class="user-info">
@@ -48,13 +54,19 @@
     <header class="topbar">
       <span class="topbar-title">Painel de Controle</span>
       <div class="topbar-right">
+        @if (!statsLoading && (stats?.manutencoesVencidas ?? 0) > 0) {
+          <span class="alert-badge">
+            <mat-icon style="font-size:13px;width:13px;height:13px">warning</mat-icon>
+            {{ stats?.manutencoesVencidas }} prev. vencida{{ (stats?.manutencoesVencidas ?? 0) !== 1 ? 's' : '' }}
+          </span>
+        }
         <span class="live"><span class="live-dot"></span>Ao vivo</span>
       </div>
     </header>
 
     <div class="content">
       <div class="page-header">
-        <div class="greeting">{{ greeting }}</div>
+        <div class="greeting">{{ greeting }} 👋</div>
         <div class="greeting-sub">Aqui está o resumo operacional de hoje</div>
       </div>
 
@@ -63,42 +75,90 @@
         <div class="kpi" routerLink="/maquinas" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
           <div class="kpi-label">Máquinas</div>
           <div class="kpi-value">
-            <span *ngIf="!loading">{{ displayMaquinas }}</span>
-            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
+            @if (!loading) { <span>{{ displayMaquinas }}</span> }
+            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
           </div>
-          <div class="kpi-sub" *ngIf="!loading">Total de equipamentos</div>
-          <div class="kpi-trend up" *ngIf="!loading">↗ Em operação</div>
+          @if (!loading) {
+            <div class="kpi-sub">{{ stats?.maquinasAtivas ?? 0 }} ativas · {{ stats?.maquinasInativas ?? 0 }} inativas</div>
+            <div class="kpi-trend up">↗ {{ stats?.maquinasAtivas ?? 0 }} em operação</div>
+          }
         </div>
 
         <div class="kpi" routerLink="/manutencoes" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
           <div class="kpi-label">Manutenções</div>
           <div class="kpi-value">
-            <span *ngIf="!loading">{{ displayManutencoes }}</span>
-            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
+            @if (!loading) { <span>{{ displayManutencoes }}</span> }
+            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
           </div>
-          <div class="kpi-sub" *ngIf="!loading">Ordens registradas</div>
-          <div class="kpi-trend up" *ngIf="!loading">↗ Histórico</div>
+          @if (!loading) {
+            <div class="kpi-sub">{{ stats?.manutencoesPreventivas ?? 0 }} prev · {{ stats?.manutencoesCorretivas ?? 0 }} corr</div>
+            <div class="kpi-trend up">↗ Histórico completo</div>
+          }
         </div>
 
         <div class="kpi" routerLink="/estoque" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
           <div class="kpi-label">Estoque</div>
           <div class="kpi-value">
-            <span *ngIf="!loading">{{ displayPecas }}</span>
-            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
+            @if (!loading) { <span>{{ displayPecas }}</span> }
+            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
           </div>
-          <div class="kpi-sub" *ngIf="!loading">Peças disponíveis</div>
-          <div class="kpi-trend up" *ngIf="!loading">↗ Inventário ativo</div>
+          @if (!loading) {
+            <div class="kpi-sub">Peças disponíveis</div>
+            <div class="kpi-trend up">↗ Inventário ativo</div>
+          }
         </div>
 
         <div class="kpi" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
           <div class="kpi-label">Prev. Vencendo</div>
           <div class="kpi-value">
-            <span *ngIf="!loading">{{ proximasManutencoes.length }}</span>
-            <div *ngIf="loading" class="sk" style="width:60px;height:44px;border-radius:6px"></div>
+            @if (!loading) { <span>{{ displayVencidas }}</span> }
+            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
           </div>
-          <div class="kpi-sub" *ngIf="!loading">Nos próximos 7 dias</div>
-          <div class="kpi-trend" [class.warn]="proximasManutencoes.length > 0" [class.up]="proximasManutencoes.length === 0" *ngIf="!loading">
-            {{ proximasManutencoes.length === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
+          @if (!loading) {
+            <div class="kpi-sub">Manutenções atrasadas</div>
+            <div class="kpi-trend" [class.warn]="displayVencidas > 0" [class.up]="displayVencidas === 0">
+              {{ displayVencidas === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Métricas enterprise: Disponibilidade + MTBF -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-icon">📊</div>
+          <div class="metric-body">
+            <div class="metric-label">Disponibilidade</div>
+            @if (!statsLoading) {
+              <div class="metric-value">{{ stats?.disponibilidade ?? 0 | number:'1.1-1' }}%</div>
+              <div class="metric-bar"><div class="metric-bar-fill" [style.width.%]="stats?.disponibilidade ?? 0"></div></div>
+            } @else {
+              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
+            }
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">⏱</div>
+          <div class="metric-body">
+            <div class="metric-label">MTBF (dias)</div>
+            @if (!statsLoading) {
+              <div class="metric-value">{{ (stats?.mtbfDias ?? 0) > 0 ? (stats?.mtbfDias | number:'1.1-1') : '—' }}</div>
+              <div class="metric-sub">Tempo médio entre falhas corretivas</div>
+            } @else {
+              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
+            }
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🔧</div>
+          <div class="metric-body">
+            <div class="metric-label">Preventivas / Corretivas</div>
+            @if (!statsLoading) {
+              <div class="metric-value">{{ stats?.manutencoesPreventivas ?? 0 }} / {{ stats?.manutencoesCorretivas ?? 0 }}</div>
+              <div class="metric-sub">Razão de manutenção planejada</div>
+            } @else {
+              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
+            }
           </div>
         </div>
       </div>
@@ -151,31 +211,36 @@
         </div>
       </div>
 
-      <!-- Row 3: próximas manutenções + bar chart -->
+      <!-- Row 3: alertas vencidos + bar chart -->
       <div class="row-3">
         <div class="panel">
           <div class="panel-head">
-            <span class="panel-title">Próximas Manutenções</span>
-            <span class="panel-badge" [class.warn]="proximasManutencoes.length > 0">
-              {{ proximasManutencoes.length }} pendente{{ proximasManutencoes.length !== 1 ? 's' : '' }}
+            <span class="panel-title">Alertas de Manutenção Vencida</span>
+            <span class="panel-badge" [class.warn]="(stats?.alertasVencidos?.length ?? 0) > 0">
+              {{ stats?.alertasVencidos?.length ?? 0 }} alerta{{ (stats?.alertasVencidos?.length ?? 0) !== 1 ? 's' : '' }}
             </span>
           </div>
-          <div class="proxima-empty" *ngIf="proximasManutencoes.length === 0 && !loading">
-            <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
-            Nenhuma vencendo nos próximos 7 dias
-          </div>
-          <div class="proximas" *ngIf="proximasManutencoes.length > 0">
-            <div *ngFor="let p of proximasManutencoes" class="proxima-item">
-              <div class="proxima-dot" [class.red]="p.diasRestantes < 0" [class.warn]="p.diasRestantes >= 0 && p.urgente" [class.ok]="!p.urgente && p.diasRestantes >= 0"></div>
-              <div class="proxima-body">
-                <div class="proxima-name">{{ p.nome }}</div>
-                <div class="proxima-setor">{{ p.setor }}</div>
-              </div>
-              <span class="proxima-chip" [class.chip-red]="p.diasRestantes < 0" [class.chip-warn]="p.diasRestantes >= 0 && p.urgente" [class.chip-ok]="!p.urgente && p.diasRestantes >= 0">
-                {{ p.diasRestantes < 0 ? 'Vencida' : p.diasRestantes === 0 ? 'Hoje' : p.diasRestantes + 'd' }}
-              </span>
+          @if (!statsLoading && (stats?.alertasVencidos?.length ?? 0) === 0) {
+            <div class="proxima-empty">
+              <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
+              Nenhuma manutenção vencida
             </div>
-          </div>
+          }
+          @if ((stats?.alertasVencidos?.length ?? 0) > 0) {
+            <div class="proximas">
+              @for (a of stats!.alertasVencidos; track a.maquinaId) {
+                <div class="proxima-item">
+                  <div class="proxima-dot red"></div>
+                  <div class="proxima-body">
+                    <div class="proxima-name">{{ a.maquinaNome }}</div>
+                    <div class="proxima-setor">{{ a.setor }}</div>
+                  </div>
+                  <span class="prio-badge" [class]="'prio-' + (a.prioridade | lowercase)">{{ prioridadeLabel(a.prioridade) }}</span>
+                  <span class="proxima-chip chip-red">{{ a.diasVencido }}d atraso</span>
+                </div>
+              }
+            </div>
+          }
         </div>
 
         <div class="panel">
@@ -183,13 +248,17 @@
             <span class="panel-title">Manutenções por Mês</span>
             <span class="panel-badge">últimos 6 meses</span>
           </div>
-          <div class="bar-chart" *ngIf="barsUltimos6Meses.length > 0">
-            <div *ngFor="let b of barsUltimos6Meses" class="bc">
-              <span class="bc-count">{{ b.count }}</span>
-              <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
-              <span class="bc-label">{{ b.mes }}</span>
+          @if (barsUltimos6Meses.length > 0) {
+            <div class="bar-chart">
+              @for (b of barsUltimos6Meses; track b.mes) {
+                <div class="bc">
+                  <span class="bc-count">{{ b.count }}</span>
+                  <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
+                  <span class="bc-label">{{ b.mes }}</span>
+                </div>
+              }
             </div>
-          </div>
+          }
         </div>
       </div>
 

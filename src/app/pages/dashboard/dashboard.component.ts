@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { DashboardService, DashboardStats } from '../../services/dashboard.service';
+import { ThemeService } from '../../services/theme.service';
 import { MaquinaService } from '../../services/maquina.service';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { PecaService } from '../../services/peca.service';
@@ -25,25 +27,30 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('bar4') bar4!: ElementRef;
 
   private router = inject(Router);
+  private dashboardService = inject(DashboardService);
   private maquinaService = inject(MaquinaService);
   private manutencaoService = inject(ManutencaoService);
   private pecaService = inject(PecaService);
+  readonly theme = inject(ThemeService);
+
   private pollingInterval: ReturnType<typeof setInterval> | null = null;
   private animTimers: Map<string, ReturnType<typeof setInterval>> = new Map();
+
+  stats: DashboardStats | null = null;
 
   totalMaquinas = 0;
   totalManutencoes = 0;
   totalPecas = 0;
-  totalPendencias = 0;
 
   displayMaquinas = 0;
   displayManutencoes = 0;
   displayPecas = 0;
-  displayPendencias = 0;
+  displayVencidas = 0;
 
   proximasManutencoes: { nome: string; setor: string; diasRestantes: number; urgente: boolean }[] = [];
   barsUltimos6Meses: { mes: string; count: number; pct: number }[] = [];
   loading = true;
+  statsLoading = true;
 
   ngOnInit() {
     this.carregarDados();
@@ -66,25 +73,31 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   carregarDados() {
-    let loaded = 0;
-    const checkDone = () => { if (++loaded >= 3) this.loading = false; };
+    this.dashboardService.getStats().pipe(catchError(() => of(null))).subscribe(s => {
+      if (s) {
+        this.stats = s;
+        this.animateNumber('displayMaquinas', s.totalMaquinas);
+        this.animateNumber('displayManutencoes', s.totalManutencoes);
+        this.animateNumber('displayPecas', s.totalPecas);
+        this.animateNumber('displayVencidas', s.manutencoesVencidas);
+        this.barsUltimos6Meses = s.ultimosSeisMeses.map(m => ({
+          mes: m.label,
+          count: m.total,
+          pct: 0
+        }));
+        const maxCount = Math.max(...s.ultimosSeisMeses.map(m => m.total), 1);
+        this.barsUltimos6Meses = s.ultimosSeisMeses.map(m => ({
+          mes: m.label,
+          count: m.total,
+          pct: Math.round((m.total / maxCount) * 100)
+        }));
+        this.statsLoading = false;
+      }
+      this.loading = false;
+    });
 
     this.maquinaService.listar().pipe(catchError(() => of([]))).subscribe(m => {
-      this.totalMaquinas = m.length;
-      this.animateNumber('displayMaquinas', m.length);
       this.computeProximas(m);
-      checkDone();
-    });
-    this.manutencaoService.listar().pipe(catchError(() => of([]))).subscribe(m => {
-      this.totalManutencoes = m.length;
-      this.animateNumber('displayManutencoes', m.length);
-      this.computeBarChart(m);
-      checkDone();
-    });
-    this.pecaService.listar().pipe(catchError(() => of([]))).subscribe(p => {
-      this.totalPecas = p.length;
-      this.animateNumber('displayPecas', p.length);
-      checkDone();
     });
   }
 
@@ -111,37 +124,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       .slice(0, 5);
   }
 
-  private computeBarChart(manutencoes: Manutencao[]) {
-    const nomeMeses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    const hoje = new Date();
-    const keys: string[] = [];
-    const labels: string[] = [];
-
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-      keys.push(`${d.getFullYear()}-${d.getMonth()}`);
-      labels.push(`${nomeMeses[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
-    }
-
-    const counts: { [k: string]: number } = {};
-    keys.forEach(k => counts[k] = 0);
-
-    manutencoes.forEach(m => {
-      if (m.dataManutencao) {
-        const d = new Date(m.dataManutencao);
-        const k = `${d.getFullYear()}-${d.getMonth()}`;
-        if (k in counts) counts[k]++;
-      }
-    });
-
-    const maxVal = Math.max(...Object.values(counts), 1);
-    this.barsUltimos6Meses = keys.map((k, i) => ({
-      mes: labels[i],
-      count: counts[k],
-      pct: Math.round((counts[k] / maxVal) * 100)
-    }));
-  }
-
   onKpiTilt(event: MouseEvent) {
     const card = event.currentTarget as HTMLElement;
     const rect = card.getBoundingClientRect();
@@ -153,18 +135,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onKpiLeave(event: MouseEvent) {
-    const card = event.currentTarget as HTMLElement;
-    card.style.transform = '';
+    (event.currentTarget as HTMLElement).style.transform = '';
   }
 
-  private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayPendencias', target: number) {
+  private animateNumber(prop: 'displayMaquinas' | 'displayManutencoes' | 'displayPecas' | 'displayVencidas', target: number) {
     const existing = this.animTimers.get(prop);
     if (existing) clearInterval(existing);
 
-    if (target === 0) {
-      (this as any)[prop] = 0;
-      return;
-    }
+    if (target === 0) { (this as any)[prop] = 0; return; }
 
     const steps = 40;
     const interval = 1000 / steps;
@@ -182,11 +160,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.animTimers.set(prop, timer);
   }
 
+  prioridadeLabel(p?: string): string {
+    return ({ CRITICA: 'Crítica', ALTA: 'Alta', MEDIA: 'Média', BAIXA: 'Baixa' } as any)[p ?? 'MEDIA'] ?? 'Média';
+  }
+
   get greeting(): string {
     const h = new Date().getHours();
-    if (h < 12) return 'Bom dia 👋';
-    if (h < 18) return 'Boa tarde 👋';
-    return 'Boa noite 👋';
+    if (h < 12) return 'Bom dia';
+    if (h < 18) return 'Boa tarde';
+    return 'Boa noite';
   }
 
   logout() {
