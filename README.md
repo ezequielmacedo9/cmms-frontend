@@ -18,13 +18,13 @@
 <br/>
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)](https://github.com/ezequielmacedo9/cmms-frontend/releases)
-[![Deploy](https://img.shields.io/badge/deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://cmms-frontend-oagroceo8-ezequielmacedo9s-projects.vercel.app)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://cmms-frontend-ezequielmacedo9s-projects.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange?style=for-the-badge)](https://github.com/ezequielmacedo9/cmms-frontend/issues)
 
 <br/>
 
-[![🚀 Acessar Sistema](https://img.shields.io/badge/🚀%20Acessar%20Sistema-Live%20Demo-brightgreen?style=for-the-badge)](https://cmms-frontend-oagroceo8-ezequielmacedo9s-projects.vercel.app)
+[![🚀 Acessar Sistema](https://img.shields.io/badge/🚀%20Acessar%20Sistema-Live%20Demo-brightgreen?style=for-the-badge)](https://cmms-frontend-ezequielmacedo9s-projects.vercel.app)
 [![📖 API Docs](https://img.shields.io/badge/📖%20API%20Docs-Swagger%20UI-blue?style=for-the-badge)](https://cmms-backend-8y7h.onrender.com/swagger-ui.html)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Ezequiel%20Macedo-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ezequielmacedo444)
 
@@ -50,7 +50,7 @@ Indústrias ainda controlam manutenção em planilhas Excel. Uma parada não pla
 
 | Recurso | URL |
 |:---|:---|
-| 🖥️ **Frontend (Produção)** | https://cmms-frontend-oagroceo8-ezequielmacedo9s-projects.vercel.app |
+| 🖥️ **Frontend (Produção)** | https://cmms-frontend-ezequielmacedo9s-projects.vercel.app |
 | 🔧 **Backend API** | https://cmms-backend-8y7h.onrender.com |
 | 📖 **Swagger UI** | https://cmms-backend-8y7h.onrender.com/swagger-ui.html |
 | 📧 **Login demo** | `admin@email.com` / `123456` |
