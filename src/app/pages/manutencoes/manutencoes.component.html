@@ -105,6 +105,7 @@
           <tr>
             <th>Máquina</th>
             <th>Tipo</th>
+            <th>Prioridade</th>
             <th>Técnico</th>
             <th>Data</th>
             <th></th>
@@ -129,6 +130,15 @@
                   [class.badge-red]="m.tipo === 'CORRETIVA'"
                   [class.badge-violet]="m.tipo === 'PREDITIVA'">
                   {{ m.tipo }}
+                </span>
+              </td>
+              <td>
+                <span class="prio-badge"
+                  [class.prio-critica]="m.prioridade === 'CRITICA'"
+                  [class.prio-alta]="m.prioridade === 'ALTA'"
+                  [class.prio-media]="!m.prioridade || m.prioridade === 'MEDIA'"
+                  [class.prio-baixa]="m.prioridade === 'BAIXA'">
+                  {{ m.prioridade === 'CRITICA' ? 'Crítica' : m.prioridade === 'ALTA' ? 'Alta' : m.prioridade === 'BAIXA' ? 'Baixa' : 'Média' }}
                 </span>
               </td>
               <td>{{ m.tecnico }}</td>
