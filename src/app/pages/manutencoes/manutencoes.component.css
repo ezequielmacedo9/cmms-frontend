@@ -1,6 +1,12 @@
 .page-container { animation: pageFadeIn 0.2s ease; }
 @keyframes pageFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
 
+.prio-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.prio-critica { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+.prio-alta    { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+.prio-media   { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+.prio-baixa   { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+
 .page-hero { padding: 28px 32px 20px; border-bottom: 1px solid rgba(139,92,246,0.1); }
 .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 0.01em; margin-bottom: 14px; }
 .breadcrumb mat-icon { font-size: 13px; width: 13px; height: 13px; }

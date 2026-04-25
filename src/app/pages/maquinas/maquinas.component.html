@@ -148,6 +148,7 @@
             <th>Equipamento</th>
             <th>Setor</th>
             <th>Status</th>
+            <th>Prioridade</th>
             <th>Intervalo</th>
             <th></th>
           </tr>
@@ -163,8 +164,11 @@
             </tr>
           </ng-container>
           <ng-container *ngIf="!carregando">
-            <tr *ngFor="let m of pagedMaquinas; trackBy: trackById" [class.row-new]="m.id && m.id < 0">
-              <td>{{ m.nome }}</td>
+            <tr *ngFor="let m of pagedMaquinas; trackBy: trackById" [class.row-new]="m.id && m.id < 0" [class.row-vencida]="m.manutencaoVencida">
+              <td>
+                <div class="cell-name">{{ m.nome }}</div>
+                <span *ngIf="m.manutencaoVencida" class="overdue-chip">⚠ Prev. Vencida</span>
+              </td>
               <td>{{ m.setor }}</td>
               <td>
                 <span class="badge"
@@ -172,6 +176,15 @@
                   [class.badge-red]="m.status === 'INATIVO'"
                   [class.badge-amber]="m.status === 'EM_MANUTENCAO'">
                   {{ m.status === 'EM_MANUTENCAO' ? 'Em Manutenção' : m.status === 'ATIVO' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td>
+                <span class="prio-badge"
+                  [class.prio-critica]="m.prioridade === 'CRITICA'"
+                  [class.prio-alta]="m.prioridade === 'ALTA'"
+                  [class.prio-media]="!m.prioridade || m.prioridade === 'MEDIA'"
+                  [class.prio-baixa]="m.prioridade === 'BAIXA'">
+                  {{ m.prioridade === 'CRITICA' ? 'Crítica' : m.prioridade === 'ALTA' ? 'Alta' : m.prioridade === 'BAIXA' ? 'Baixa' : 'Média' }}
                 </span>
               </td>
               <td>{{ m.intervaloPreventivaDias ? m.intervaloPreventivaDias + 'd' : '—' }}</td>
