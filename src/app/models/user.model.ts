@@ -12,6 +12,13 @@ export interface UserProfile {
   role: UserRole;
   ativo: boolean;
   dataCriacao?: string;
+  telefone?: string;
+  cargo?: string;
+  departamento?: string;
+  avatarBase64?: string;
+  totpEnabled?: boolean;
+  googleId?: string;
+  ultimoLogin?: string;
 }
 
 export const ROLE_LABELS: Record<string, string> = {

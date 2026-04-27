@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,13 +12,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../services/notification.service';
 import { WakeupService } from '../../services/wakeup.service';
 
+declare const google: any;
+
 type ServerStatus = 'checking' | 'online' | 'offline';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatCardModule, MatFormFieldModule,
+    CommonModule, FormsModule, RouterModule, MatCardModule, MatFormFieldModule,
     MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
@@ -33,6 +35,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   email = '';
   senha = '';
   carregando = false;
+  googleLoading = false;
   serverStatus: ServerStatus = 'checking';
   errorMessage = '';
 
@@ -48,6 +51,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initParticles();
+    this.initGoogleButton();
     const card = document.querySelector('.card') as HTMLElement;
     if (!card) return;
     card.addEventListener('mousemove', (e: MouseEvent) => {
@@ -92,6 +96,29 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       this.checkServer();
     }, this.RETRY_DELAY_MS);
     this.retryTimeouts.push(id);
+  }
+
+  private initGoogleButton() {
+    if (typeof google === 'undefined') return;
+    try {
+      google.accounts.id.initialize({
+        client_id: '<<REPLACE_WITH_GOOGLE_CLIENT_ID>>',
+        callback: (resp: any) => this.handleGoogleCredential(resp.credential)
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('google-btn'),
+        { theme: 'filled_black', size: 'large', width: 320, text: 'signin_with' }
+      );
+    } catch (_) {}
+  }
+
+  handleGoogleCredential(idToken: string) {
+    this.googleLoading = true;
+    this.errorMessage = '';
+    this.authService.loginWithGoogle(idToken).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: () => { this.errorMessage = 'Falha no login com Google. Tente novamente.'; this.googleLoading = false; }
+    });
   }
 
   initParticles() {

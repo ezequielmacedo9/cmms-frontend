@@ -1,0 +1,130 @@
+<div class="settings-page">
+  <div class="page-header">
+    <div class="page-title">Configurações</div>
+    <div class="page-sub">Personalize o comportamento do sistema</div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><div class="spinner"></div></div>
+  } @else {
+  <div class="settings-layout">
+    <!-- Sidebar -->
+    <div class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab === 'geral'" (click)="setTab('geral')">
+        <mat-icon>business</mat-icon> Geral
+      </button>
+      <button class="nav-item" [class.active]="activeTab === 'seguranca'" (click)="setTab('seguranca')">
+        <mat-icon>security</mat-icon> Segurança
+      </button>
+      <button class="nav-item" [class.active]="activeTab === 'notificacoes'" (click)="setTab('notificacoes')">
+        <mat-icon>notifications</mat-icon> Notificações
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="content-panel">
+
+      @if (activeTab === 'geral') {
+        <div class="section">
+          <div class="section-title"><mat-icon>business</mat-icon> Informações da Empresa</div>
+          <div class="form-group">
+            <label>Nome da empresa</label>
+            <input type="text" [value]="get('empresa.nome')" (input)="set('empresa.nome', $any($event.target).value)" />
+          </div>
+          <div class="form-group">
+            <label>Descrição</label>
+            <input type="text" [value]="get('empresa.descricao')" (input)="set('empresa.descricao', $any($event.target).value)" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fuso horário</label>
+              <select [value]="get('empresa.timezone')" (change)="set('empresa.timezone', $any($event.target).value)">
+                <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+                <option value="America/Manaus">Manaus (UTC-4)</option>
+                <option value="America/Belem">Belém (UTC-3)</option>
+                <option value="America/Fortaleza">Fortaleza (UTC-3)</option>
+                <option value="America/Rio_Branco">Rio Branco (UTC-5)</option>
+                <option value="America/Noronha">Noronha (UTC-2)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Idioma</label>
+              <select [value]="get('empresa.idioma')" (change)="set('empresa.idioma', $any($event.target).value)">
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">English (US)</option>
+                <option value="es-ES">Español</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'seguranca') {
+        <div class="section">
+          <div class="section-title"><mat-icon>security</mat-icon> Política de Senha</div>
+          <div class="form-group">
+            <label>Comprimento mínimo da senha</label>
+            <input type="number" [value]="get('seguranca.senha.minLength')" min="6" max="32"
+                   (input)="set('seguranca.senha.minLength', $any($event.target).value)" />
+          </div>
+          <div class="section-title" style="margin-top:24px"><mat-icon>lock_clock</mat-icon> Bloqueio de Conta</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tentativas antes do bloqueio</label>
+              <input type="number" [value]="get('seguranca.lockout.tentativas')" min="3" max="20"
+                     (input)="set('seguranca.lockout.tentativas', $any($event.target).value)" />
+            </div>
+            <div class="form-group">
+              <label>Duração do bloqueio (minutos)</label>
+              <input type="number" [value]="get('seguranca.lockout.minutos')" min="5" max="1440"
+                     (input)="set('seguranca.lockout.minutos', $any($event.target).value)" />
+            </div>
+          </div>
+          <div class="section-title" style="margin-top:24px"><mat-icon>verified_user</mat-icon> Autenticação 2 Fatores</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Exigir 2FA para todos os usuários</div>
+              <div class="toggle-sub">Usuários precisarão configurar 2FA no próximo login</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [checked]="get('seguranca.2fa.obrigatorio') === 'true'"
+                     (change)="set('seguranca.2fa.obrigatorio', $any($event.target).checked ? 'true' : 'false')" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      }
+
+      @if (activeTab === 'notificacoes') {
+        <div class="section">
+          <div class="section-title"><mat-icon>mail</mat-icon> Notificações por Email</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Ativar notificações por email</div>
+              <div class="toggle-sub">Enviar alertas de manutenção vencida por email</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [checked]="get('notificacao.email.habilitado') === 'true'"
+                     (change)="set('notificacao.email.habilitado', $any($event.target).checked ? 'true' : 'false')" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="form-group" style="margin-top:16px">
+            <label>Aviso prévio de manutenção preventiva (dias)</label>
+            <input type="number" [value]="get('notificacao.manutencao.diasAviso')" min="1" max="90"
+                   (input)="set('notificacao.manutencao.diasAviso', $any($event.target).value)" />
+            <div class="hint">Você será notificado X dias antes da data prevista</div>
+          </div>
+        </div>
+      }
+
+      <div class="save-bar">
+        <button class="btn-primary" (click)="save()" [disabled]="saving">
+          @if (saving) { <div class="spinner-sm"></div> }
+          {{ saving ? 'Salvando...' : 'Salvar Configurações' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

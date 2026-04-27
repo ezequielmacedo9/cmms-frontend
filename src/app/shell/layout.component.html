@@ -26,10 +26,27 @@
       <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
         <mat-icon>inventory_2</mat-icon> Estoque
       </a>
-      @if (canManageUsers) {
+      @if (canViewReports) {
+        <a class="nav-item" routerLink="/relatorios" routerLinkActive="active">
+          <mat-icon>assessment</mat-icon> Relatórios
+        </a>
+      }
+      @if (canManageUsers || canViewAudit || canViewSettings) {
         <div class="nav-label" style="margin-top:8px">Administração</div>
+      }
+      @if (canManageUsers) {
         <a class="nav-item" routerLink="/usuarios" routerLinkActive="active">
           <mat-icon>manage_accounts</mat-icon> Usuários
+        </a>
+      }
+      @if (canViewSettings) {
+        <a class="nav-item" routerLink="/configuracoes" routerLinkActive="active">
+          <mat-icon>settings</mat-icon> Configurações
+        </a>
+      }
+      @if (canViewAudit) {
+        <a class="nav-item" routerLink="/auditoria" routerLinkActive="active">
+          <mat-icon>manage_search</mat-icon> Auditoria
         </a>
       }
     </nav>
@@ -39,7 +56,7 @@
         <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         {{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}
       </button>
-      <div class="user-item" (click)="logout()">
+      <a class="user-item" routerLink="/perfil">
         <div class="user-avatar">{{ userInitial }}</div>
         <div class="user-info">
           <div class="user-name">{{ userName }}</div>
@@ -47,7 +64,10 @@
             <span class="sidebar-role-badge" [class]="userRoleCSS">{{ userRoleLabel }}</span>
           </div>
         </div>
-      </div>
+      </a>
+      <button class="logout-btn" (click)="logout()" title="Sair">
+        <mat-icon>logout</mat-icon> Sair
+      </button>
     </div>
   </aside>
 

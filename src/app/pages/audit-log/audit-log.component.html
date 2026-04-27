@@ -1,0 +1,59 @@
+<div class="audit-page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Log de Auditoria</div>
+      <div class="page-sub">Registro completo de ações do sistema</div>
+    </div>
+    <div class="header-actions">
+      <div class="search-wrap">
+        <mat-icon>search</mat-icon>
+        <input type="text" [(ngModel)]="search" (input)="onSearch()" placeholder="Filtrar por email..." />
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><div class="spinner"></div></div>
+  } @else {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Usuário</th>
+            <th>Ação</th>
+            <th>Recurso</th>
+            <th>Detalhes</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of entries; track e.id) {
+            <tr>
+              <td class="ts">{{ e.timestamp | date:'dd/MM/yy HH:mm:ss' }}</td>
+              <td class="email">{{ e.userEmail }}</td>
+              <td><span class="badge" [class]="actionClass(e.acao)">{{ e.acao }}</span></td>
+              <td class="recurso">{{ e.recurso }}{{ e.recursoId ? ' #' + e.recursoId : '' }}</td>
+              <td class="detalhes">{{ e.detalhes }}</td>
+              <td class="ip">{{ e.ip }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="empty">Nenhum registro encontrado.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button (click)="goPage(page - 1)" [disabled]="page === 0">‹</button>
+        @for (p of pages; track p) {
+          <button [class.active]="p === page" (click)="goPage(p)">{{ p + 1 }}</button>
+        }
+        <button (click)="goPage(page + 1)" [disabled]="page >= totalPages - 1">›</button>
+      </div>
+    }
+
+    <div class="count-label">{{ total }} registro(s) no total</div>
+  }
+</div>
