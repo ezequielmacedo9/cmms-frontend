@@ -1,17 +1,12 @@
 import { Component, inject, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { DashboardService, DashboardStats } from '../../services/dashboard.service';
-import { ThemeService } from '../../services/theme.service';
-import { AuthService } from '../../services/auth.service';
 import { MaquinaService } from '../../services/maquina.service';
-import { ManutencaoService } from '../../services/manutencao.service';
-import { PecaService } from '../../services/peca.service';
 import { Maquina } from '../../models/maquina.model';
-import { ROLE_LABELS, ROLE_CSS } from '../../models/user.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,16 +22,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('bar3') bar3!: ElementRef;
   @ViewChild('bar4') bar4!: ElementRef;
 
-  private router           = inject(Router);
   private dashboardService = inject(DashboardService);
   private maquinaService   = inject(MaquinaService);
-  private manutencaoService= inject(ManutencaoService);
-  private pecaService      = inject(PecaService);
-  readonly theme           = inject(ThemeService);
-  readonly auth            = inject(AuthService);
-
-  readonly ROLE_LABELS = ROLE_LABELS;
-  readonly ROLE_CSS    = ROLE_CSS;
 
   private pollingInterval: ReturnType<typeof setInterval> | null = null;
   private animTimers: Map<string, ReturnType<typeof setInterval>> = new Map();
@@ -48,17 +35,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   displayPecas       = 0;
   displayVencidas    = 0;
 
-  proximasManutencoes: { nome: string; setor: string; diasRestantes: number; urgente: boolean }[] = [];
   barsUltimos6Meses: { mes: string; count: number; pct: number }[] = [];
   loading      = true;
   statsLoading = true;
-
-  get userName()  { return this.auth.getNome(); }
-  get userRole()  { return this.auth.getRole(); }
-  get userRoleLabel() { return this.userRole ? (ROLE_LABELS[this.userRole] ?? this.userRole) : ''; }
-  get userRoleCSS()   { return this.userRole ? (ROLE_CSS[this.userRole] ?? '') : ''; }
-  get userInitial()   { return this.userName.charAt(0).toUpperCase(); }
-  get canManageUsers(){ return this.auth.canManageUsers(); }
 
   ngOnInit() {
     this.carregarDados();
@@ -98,31 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.loading = false;
     });
 
-    this.maquinaService.listar().pipe(catchError(() => of([]))).subscribe(m => {
-      this.computeProximas(m);
-    });
-  }
-
-  private computeProximas(maquinas: Maquina[]) {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    this.proximasManutencoes = maquinas
-      .filter(m => m.intervaloPreventivaDias && m.intervaloPreventivaDias > 0)
-      .map(m => {
-        let diasRestantes: number;
-        if (m.dataUltimaManutencao) {
-          const ultima  = new Date(m.dataUltimaManutencao);
-          const proxima = new Date(ultima);
-          proxima.setDate(proxima.getDate() + m.intervaloPreventivaDias!);
-          diasRestantes = Math.ceil((proxima.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-        } else {
-          diasRestantes = -999;
-        }
-        return { nome: m.nome, setor: m.setor, diasRestantes, urgente: diasRestantes <= 3 };
-      })
-      .filter(m => m.diasRestantes <= 7)
-      .sort((a, b) => a.diasRestantes - b.diasRestantes)
-      .slice(0, 5);
+    this.maquinaService.listar().pipe(catchError(() => of([]))).subscribe();
   }
 
   onKpiTilt(event: MouseEvent) {
@@ -168,10 +123,5 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (h < 12) return 'Bom dia';
     if (h < 18) return 'Boa tarde';
     return 'Boa noite';
-  }
-
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
   }
 }
