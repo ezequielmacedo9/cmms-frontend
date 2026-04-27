@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#3B0764" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Head — hexagonal -->
+  <polygon points="50,7 81,25 81,62 65,86 35,86 19,62 19,25" fill="url(#g)"/>
+
+  <!-- Left ear -->
+  <polygon points="19,25 10,5 34,21" fill="#5B21B6"/>
+  <!-- Right ear -->
+  <polygon points="81,25 90,5 66,21" fill="#5B21B6"/>
+  <!-- Left inner ear -->
+  <polygon points="19,25 14,11 30,22" fill="#7C3AED" opacity="0.5"/>
+  <!-- Right inner ear -->
+  <polygon points="81,25 86,11 70,22" fill="#7C3AED" opacity="0.5"/>
+
+  <!-- Face center depth -->
+  <polygon points="50,24 70,38 70,62 50,74 30,62 30,38" fill="url(#g2)"/>
+
+  <!-- Left eye (diamond) -->
+  <polygon points="36,47 42,39 48,47 42,55" fill="white"/>
+  <!-- Right eye (diamond) -->
+  <polygon points="64,47 58,39 52,47 58,55" fill="white"/>
+  <!-- Left pupil -->
+  <circle cx="42" cy="47" r="3.2" fill="#C4B5FD"/>
+  <!-- Right pupil -->
+  <circle cx="58" cy="47" r="3.2" fill="#C4B5FD"/>
+  <!-- Left eye glint -->
+  <circle cx="40.5" cy="45" r="1" fill="white" opacity="0.9"/>
+  <!-- Right eye glint -->
+  <circle cx="56.5" cy="45" r="1" fill="white" opacity="0.9"/>
+
+  <!-- Muzzle -->
+  <polygon points="50,61 39,78 61,78" fill="#2E1065" opacity="0.85"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="66" rx="5.5" ry="4" fill="#1E1B4B"/>
+  <!-- Nose highlight -->
+  <ellipse cx="48.5" cy="64.5" rx="1.5" ry="1" fill="rgba(196,181,253,0.3)"/>
+  <!-- Chin -->
+  <polygon points="39,78 61,78 50,86" fill="#4C1D95" opacity="0.45"/>
+</svg>

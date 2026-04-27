@@ -1,273 +1,206 @@
-<div class="shell" [class.light]="!theme.isDark()">
+<div class="content">
+  <div class="page-header">
+    <div class="greeting">{{ greeting }} 👋</div>
+    <div class="greeting-sub">Aqui está o resumo operacional de hoje</div>
+    @if (!statsLoading && (stats?.manutencoesVencidas ?? 0) > 0) {
+      <span class="alert-badge">
+        <mat-icon style="font-size:13px;width:13px;height:13px">warning</mat-icon>
+        {{ stats?.manutencoesVencidas }} prev. vencida{{ (stats?.manutencoesVencidas ?? 0) !== 1 ? 's' : '' }}
+      </span>
+    }
+  </div>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">
-        <img src="/lobo.jpeg" alt="CMMS Logo" class="logo-wolf" />
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi" routerLink="/maquinas" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+      <div class="kpi-label">Máquinas</div>
+      <div class="kpi-value">
+        @if (!loading) { <span>{{ displayMaquinas }}</span> }
+        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
       </div>
-      <div>
-        <div class="logo-name">CMMS</div>
-        <div class="logo-sub">Industrial Suite</div>
-      </div>
-    </div>
-
-    <nav class="nav">
-      <div class="nav-label">Menu</div>
-      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
-        <mat-icon>dashboard</mat-icon> Dashboard
-      </a>
-      <a class="nav-item" routerLink="/maquinas" routerLinkActive="active">
-        <mat-icon>precision_manufacturing</mat-icon> Máquinas
-      </a>
-      <a class="nav-item" routerLink="/manutencoes" routerLinkActive="active">
-        <mat-icon>build</mat-icon> Manutenções
-        @if (!statsLoading && (stats?.totalManutencoes ?? 0) > 0) {
-          <span class="nav-badge">{{ (stats?.totalManutencoes ?? 0) > 99 ? '99+' : stats?.totalManutencoes }}</span>
-        }
-      </a>
-      <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
-        <mat-icon>inventory_2</mat-icon> Estoque
-      </a>
-      @if (canManageUsers) {
-        <div class="nav-label" style="margin-top:8px">Administração</div>
-        <a class="nav-item" routerLink="/usuarios" routerLinkActive="active">
-          <mat-icon>manage_accounts</mat-icon> Usuários
-        </a>
+      @if (!loading) {
+        <div class="kpi-sub">{{ stats?.maquinasAtivas ?? 0 }} ativas · {{ stats?.maquinasInativas ?? 0 }} inativas</div>
+        <div class="kpi-trend up">↗ {{ stats?.maquinasAtivas ?? 0 }} em operação</div>
       }
-    </nav>
-
-    <div class="sidebar-footer">
-      <button class="theme-toggle" (click)="theme.toggle()" [title]="theme.isDark() ? 'Modo claro' : 'Modo escuro'">
-        <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        {{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}
-      </button>
-      <div class="user-item" (click)="logout()">
-        <div class="user-avatar">{{ userInitial }}</div>
-        <div class="user-info">
-          <div class="user-name">{{ userName }}</div>
-          <div class="user-role">
-            <span class="sidebar-role-badge" [class]="userRoleCSS">{{ userRoleLabel }}</span>
-          </div>
-        </div>
-      </div>
     </div>
-  </aside>
 
-  <!-- Main -->
-  <main class="main">
-    <header class="topbar">
-      <span class="topbar-title">Painel de Controle</span>
-      <div class="topbar-right">
-        @if (!statsLoading && (stats?.manutencoesVencidas ?? 0) > 0) {
-          <span class="alert-badge">
-            <mat-icon style="font-size:13px;width:13px;height:13px">warning</mat-icon>
-            {{ stats?.manutencoesVencidas }} prev. vencida{{ (stats?.manutencoesVencidas ?? 0) !== 1 ? 's' : '' }}
-          </span>
+    <div class="kpi" routerLink="/manutencoes" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+      <div class="kpi-label">Manutenções</div>
+      <div class="kpi-value">
+        @if (!loading) { <span>{{ displayManutencoes }}</span> }
+        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
+      </div>
+      @if (!loading) {
+        <div class="kpi-sub">{{ stats?.manutencoesPreventivas ?? 0 }} prev · {{ stats?.manutencoesCorretivas ?? 0 }} corr</div>
+        <div class="kpi-trend up">↗ Histórico completo</div>
+      }
+    </div>
+
+    <div class="kpi" routerLink="/estoque" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+      <div class="kpi-label">Estoque</div>
+      <div class="kpi-value">
+        @if (!loading) { <span>{{ displayPecas }}</span> }
+        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
+      </div>
+      @if (!loading) {
+        <div class="kpi-sub">Peças disponíveis</div>
+        <div class="kpi-trend up">↗ Inventário ativo</div>
+      }
+    </div>
+
+    <div class="kpi" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
+      <div class="kpi-label">Prev. Vencendo</div>
+      <div class="kpi-value">
+        @if (!loading) { <span>{{ displayVencidas }}</span> }
+        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
+      </div>
+      @if (!loading) {
+        <div class="kpi-sub">Manutenções atrasadas</div>
+        <div class="kpi-trend" [class.warn]="displayVencidas > 0" [class.up]="displayVencidas === 0">
+          {{ displayVencidas === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Métricas enterprise: Disponibilidade + MTBF -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-icon">📊</div>
+      <div class="metric-body">
+        <div class="metric-label">Disponibilidade</div>
+        @if (!statsLoading) {
+          <div class="metric-value">{{ stats?.disponibilidade ?? 0 | number:'1.1-1' }}%</div>
+          <div class="metric-bar"><div class="metric-bar-fill" [style.width.%]="stats?.disponibilidade ?? 0"></div></div>
+        } @else {
+          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
         }
-        <span class="live"><span class="live-dot"></span>Ao vivo</span>
       </div>
-    </header>
-
-    <div class="content">
-      <div class="page-header">
-        <div class="greeting">{{ greeting }} 👋</div>
-        <div class="greeting-sub">Aqui está o resumo operacional de hoje</div>
-      </div>
-
-      <!-- KPIs -->
-      <div class="kpi-grid">
-        <div class="kpi" routerLink="/maquinas" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-label">Máquinas</div>
-          <div class="kpi-value">
-            @if (!loading) { <span>{{ displayMaquinas }}</span> }
-            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-          </div>
-          @if (!loading) {
-            <div class="kpi-sub">{{ stats?.maquinasAtivas ?? 0 }} ativas · {{ stats?.maquinasInativas ?? 0 }} inativas</div>
-            <div class="kpi-trend up">↗ {{ stats?.maquinasAtivas ?? 0 }} em operação</div>
-          }
-        </div>
-
-        <div class="kpi" routerLink="/manutencoes" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-label">Manutenções</div>
-          <div class="kpi-value">
-            @if (!loading) { <span>{{ displayManutencoes }}</span> }
-            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-          </div>
-          @if (!loading) {
-            <div class="kpi-sub">{{ stats?.manutencoesPreventivas ?? 0 }} prev · {{ stats?.manutencoesCorretivas ?? 0 }} corr</div>
-            <div class="kpi-trend up">↗ Histórico completo</div>
-          }
-        </div>
-
-        <div class="kpi" routerLink="/estoque" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-label">Estoque</div>
-          <div class="kpi-value">
-            @if (!loading) { <span>{{ displayPecas }}</span> }
-            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-          </div>
-          @if (!loading) {
-            <div class="kpi-sub">Peças disponíveis</div>
-            <div class="kpi-trend up">↗ Inventário ativo</div>
-          }
-        </div>
-
-        <div class="kpi" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-          <div class="kpi-label">Prev. Vencendo</div>
-          <div class="kpi-value">
-            @if (!loading) { <span>{{ displayVencidas }}</span> }
-            @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-          </div>
-          @if (!loading) {
-            <div class="kpi-sub">Manutenções atrasadas</div>
-            <div class="kpi-trend" [class.warn]="displayVencidas > 0" [class.up]="displayVencidas === 0">
-              {{ displayVencidas === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Métricas enterprise: Disponibilidade + MTBF -->
-      <div class="metrics-row">
-        <div class="metric-card">
-          <div class="metric-icon">📊</div>
-          <div class="metric-body">
-            <div class="metric-label">Disponibilidade</div>
-            @if (!statsLoading) {
-              <div class="metric-value">{{ stats?.disponibilidade ?? 0 | number:'1.1-1' }}%</div>
-              <div class="metric-bar"><div class="metric-bar-fill" [style.width.%]="stats?.disponibilidade ?? 0"></div></div>
-            } @else {
-              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-            }
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-icon">⏱</div>
-          <div class="metric-body">
-            <div class="metric-label">MTBF (dias)</div>
-            @if (!statsLoading) {
-              <div class="metric-value">{{ (stats?.mtbfDias ?? 0) > 0 ? (stats?.mtbfDias | number:'1.1-1') : '—' }}</div>
-              <div class="metric-sub">Tempo médio entre falhas corretivas</div>
-            } @else {
-              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-            }
-          </div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-icon">🔧</div>
-          <div class="metric-body">
-            <div class="metric-label">Preventivas / Corretivas</div>
-            @if (!statsLoading) {
-              <div class="metric-value">{{ stats?.manutencoesPreventivas ?? 0 }} / {{ stats?.manutencoesCorretivas ?? 0 }}</div>
-              <div class="metric-sub">Razão de manutenção planejada</div>
-            } @else {
-              <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: quick actions + system status -->
-      <div class="row-2">
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">Ações Rápidas</span>
-          </div>
-          <div class="act-grid">
-            <a class="act" routerLink="/maquinas"><mat-icon>add</mat-icon> Nova Máquina</a>
-            <a class="act" routerLink="/manutencoes"><mat-icon>assignment_add</mat-icon> Criar Ordem</a>
-            <a class="act" routerLink="/estoque"><mat-icon>add_box</mat-icon> Adicionar Peça</a>
-            <a class="act" routerLink="/maquinas"><mat-icon>list_alt</mat-icon> Ver Máquinas</a>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">Status do Sistema</span>
-            <span class="panel-badge">● online</span>
-          </div>
-          <div class="status-rows">
-            <div class="status-row">
-              <div class="status-dot-sm ok"></div>
-              <span class="status-name">API Backend</span>
-              <div class="status-track"><div class="status-fill ok" #bar1></div></div>
-              <span class="status-pct">98%</span>
-            </div>
-            <div class="status-row">
-              <div class="status-dot-sm ok"></div>
-              <span class="status-name">Banco de dados</span>
-              <div class="status-track"><div class="status-fill ok" #bar2></div></div>
-              <span class="status-pct">100%</span>
-            </div>
-            <div class="status-row">
-              <div class="status-dot-sm ok"></div>
-              <span class="status-name">Autenticação JWT</span>
-              <div class="status-track"><div class="status-fill ok" #bar3></div></div>
-              <span class="status-pct">100%</span>
-            </div>
-            <div class="status-row">
-              <div class="status-dot-sm warn"></div>
-              <span class="status-name">Notificações</span>
-              <div class="status-track"><div class="status-fill warn" #bar4></div></div>
-              <span class="status-pct">60%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 3: alertas vencidos + bar chart -->
-      <div class="row-3">
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">Alertas de Manutenção Vencida</span>
-            <span class="panel-badge" [class.warn]="(stats?.alertasVencidos?.length ?? 0) > 0">
-              {{ stats?.alertasVencidos?.length ?? 0 }} alerta{{ (stats?.alertasVencidos?.length ?? 0) !== 1 ? 's' : '' }}
-            </span>
-          </div>
-          @if (!statsLoading && (stats?.alertasVencidos?.length ?? 0) === 0) {
-            <div class="proxima-empty">
-              <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
-              Nenhuma manutenção vencida
-            </div>
-          }
-          @if ((stats?.alertasVencidos?.length ?? 0) > 0) {
-            <div class="proximas">
-              @for (a of stats!.alertasVencidos; track a.maquinaId) {
-                <div class="proxima-item">
-                  <div class="proxima-dot red"></div>
-                  <div class="proxima-body">
-                    <div class="proxima-name">{{ a.maquinaNome }}</div>
-                    <div class="proxima-setor">{{ a.setor }}</div>
-                  </div>
-                  <span class="prio-badge" [class]="'prio-' + (a.prioridade | lowercase)">{{ prioridadeLabel(a.prioridade) }}</span>
-                  <span class="proxima-chip chip-red">{{ a.diasVencido }}d atraso</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="panel">
-          <div class="panel-head">
-            <span class="panel-title">Manutenções por Mês</span>
-            <span class="panel-badge">últimos 6 meses</span>
-          </div>
-          @if (barsUltimos6Meses.length > 0) {
-            <div class="bar-chart">
-              @for (b of barsUltimos6Meses; track b.mes) {
-                <div class="bc">
-                  <span class="bc-count">{{ b.count }}</span>
-                  <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
-                  <span class="bc-label">{{ b.mes }}</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-
-      <div class="footer">Construído por <strong style="color:rgba(255,255,255,0.3)">ezequiel</strong> · Industrial CMMS Suite · 2026</div>
     </div>
-  </main>
+    <div class="metric-card">
+      <div class="metric-icon">⏱</div>
+      <div class="metric-body">
+        <div class="metric-label">MTBF (dias)</div>
+        @if (!statsLoading) {
+          <div class="metric-value">{{ (stats?.mtbfDias ?? 0) > 0 ? (stats?.mtbfDias | number:'1.1-1') : '—' }}</div>
+          <div class="metric-sub">Tempo médio entre falhas corretivas</div>
+        } @else {
+          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
+        }
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">🔧</div>
+      <div class="metric-body">
+        <div class="metric-label">Preventivas / Corretivas</div>
+        @if (!statsLoading) {
+          <div class="metric-value">{{ stats?.manutencoesPreventivas ?? 0 }} / {{ stats?.manutencoesCorretivas ?? 0 }}</div>
+          <div class="metric-sub">Razão de manutenção planejada</div>
+        } @else {
+          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: quick actions + system status -->
+  <div class="row-2">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Ações Rápidas</span>
+      </div>
+      <div class="act-grid">
+        <a class="act" routerLink="/maquinas"><mat-icon>add</mat-icon> Nova Máquina</a>
+        <a class="act" routerLink="/manutencoes"><mat-icon>assignment_add</mat-icon> Criar Ordem</a>
+        <a class="act" routerLink="/estoque"><mat-icon>add_box</mat-icon> Adicionar Peça</a>
+        <a class="act" routerLink="/maquinas"><mat-icon>list_alt</mat-icon> Ver Máquinas</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Status do Sistema</span>
+        <span class="panel-badge">● online</span>
+      </div>
+      <div class="status-rows">
+        <div class="status-row">
+          <div class="status-dot-sm ok"></div>
+          <span class="status-name">API Backend</span>
+          <div class="status-track"><div class="status-fill ok" #bar1></div></div>
+          <span class="status-pct">98%</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot-sm ok"></div>
+          <span class="status-name">Banco de dados</span>
+          <div class="status-track"><div class="status-fill ok" #bar2></div></div>
+          <span class="status-pct">100%</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot-sm ok"></div>
+          <span class="status-name">Autenticação JWT</span>
+          <div class="status-track"><div class="status-fill ok" #bar3></div></div>
+          <span class="status-pct">100%</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot-sm warn"></div>
+          <span class="status-name">Notificações</span>
+          <div class="status-track"><div class="status-fill warn" #bar4></div></div>
+          <span class="status-pct">60%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: alertas vencidos + bar chart -->
+  <div class="row-3">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Alertas de Manutenção Vencida</span>
+        <span class="panel-badge" [class.warn]="(stats?.alertasVencidos?.length ?? 0) > 0">
+          {{ stats?.alertasVencidos?.length ?? 0 }} alerta{{ (stats?.alertasVencidos?.length ?? 0) !== 1 ? 's' : '' }}
+        </span>
+      </div>
+      @if (!statsLoading && (stats?.alertasVencidos?.length ?? 0) === 0) {
+        <div class="proxima-empty">
+          <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
+          Nenhuma manutenção vencida
+        </div>
+      }
+      @if ((stats?.alertasVencidos?.length ?? 0) > 0) {
+        <div class="proximas">
+          @for (a of stats!.alertasVencidos; track a.maquinaId) {
+            <div class="proxima-item">
+              <div class="proxima-dot red"></div>
+              <div class="proxima-body">
+                <div class="proxima-name">{{ a.maquinaNome }}</div>
+                <div class="proxima-setor">{{ a.setor }}</div>
+              </div>
+              <span class="prio-badge" [class]="'prio-' + (a.prioridade | lowercase)">{{ prioridadeLabel(a.prioridade) }}</span>
+              <span class="proxima-chip chip-red">{{ a.diasVencido }}d atraso</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Manutenções por Mês</span>
+        <span class="panel-badge">últimos 6 meses</span>
+      </div>
+      @if (barsUltimos6Meses.length > 0) {
+        <div class="bar-chart">
+          @for (b of barsUltimos6Meses; track b.mes) {
+            <div class="bc">
+              <span class="bc-count">{{ b.count }}</span>
+              <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
+              <span class="bc-label">{{ b.mes }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="footer">Construído por <strong style="color:rgba(255,255,255,0.3)">ezequiel</strong> · Industrial CMMS Suite · 2026</div>
 </div>
