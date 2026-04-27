@@ -27,7 +27,10 @@ export class LayoutComponent {
   get userRoleLabel() { return this.userRole ? (ROLE_LABELS[this.userRole] ?? this.userRole) : ''; }
   get userRoleCSS()   { return this.userRole ? (ROLE_CSS[this.userRole] ?? '') : ''; }
   get userInitial()   { return this.userName.charAt(0).toUpperCase(); }
-  get canManageUsers(){ return this.auth.canManageUsers(); }
+  get canManageUsers() { return this.auth.canManageUsers(); }
+  get canViewAudit()  { return this.auth.canViewAudit(); }
+  get canViewSettings(){ return this.auth.canViewSettings(); }
+  get canViewReports() { return this.auth.hasRole('ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_GESTOR'); }
 
   logout() {
     this.auth.logout();

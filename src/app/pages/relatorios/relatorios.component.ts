@@ -1,0 +1,54 @@
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { ReportService, ReportEntity } from '../../services/report.service';
+import { NotificationService } from '../../services/notification.service';
+
+interface ReportCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+}
+
+@Component({
+  selector: 'app-relatorios',
+  standalone: true,
+  imports: [CommonModule, MatIconModule],
+  templateUrl: './relatorios.component.html',
+  styleUrl: './relatorios.component.css'
+})
+export class RelatoriosComponent {
+  private reportSvc = inject(ReportService);
+  private notify    = inject(NotificationService);
+
+  downloading = signal<string | null>(null);
+
+  reports: ReportCard[] = [
+    { id: 'manutencoes', title: 'Manutenções',  description: 'Histórico completo de ordens de serviço e manutenções preventivas/corretivas.', icon: 'build',       color: '#7c3aed' },
+    { id: 'maquinas',    title: 'Máquinas',      description: 'Inventário de ativos com status, localização e dados técnicos.', icon: 'precision_manufacturing', color: '#0ea5e9' },
+    { id: 'estoque',     title: 'Estoque',        description: 'Posição atual de peças e insumos com valores e quantidades.', icon: 'inventory_2',  color: '#10b981' },
+  ];
+
+  download(id: string, format: 'pdf' | 'xlsx') {
+    const key = `${id}-${format}`;
+    if (this.downloading()) return;
+    this.downloading.set(key);
+    this.reportSvc.download(id as ReportEntity, format).subscribe({
+      next: blob => {
+        const ext  = format === 'pdf' ? 'pdf' : 'xlsx';
+        const name = `relatorio-${id}-${new Date().toISOString().slice(0,10)}.${ext}`;
+        this.reportSvc.triggerDownload(blob, name);
+        this.notify.success(`Relatório de ${id} baixado com sucesso`);
+        this.downloading.set(null);
+      },
+      error: () => {
+        this.notify.error('Erro ao gerar relatório. Tente novamente.');
+        this.downloading.set(null);
+      }
+    });
+  }
+
+  isDownloading(id: string, format: string) { return this.downloading() === `${id}-${format}`; }
+}

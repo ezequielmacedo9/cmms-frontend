@@ -1,0 +1,46 @@
+<div class="relatorios-page">
+  <div class="page-header">
+    <div class="page-title">Relatórios</div>
+    <div class="page-sub">Exporte dados do sistema em PDF ou Excel</div>
+  </div>
+
+  <div class="cards-grid">
+    @for (r of reports; track r.id) {
+      <div class="report-card">
+        <div class="card-icon" [style.background]="r.color + '1a'" [style.color]="r.color">
+          <mat-icon>{{ r.icon }}</mat-icon>
+        </div>
+        <div class="card-body">
+          <div class="card-title">{{ r.title }}</div>
+          <div class="card-desc">{{ r.description }}</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-format pdf" (click)="download(r.id, 'pdf')" [disabled]="!!downloading()">
+            @if (isDownloading(r.id, 'pdf')) {
+              <div class="spinner-sm"></div>
+            } @else {
+              <mat-icon>picture_as_pdf</mat-icon>
+            }
+            PDF
+          </button>
+          <button class="btn-format xlsx" (click)="download(r.id, 'xlsx')" [disabled]="!!downloading()">
+            @if (isDownloading(r.id, 'xlsx')) {
+              <div class="spinner-sm"></div>
+            } @else {
+              <mat-icon>table_chart</mat-icon>
+            }
+            Excel
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="info-box">
+    <mat-icon>info</mat-icon>
+    <div>
+      <strong>Sobre os relatórios</strong><br>
+      Os relatórios são gerados em tempo real com os dados mais recentes do sistema. PDFs são ideais para impressão e arquivamento; Excel para análises e edição.
+    </div>
+  </div>
+</div>
