@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, retry, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserRole } from '../models/user.model';
 
@@ -13,6 +13,13 @@ export class AuthService {
 
   login(email: string, senha: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).pipe(
+      retry({
+        count: 6,
+        delay: (error) => {
+          if (error.status && error.status > 0 && error.status < 500) throw error;
+          return timer(5000);
+        }
+      }),
       tap((res: any) => this.storeTokens(res))
     );
   }

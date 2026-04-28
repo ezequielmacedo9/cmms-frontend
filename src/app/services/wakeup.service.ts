@@ -6,10 +6,10 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class WakeupService {
   private http = inject(HttpClient);
-  private pingUrl = `${environment.apiUrl}/ping`;
+  private healthUrl = `${environment.apiUrl}/api/health`;
 
   ping() {
-    return this.http.get(this.pingUrl, { responseType: 'text' }).pipe(
+    return this.http.get<{ status: string }>(this.healthUrl).pipe(
       timeout(5000),
       catchError(() => of(null))
     );
