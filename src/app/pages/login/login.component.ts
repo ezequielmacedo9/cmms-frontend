@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../services/notification.service';
 import { WakeupService } from '../../services/wakeup.service';
+import { environment } from '../../../environments/environment';
 
 declare const google: any;
 
@@ -42,8 +43,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private retryTimeouts: ReturnType<typeof setTimeout>[] = [];
   private animFrameId: number | null = null;
   private retryCount = 0;
-  private readonly MAX_RETRIES = 5;
-  private readonly RETRY_DELAY_MS = 4000;
+  private readonly MAX_RETRIES = 6;
+  private readonly RETRY_DELAY_MS = 5000;
 
   ngOnInit() {
     this.checkServer();
@@ -99,10 +100,15 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initGoogleButton() {
-    if (typeof google === 'undefined') return;
+    if (typeof google === 'undefined' || !environment.googleClientId) {
+      if (!environment.googleClientId) {
+        console.error('[CMMS] environment.googleClientId não configurado. Login com Google indisponível.');
+      }
+      return;
+    }
     try {
       google.accounts.id.initialize({
-        client_id: '<<REPLACE_WITH_GOOGLE_CLIENT_ID>>',
+        client_id: environment.googleClientId,
         callback: (resp: any) => this.handleGoogleCredential(resp.credential)
       });
       google.accounts.id.renderButton(
@@ -184,8 +190,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this.animFrameId = requestAnimationFrame(animate);
   }
 
+  get formBlocked(): boolean {
+    return this.serverStatus === 'checking';
+  }
+
   onSubmit() {
-    if (this.carregando || !this.email || !this.senha) return;
+    if (this.carregando || this.formBlocked || !this.email || !this.senha) return;
     this.carregando = true;
     this.errorMessage = '';
     this.authService.login(this.email, this.senha).subscribe({
