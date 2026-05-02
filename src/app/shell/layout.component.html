@@ -49,6 +49,11 @@
           <mat-icon>manage_search</mat-icon> Auditoria
         </a>
       }
+      @if (canViewSettings) {
+        <a class="nav-item" routerLink="/assinatura" routerLinkActive="active">
+          <mat-icon>credit_card</mat-icon> Assinatura
+        </a>
+      }
     </nav>
 
     <div class="sidebar-footer">
