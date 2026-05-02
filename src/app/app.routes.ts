@@ -61,6 +61,11 @@ export const routes: Routes = [
         path: 'auditoria',
         loadComponent: () => import('./pages/audit-log/audit-log.component').then(m => m.AuditLogComponent),
         canActivate: [roleGuard(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])]
+      },
+      {
+        path: 'assinatura',
+        loadComponent: () => import('./pages/billing/billing.component').then(m => m.BillingComponent),
+        canActivate: [roleGuard(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'])]
       }
     ]
   },

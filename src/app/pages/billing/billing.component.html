@@ -1,0 +1,153 @@
+<div class="billing-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Assinatura</h1>
+      <p class="page-sub">Gerencie seu plano e cobrança</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+    </div>
+  } @else {
+
+    <!-- Trial / Status banner -->
+    @if (assinatura(); as a) {
+      @if (a.status === 'TRIAL' && a.trialAtivo) {
+        <div class="banner banner-trial">
+          <mat-icon>hourglass_top</mat-icon>
+          <span>Trial gratuito — <strong>{{ diasRestantes }} dias restantes</strong>. Escolha um plano para continuar após o período.</span>
+        </div>
+      } @else if (a.status === 'INADIMPLENTE') {
+        <div class="banner banner-warn">
+          <mat-icon>warning</mat-icon>
+          <span>Sua assinatura está inadimplente. Regularize para continuar usando o sistema.</span>
+        </div>
+      } @else if (a.status === 'CANCELADA') {
+        <div class="banner banner-error">
+          <mat-icon>cancel</mat-icon>
+          <span>Assinatura cancelada. Selecione um plano abaixo para reativar.</span>
+        </div>
+      }
+
+      <!-- Current plan card -->
+      <div class="current-card">
+        <div class="current-left">
+          <div class="current-label">Plano atual</div>
+          <div class="current-plano">
+            <mat-icon>{{ planoIcons[a.plano] }}</mat-icon>
+            {{ a.plano }}
+          </div>
+          <div class="current-meta">
+            <span class="status-badge" [class]="statusCss(a.status)">{{ statusLabel(a.status) }}</span>
+            @if (a.status === 'ATIVA') {
+              <span class="renova">Renova em {{ a.dataProximaCobranca | date:'dd/MM/yyyy' }}</span>
+            }
+          </div>
+        </div>
+        <div class="current-right">
+          <div class="current-valor">{{ formatVal(a.valorMensal) }}<span class="period">/mês</span></div>
+          @if (a.status === 'ATIVA') {
+            <button class="btn-cancel" (click)="cancelar()">Cancelar assinatura</button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Plans grid -->
+    <div class="plans-section">
+      <h2 class="plans-title">Escolha seu plano</h2>
+      <div class="plans-grid">
+        @for (plano of planos(); track plano.nome) {
+          <div class="plan-card" [class.plan-current]="isCurrentPlano(plano.nome)" [class.plan-highlight]="plano.nome === 'PRO'">
+            @if (plano.nome === 'PRO') {
+              <div class="popular-tag">Mais popular</div>
+            }
+            <div class="plan-icon">
+              <mat-icon>{{ planoIcons[plano.nome] }}</mat-icon>
+            </div>
+            <div class="plan-name">{{ plano.nome }}</div>
+            <div class="plan-desc">{{ planoDesc[plano.nome] }}</div>
+            <div class="plan-price">
+              {{ formatVal(plano.valorMensal) }}
+              <span class="plan-period">/mês</span>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <mat-icon>check</mat-icon>
+                <span>{{ plano.limiteAtivos }} ativos</span>
+              </li>
+              <li>
+                <mat-icon>check</mat-icon>
+                <span>{{ plano.limiteUsuarios }} usuários</span>
+              </li>
+              <li>
+                <mat-icon>check</mat-icon>
+                <span>Manutenções ilimitadas</span>
+              </li>
+              <li>
+                <mat-icon>check</mat-icon>
+                <span>Estoque e peças</span>
+              </li>
+              @if (plano.nome === 'PRO' || plano.nome === 'BUSINESS' || plano.nome === 'ENTERPRISE') {
+                <li>
+                  <mat-icon>check</mat-icon>
+                  <span>Relatórios avançados</span>
+                </li>
+              }
+              @if (plano.nome === 'BUSINESS' || plano.nome === 'ENTERPRISE') {
+                <li>
+                  <mat-icon>check</mat-icon>
+                  <span>SLA & métricas de custo</span>
+                </li>
+              }
+              @if (plano.nome === 'ENTERPRISE') {
+                <li>
+                  <mat-icon>check</mat-icon>
+                  <span>Suporte prioritário</span>
+                </li>
+              }
+            </ul>
+
+            @if (isCurrentPlano(plano.nome)) {
+              <button class="plan-btn plan-btn-current" disabled>Plano atual</button>
+            } @else if (assinatura()?.status === 'ATIVA') {
+              <button class="plan-btn" [class.plan-btn-upgrade]="isUpgrade(plano.nome)"
+                      [disabled]="actionBusy() !== null"
+                      (click)="upgrade(plano.nome)">
+                @if (actionBusy() === plano.nome) {
+                  <span class="btn-spinner"></span>
+                } @else {
+                  {{ isUpgrade(plano.nome) ? 'Fazer upgrade' : 'Fazer downgrade' }}
+                }
+              </button>
+            } @else {
+              <button class="plan-btn plan-btn-upgrade"
+                      [disabled]="actionBusy() !== null"
+                      (click)="checkout(plano.nome)">
+                @if (actionBusy() === plano.nome) {
+                  <span class="btn-spinner"></span>
+                } @else {
+                  Assinar agora
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Checkout link notice -->
+    @if (checkoutUrl()) {
+      <div class="checkout-notice">
+        <mat-icon>open_in_new</mat-icon>
+        <span>Link de pagamento aberto em nova aba. </span>
+        <a [href]="checkoutUrl()!" target="_blank">Abrir novamente</a>
+      </div>
+    }
+
+  }
+</div>
