@@ -1,20 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
-import { Manutencoes } from './manutencoes';
+import { ManutencoesComponent } from './manutencoes.component';
 
-describe('Manutencoes', () => {
-  let component: Manutencoes;
-  let fixture: ComponentFixture<Manutencoes>;
+describe('ManutencoesComponent', () => {
+  let component: ManutencoesComponent;
+  let fixture: ComponentFixture<ManutencoesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Manutencoes]
-    })
-    .compileComponents();
+      imports: [ManutencoesComponent],
+      providers: [provideHttpClient(), provideRouter([])]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Manutencoes);
+    fixture = TestBed.createComponent(ManutencoesComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {
