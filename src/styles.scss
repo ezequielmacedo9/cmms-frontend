@@ -1,2 +1,510 @@
-/* src/styles.scss - arquivo global vazio por enquanto */
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* =============================================================================
+ * Global styles — applied to the entire application (bootstrap-level).
+ *
+ * Layered architecture:
+ *   1. Font import + reset
+ *   2. Design tokens (CSS custom properties on :root)
+ *   3. Base typography + scrollbars
+ *   4. Angular Material dark overrides (selectors that escape view encaps.)
+ *   5. Utility primitives (.card, .btn, .input, .badge, .empty-state, .sk)
+ *   6. Animation keyframes
+ *
+ * Component CSS should consume tokens (var(--*)) instead of hard-coding
+ * colors / radii / shadows. This keeps the visual identity coherent and
+ * a future theme swap painless.
+ * =============================================================================
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ------------------------------------------------------------------ */
+/* 1. Reset                                                            */
+/* ------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Design tokens                                                    */
+/* ------------------------------------------------------------------ */
+:root {
+  /* — Color: surfaces (darkest → lightest) — */
+  --bg:           #0a0a14;        /* page background */
+  --bg-elevated:  #0e0e1c;        /* slightly raised sections */
+  --surface:      #12122a;        /* card background */
+  --surface-2:    #1a1a35;        /* hovered card / modal */
+  --surface-3:    #232347;        /* pressed / active */
+
+  /* — Color: borders & dividers — */
+  --border:        rgba(139, 92, 246, 0.10);
+  --border-strong: rgba(139, 92, 246, 0.20);
+  --border-hover:  rgba(139, 92, 246, 0.30);
+  --divider:       rgba(255, 255, 255, 0.06);
+
+  /* — Color: brand (purple) — */
+  --accent:         #8b5cf6;
+  --accent-hover:   #7c3aed;
+  --accent-active:  #6d28d9;
+  --accent-muted:   rgba(139, 92, 246, 0.15);
+  --accent-glow:    rgba(139, 92, 246, 0.35);
+  --accent-grad:    linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%);
+
+  /* — Color: status semantic palette — */
+  --success:       #22c55e;
+  --success-muted: rgba(34, 197, 94, 0.14);
+  --success-grad:  linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+
+  --warning:       #f59e0b;
+  --warning-muted: rgba(245, 158, 11, 0.14);
+  --warning-grad:  linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+
+  --danger:        #ef4444;
+  --danger-muted:  rgba(239, 68, 68, 0.14);
+  --danger-grad:   linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+
+  --info:          #3b82f6;
+  --info-muted:    rgba(59, 130, 246, 0.14);
+  --info-grad:     linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+
+  /* — Color: text — */
+  --text:          #fafafa;          /* primary */
+  --text-2:        rgba(255, 255, 255, 0.65); /* secondary / body */
+  --text-3:        rgba(255, 255, 255, 0.42); /* tertiary / placeholders */
+  --text-4:        rgba(255, 255, 255, 0.22); /* faint / disabled */
+  --text-on-accent: #ffffff;
+
+  /* — Typography — */
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --fs-xs:   11px;
+  --fs-sm:   12px;
+  --fs-base: 13px;
+  --fs-md:   14px;
+  --fs-lg:   16px;
+  --fs-xl:   20px;
+  --fs-2xl:  24px;
+  --fs-3xl:  32px;
+  --fs-4xl:  40px;
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+  --fw-black:    800;
+
+  --lh-tight:   1.2;
+  --lh-snug:    1.35;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  /* — Spacing scale (4px-based) — */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  40px;
+  --space-9:  48px;
+  --space-10: 64px;
+
+  /* — Radius — */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* — Shadows (composable on dark background) — */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 28px 60px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 24px var(--accent-glow);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* — Transitions & easings — */
+  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast:   120ms var(--ease-out);
+  --t-base:   180ms var(--ease-out);
+  --t-slow:   260ms var(--ease-out);
+  --t-page:   320ms var(--ease-out);
+
+  /* — Z-index scale — */
+  --z-base:    0;
+  --z-dropdown: 1000;
+  --z-sticky:   1100;
+  --z-overlay:  1200;
+  --z-modal:    1300;
+  --z-toast:    1400;
+  --z-tooltip:  1500;
+
+  /* — Layout — */
+  --sidebar-width:          240px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-height:          64px;
+  --container-max:          1440px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Base typography & scrollbars                                     */
+/* ------------------------------------------------------------------ */
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+}
+
+::selection {
+  background: var(--accent-muted);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  transition: background var(--t-fast);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+a:hover { color: var(--accent-hover); }
+
+button { font-family: inherit; cursor: pointer; }
+
+/* ------------------------------------------------------------------ */
+/* 4. Angular Material — dark theme overrides                          */
+/*    (selectors that escape view encapsulation by design)             */
+/* ------------------------------------------------------------------ */
+.mat-mdc-raised-button.mat-primary {
+  background: var(--accent) !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: var(--fw-medium) !important;
+  font-size: var(--fs-base) !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+  transition: background var(--t-fast) !important;
+}
+.mat-mdc-raised-button.mat-primary:hover { background: var(--accent-hover) !important; }
+
+.mat-mdc-icon-button { transition: all var(--t-fast) !important; }
+.mat-mdc-form-field-subscript-wrapper { display: none !important; }
+
+.dark-field .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: var(--radius-sm) !important;
+}
+.dark-field .mdc-notched-outline__leading,
+.dark-field .mdc-notched-outline__notch,
+.dark-field .mdc-notched-outline__trailing {
+  border-color: var(--border-strong) !important;
+}
+.dark-field:hover .mdc-notched-outline__leading,
+.dark-field:hover .mdc-notched-outline__notch,
+.dark-field:hover .mdc-notched-outline__trailing {
+  border-color: var(--border-hover) !important;
+}
+.dark-field.mat-focused .mdc-notched-outline__leading,
+.dark-field.mat-focused .mdc-notched-outline__notch,
+.dark-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--accent) !important;
+}
+.dark-field .mdc-floating-label { color: var(--text-3) !important; }
+.dark-field input,
+.dark-field textarea,
+.dark-field .mat-mdc-select-value {
+  color: var(--text) !important;
+  caret-color: var(--accent) !important;
+}
+.dark-field .mat-mdc-select-arrow { color: var(--text-3) !important; }
+
+.mat-mdc-select-panel {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+}
+.mat-mdc-option { color: var(--text) !important; }
+.mat-mdc-option:hover { background: rgba(255, 255, 255, 0.05) !important; }
+.mat-mdc-option.mdc-list-item--selected { background: var(--accent-muted) !important; }
+
+/* CDK overlay backdrops follow the same dark aesthetic. */
+.cdk-overlay-dark-backdrop {
+  background: rgba(5, 5, 12, 0.72) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Utility primitives                                               */
+/* ------------------------------------------------------------------ */
+
+/* Cards */
+.ui-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-inset);
+  padding: var(--space-6);
+  transition: border-color var(--t-base), transform var(--t-base), box-shadow var(--t-base);
+}
+.ui-card:hover {
+  border-color: var(--border-hover);
+}
+.ui-card--interactive {
+  cursor: pointer;
+}
+.ui-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-inset);
+}
+
+/* Buttons */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 38px;
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast),
+              transform var(--t-fast), box-shadow var(--t-fast);
+}
+.ui-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.ui-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.ui-btn--primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+.ui-btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.ui-btn--secondary {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.ui-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--border-hover);
+}
+
+.ui-btn--ghost {
+  background: transparent;
+  color: var(--text-2);
+}
+.ui-btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.ui-btn--danger {
+  background: var(--danger);
+  color: white;
+}
+.ui-btn--danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.ui-btn--sm { height: 30px; padding: 0 var(--space-3); font-size: var(--fs-sm); }
+.ui-btn--lg { height: 46px; padding: 0 var(--space-6); font-size: var(--fs-md); }
+
+/* Inputs (vanilla, when not using Material) */
+.ui-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-4);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-md);
+  outline: none;
+  transition: border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
+}
+.ui-input::placeholder { color: var(--text-4); }
+.ui-input:hover { border-color: var(--border-hover); }
+.ui-input:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+.ui-input--invalid { border-color: var(--danger); }
+.ui-input--invalid:focus { box-shadow: 0 0 0 3px var(--danger-muted); }
+
+/* Badges */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.ui-badge--success { background: var(--success-muted); color: var(--success); }
+.ui-badge--warning { background: var(--warning-muted); color: var(--warning); }
+.ui-badge--danger  { background: var(--danger-muted);  color: var(--danger); }
+.ui-badge--info    { background: var(--info-muted);    color: var(--info); }
+.ui-badge--accent  { background: var(--accent-muted);  color: var(--accent); }
+.ui-badge--muted   { background: rgba(255,255,255,0.05); color: var(--text-3); }
+
+/* Status dot */
+.ui-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ui-dot--success { background: var(--success); box-shadow: 0 0 0 4px var(--success-muted); }
+.ui-dot--warning { background: var(--warning); box-shadow: 0 0 0 4px var(--warning-muted); }
+.ui-dot--danger  { background: var(--danger);  box-shadow: 0 0 0 4px var(--danger-muted); }
+.ui-dot--info    { background: var(--info);    box-shadow: 0 0 0 4px var(--info-muted); }
+
+/* Skeleton shimmer */
+.sk {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius-xs);
+  display: block;
+}
+
+/* Empty states */
+.ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-9) var(--space-6);
+  gap: var(--space-4);
+  color: var(--text-3);
+}
+.ui-empty__icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+.ui-empty__title  { color: var(--text); font-size: var(--fs-lg); font-weight: var(--fw-semibold); }
+.ui-empty__hint   { font-size: var(--fs-base); max-width: 360px; line-height: var(--lh-relaxed); }
+
+/* Page container — applies the entry animation by default */
+.page-container {
+  background: var(--bg);
+  min-height: 100vh;
+  animation: pageFadeIn var(--t-page);
+}
+
+/* Glass / blurred surfaces */
+.ui-glass {
+  background: rgba(18, 18, 42, 0.6);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-radius: var(--radius-lg);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Keyframes                                                        */
+/* ------------------------------------------------------------------ */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.row-new { animation: rowIn var(--t-base) both; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in { animation: fadeIn var(--t-base) both; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.slide-up { animation: slideUp var(--t-slow) both; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+.pulse { animation: pulse 1.6s ease-in-out infinite; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Reduced-motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
