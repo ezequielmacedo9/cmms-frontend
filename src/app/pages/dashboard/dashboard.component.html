@@ -1,206 +1,217 @@
-<div class="content">
-  <div class="page-header">
-    <div class="greeting">{{ greeting }} 👋</div>
-    <div class="greeting-sub">Aqui está o resumo operacional de hoje</div>
-    @if (!statsLoading && (stats?.manutencoesVencidas ?? 0) > 0) {
-      <span class="alert-badge">
-        <mat-icon style="font-size:13px;width:13px;height:13px">warning</mat-icon>
-        {{ stats?.manutencoesVencidas }} prev. vencida{{ (stats?.manutencoesVencidas ?? 0) !== 1 ? 's' : '' }}
-      </span>
-    }
-  </div>
+<div class="page-container dash">
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi" routerLink="/maquinas" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-      <div class="kpi-label">Máquinas</div>
-      <div class="kpi-value">
-        @if (!loading) { <span>{{ displayMaquinas }}</span> }
-        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-      </div>
-      @if (!loading) {
-        <div class="kpi-sub">{{ stats?.maquinasAtivas ?? 0 }} ativas · {{ stats?.maquinasInativas ?? 0 }} inativas</div>
-        <div class="kpi-trend up">↗ {{ stats?.maquinasAtivas ?? 0 }} em operação</div>
-      }
+  <!-- ── Hero greeting ─────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">{{ greeting }}</span>
+      <h1 class="hero-title">Visão geral de operação</h1>
+      <p class="hero-sub">Disponibilidade, manutenções e alertas em tempo real.</p>
     </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Disponibilidade</span>
+        <span class="hero-meta-value">{{ disponibilidade() | number:'1.0-1' }}%</span>
+      </div>
+      <div class="hero-meta-sep" aria-hidden="true"></div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">MTBF</span>
+        <span class="hero-meta-value">{{ mtbf() | number:'1.0-1' }} <small>dias</small></span>
+      </div>
+    </div>
+  </section>
 
-    <div class="kpi" routerLink="/manutencoes" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-      <div class="kpi-label">Manutenções</div>
-      <div class="kpi-value">
-        @if (!loading) { <span>{{ displayManutencoes }}</span> }
-        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-      </div>
-      @if (!loading) {
-        <div class="kpi-sub">{{ stats?.manutencoesPreventivas ?? 0 }} prev · {{ stats?.manutencoesCorretivas ?? 0 }} corr</div>
-        <div class="kpi-trend up">↗ Histórico completo</div>
-      }
-    </div>
-
-    <div class="kpi" routerLink="/estoque" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-      <div class="kpi-label">Estoque</div>
-      <div class="kpi-value">
-        @if (!loading) { <span>{{ displayPecas }}</span> }
-        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-      </div>
-      @if (!loading) {
-        <div class="kpi-sub">Peças disponíveis</div>
-        <div class="kpi-trend up">↗ Inventário ativo</div>
-      }
-    </div>
-
-    <div class="kpi" (mousemove)="onKpiTilt($event)" (mouseleave)="onKpiLeave($event)">
-      <div class="kpi-label">Prev. Vencendo</div>
-      <div class="kpi-value">
-        @if (!loading) { <span>{{ displayVencidas }}</span> }
-        @else { <div class="sk" style="width:60px;height:44px;border-radius:6px"></div> }
-      </div>
-      @if (!loading) {
-        <div class="kpi-sub">Manutenções atrasadas</div>
-        <div class="kpi-trend" [class.warn]="displayVencidas > 0" [class.up]="displayVencidas === 0">
-          {{ displayVencidas === 0 ? '✓ Tudo em dia' : '⚠ Requer atenção' }}
-        </div>
-      }
-    </div>
-  </div>
-
-  <!-- Métricas enterprise: Disponibilidade + MTBF -->
-  <div class="metrics-row">
-    <div class="metric-card">
-      <div class="metric-icon">📊</div>
-      <div class="metric-body">
-        <div class="metric-label">Disponibilidade</div>
-        @if (!statsLoading) {
-          <div class="metric-value">{{ stats?.disponibilidade ?? 0 | number:'1.1-1' }}%</div>
-          <div class="metric-bar"><div class="metric-bar-fill" [style.width.%]="stats?.disponibilidade ?? 0"></div></div>
-        } @else {
-          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-        }
-      </div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-icon">⏱</div>
-      <div class="metric-body">
-        <div class="metric-label">MTBF (dias)</div>
-        @if (!statsLoading) {
-          <div class="metric-value">{{ (stats?.mtbfDias ?? 0) > 0 ? (stats?.mtbfDias | number:'1.1-1') : '—' }}</div>
-          <div class="metric-sub">Tempo médio entre falhas corretivas</div>
-        } @else {
-          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-        }
-      </div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-icon">🔧</div>
-      <div class="metric-body">
-        <div class="metric-label">Preventivas / Corretivas</div>
-        @if (!statsLoading) {
-          <div class="metric-value">{{ stats?.manutencoesPreventivas ?? 0 }} / {{ stats?.manutencoesCorretivas ?? 0 }}</div>
-          <div class="metric-sub">Razão de manutenção planejada</div>
-        } @else {
-          <div class="sk" style="width:80px;height:28px;border-radius:4px;margin:4px 0"></div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Row 2: quick actions + system status -->
-  <div class="row-2">
-    <div class="panel">
-      <div class="panel-head">
-        <span class="panel-title">Ações Rápidas</span>
-      </div>
-      <div class="act-grid">
-        <a class="act" routerLink="/maquinas"><mat-icon>add</mat-icon> Nova Máquina</a>
-        <a class="act" routerLink="/manutencoes"><mat-icon>assignment_add</mat-icon> Criar Ordem</a>
-        <a class="act" routerLink="/estoque"><mat-icon>add_box</mat-icon> Adicionar Peça</a>
-        <a class="act" routerLink="/maquinas"><mat-icon>list_alt</mat-icon> Ver Máquinas</a>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <span class="panel-title">Status do Sistema</span>
-        <span class="panel-badge">● online</span>
-      </div>
-      <div class="status-rows">
-        <div class="status-row">
-          <div class="status-dot-sm ok"></div>
-          <span class="status-name">API Backend</span>
-          <div class="status-track"><div class="status-fill ok" #bar1></div></div>
-          <span class="status-pct">98%</span>
-        </div>
-        <div class="status-row">
-          <div class="status-dot-sm ok"></div>
-          <span class="status-name">Banco de dados</span>
-          <div class="status-track"><div class="status-fill ok" #bar2></div></div>
-          <span class="status-pct">100%</span>
-        </div>
-        <div class="status-row">
-          <div class="status-dot-sm ok"></div>
-          <span class="status-name">Autenticação JWT</span>
-          <div class="status-track"><div class="status-fill ok" #bar3></div></div>
-          <span class="status-pct">100%</span>
-        </div>
-        <div class="status-row">
-          <div class="status-dot-sm warn"></div>
-          <span class="status-name">Notificações</span>
-          <div class="status-track"><div class="status-fill warn" #bar4></div></div>
-          <span class="status-pct">60%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Row 3: alertas vencidos + bar chart -->
-  <div class="row-3">
-    <div class="panel">
-      <div class="panel-head">
-        <span class="panel-title">Alertas de Manutenção Vencida</span>
-        <span class="panel-badge" [class.warn]="(stats?.alertasVencidos?.length ?? 0) > 0">
-          {{ stats?.alertasVencidos?.length ?? 0 }} alerta{{ (stats?.alertasVencidos?.length ?? 0) !== 1 ? 's' : '' }}
+  <!-- ── KPI grid ──────────────────────────────────────────────── -->
+  <section class="kpi-grid" aria-label="Indicadores principais">
+    <a class="kpi kpi--accent" routerLink="/maquinas" aria-label="Total de máquinas">
+      <div class="kpi-icon"><mat-icon>precision_manufacturing</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Máquinas</span>
+        <span class="kpi-value">
+          @if (loading()) { <span class="sk sk-num"></span> }
+          @else           { {{ displayMaquinas() }} }
+        </span>
+        <span class="kpi-foot">
+          <span class="ui-dot ui-dot--success"></span>
+          {{ stats()?.maquinasAtivas ?? 0 }} ativas
         </span>
       </div>
-      @if (!statsLoading && (stats?.alertasVencidos?.length ?? 0) === 0) {
-        <div class="proxima-empty">
-          <mat-icon style="font-size:15px;width:15px;height:15px;color:#22c55e">check_circle</mat-icon>
-          Nenhuma manutenção vencida
-        </div>
-      }
-      @if ((stats?.alertasVencidos?.length ?? 0) > 0) {
-        <div class="proximas">
-          @for (a of stats!.alertasVencidos; track a.maquinaId) {
-            <div class="proxima-item">
-              <div class="proxima-dot red"></div>
-              <div class="proxima-body">
-                <div class="proxima-name">{{ a.maquinaNome }}</div>
-                <div class="proxima-setor">{{ a.setor }}</div>
-              </div>
-              <span class="prio-badge" [class]="'prio-' + (a.prioridade | lowercase)">{{ prioridadeLabel(a.prioridade) }}</span>
-              <span class="proxima-chip chip-red">{{ a.diasVencido }}d atraso</span>
-            </div>
-          }
-        </div>
-      }
-    </div>
+    </a>
 
-    <div class="panel">
-      <div class="panel-head">
-        <span class="panel-title">Manutenções por Mês</span>
-        <span class="panel-badge">últimos 6 meses</span>
+    <a class="kpi kpi--info" routerLink="/manutencoes" aria-label="Total de manutenções">
+      <div class="kpi-icon"><mat-icon>build</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Manutenções</span>
+        <span class="kpi-value">
+          @if (loading()) { <span class="sk sk-num"></span> }
+          @else           { {{ displayManutencoes() }} }
+        </span>
+        <span class="kpi-foot">
+          {{ stats()?.manutencoesPreventivas ?? 0 }} preventivas ·
+          {{ stats()?.manutencoesCorretivas ?? 0 }} corretivas
+        </span>
       </div>
-      @if (barsUltimos6Meses.length > 0) {
-        <div class="bar-chart">
-          @for (b of barsUltimos6Meses; track b.mes) {
-            <div class="bc">
-              <span class="bc-count">{{ b.count }}</span>
-              <div class="bc-track"><div class="bc-fill" [style.height.%]="b.pct"></div></div>
-              <span class="bc-label">{{ b.mes }}</span>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  </div>
+    </a>
 
-  <div class="footer">Construído por <strong style="color:rgba(255,255,255,0.3)">ezequiel</strong> · Industrial CMMS Suite · 2026</div>
+    <a class="kpi kpi--success" routerLink="/estoque" aria-label="Peças em estoque">
+      <div class="kpi-icon"><mat-icon>inventory_2</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Peças em estoque</span>
+        <span class="kpi-value">
+          @if (loading()) { <span class="sk sk-num"></span> }
+          @else           { {{ displayPecas() }} }
+        </span>
+        <span class="kpi-foot">SKUs cadastrados</span>
+      </div>
+    </a>
+
+    <a class="kpi kpi--danger" routerLink="/manutencoes" aria-label="Manutenções vencidas">
+      <div class="kpi-icon"><mat-icon>schedule</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Preventivas vencidas</span>
+        <span class="kpi-value">
+          @if (loading()) { <span class="sk sk-num"></span> }
+          @else           { {{ displayVencidas() }} }
+        </span>
+        <span class="kpi-foot">
+          @if (displayVencidas() > 0) { Requer ação imediata }
+          @else { Tudo em dia }
+        </span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ── Charts row ────────────────────────────────────────────── -->
+  <section class="charts">
+
+    <div class="ui-card chart-card chart-card--wide">
+      <header class="chart-head">
+        <div>
+          <h2 class="chart-title">Manutenções nos últimos 6 meses</h2>
+          <span class="chart-sub">Evolução mensal — preventivas + corretivas</span>
+        </div>
+        <span class="ui-badge ui-badge--accent">Tempo real</span>
+      </header>
+      <div class="chart-body">
+        @if (loading()) {
+          <div class="sk sk-chart" aria-hidden="true"></div>
+        } @else {
+          <apx-chart
+            [series]="trendSeries()"
+            [chart]="trendChart.chart!"
+            [colors]="trendChart.colors!"
+            [stroke]="trendChart.stroke!"
+            [fill]="trendChart.fill!"
+            [grid]="trendChart.grid!"
+            [xaxis]="{ categories: trendCategories(), axisBorder: trendChart.xaxis!.axisBorder, axisTicks: trendChart.xaxis!.axisTicks, labels: trendChart.xaxis!.labels }"
+            [yaxis]="trendChart.yaxis!"
+            [dataLabels]="trendChart.dataLabels!"
+            [legend]="trendChart.legend!"
+            [markers]="trendChart.markers!"
+            [tooltip]="trendChart.tooltip!"
+            [states]="trendChart.states!">
+          </apx-chart>
+        }
+      </div>
+    </div>
+
+    <div class="ui-card chart-card">
+      <header class="chart-head">
+        <div>
+          <h2 class="chart-title">Tipo de manutenção</h2>
+          <span class="chart-sub">Preventiva vs corretiva</span>
+        </div>
+      </header>
+      <div class="chart-body">
+        @if (loading()) {
+          <div class="sk sk-chart sk-chart--sm" aria-hidden="true"></div>
+        } @else {
+          <apx-chart
+            [series]="tipoSeries()"
+            [chart]="donutTipo.chart!"
+            [labels]="donutTipo.labels!"
+            [colors]="donutTipo.colors!"
+            [legend]="donutTipo.legend!"
+            [plotOptions]="donutTipo.plotOptions!"
+            [stroke]="donutTipo.stroke!"
+            [dataLabels]="donutTipo.dataLabels!"
+            [tooltip]="donutTipo.tooltip!"
+            [responsive]="donutTipo.responsive!"
+            [states]="donutTipo.states!">
+          </apx-chart>
+        }
+      </div>
+    </div>
+
+    <div class="ui-card chart-card">
+      <header class="chart-head">
+        <div>
+          <h2 class="chart-title">Status do parque</h2>
+          <span class="chart-sub">Máquinas por situação</span>
+        </div>
+      </header>
+      <div class="chart-body">
+        @if (loading()) {
+          <div class="sk sk-chart sk-chart--sm" aria-hidden="true"></div>
+        } @else {
+          <apx-chart
+            [series]="statusSeries()"
+            [chart]="donutStatus.chart!"
+            [labels]="donutStatus.labels!"
+            [colors]="donutStatus.colors!"
+            [legend]="donutStatus.legend!"
+            [plotOptions]="donutStatus.plotOptions!"
+            [stroke]="donutStatus.stroke!"
+            [dataLabels]="donutStatus.dataLabels!"
+            [tooltip]="donutStatus.tooltip!"
+            [responsive]="donutStatus.responsive!"
+            [states]="donutStatus.states!">
+          </apx-chart>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Alerts ────────────────────────────────────────────────── -->
+  <section class="alerts ui-card">
+    <header class="alerts-head">
+      <div>
+        <h2 class="chart-title">Alertas de preventivas</h2>
+        <span class="chart-sub">Equipamentos com manutenção vencida ou pendente</span>
+      </div>
+      <a class="ui-btn ui-btn--ghost ui-btn--sm" routerLink="/manutencoes">
+        Ver todas <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </header>
+
+    @if (loading()) {
+      <div class="alerts-skeleton">
+        <span class="sk sk-row"></span>
+        <span class="sk sk-row"></span>
+        <span class="sk sk-row"></span>
+      </div>
+    } @else if (!stats()?.alertasVencidos?.length) {
+      <div class="ui-empty">
+        <div class="ui-empty__icon"><mat-icon>check_circle</mat-icon></div>
+        <div class="ui-empty__title">Tudo em dia.</div>
+        <div class="ui-empty__hint">Nenhum equipamento com preventiva vencida no momento.</div>
+      </div>
+    } @else {
+      <ul class="alerts-list" role="list">
+        @for (a of stats()!.alertasVencidos; track a.maquinaId) {
+          <li class="alert-item slide-up" role="listitem">
+            <div class="alert-icon"><mat-icon>warning</mat-icon></div>
+            <div class="alert-info">
+              <div class="alert-machine">{{ a.maquinaNome }}</div>
+              <div class="alert-sector">{{ a.setor }}</div>
+            </div>
+            <div class="alert-meta">
+              <span class="ui-badge {{ prioridadeBadgeClass(a.prioridade) }}">{{ prioridadeLabel(a.prioridade) }}</span>
+              <span class="alert-days">{{ a.diasVencido }}d em atraso</span>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
 </div>
