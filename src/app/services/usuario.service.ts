@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserProfile } from '../models/user.model';
+import { PagedResponse } from '../models/paged-response.model';
 
 export interface ConvidarUsuarioDTO {
   nome: string;
@@ -15,17 +16,24 @@ export interface AlterarRoleDTO {
   roleNome: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface UsuarioPageQuery {
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class UsuarioService {
 
-  private apiUrl = `${environment.apiUrl}/api/usuarios`;
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/api/usuarios`;
 
   listar(): Observable<UserProfile[]> {
-    return this.http.get<UserProfile[]>(this.apiUrl);
+    return this.http.get<UserProfile[]>(this.apiUrl, { params: new HttpParams().set('unpaged', 'true') });
+  }
+
+  listarPaged(query: UsuarioPageQuery = {}): Observable<PagedResponse<UserProfile>> {
+    return this.http.get<PagedResponse<UserProfile>>(this.apiUrl, { params: pageParams(query) });
   }
 
   getMeuPerfil(): Observable<UserProfile> {
@@ -51,4 +59,12 @@ export class UsuarioService {
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+}
+
+function pageParams(q: UsuarioPageQuery): HttpParams {
+  let p = new HttpParams();
+  if (q.page !== undefined) p = p.set('page', q.page);
+  if (q.size !== undefined) p = p.set('size', q.size);
+  if (q.sort)               p = p.set('sort', q.sort);
+  return p;
 }
