@@ -1,68 +1,50 @@
-<div class="shell" [class.light]="!theme.isDark()">
+<div class="shell" [class.light]="!theme.isDark()" [class.drawer-open]="drawerOpen()">
+
+  <!-- Mobile backdrop (only visible when drawer is open on small screens) -->
+  <div class="drawer-backdrop" (click)="closeDrawer()" aria-hidden="true"></div>
 
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navegação principal">
     <div class="sidebar-logo">
-      <div class="logo-mark">
-        <img src="/wolf.svg" alt="CMMS" class="logo-wolf" />
+      <div class="logo-mark" aria-hidden="true">
+        <img src="/wolf.svg" alt="" class="logo-wolf" />
       </div>
-      <div>
+      <div class="logo-text">
         <div class="logo-name">CMMS</div>
         <div class="logo-sub">Industrial Suite</div>
       </div>
     </div>
 
-    <nav class="nav">
-      <div class="nav-label">Menu</div>
-      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
-        <mat-icon>dashboard</mat-icon> Dashboard
-      </a>
-      <a class="nav-item" routerLink="/maquinas" routerLinkActive="active">
-        <mat-icon>precision_manufacturing</mat-icon> Máquinas
-      </a>
-      <a class="nav-item" routerLink="/manutencoes" routerLinkActive="active">
-        <mat-icon>build</mat-icon> Manutenções
-      </a>
-      <a class="nav-item" routerLink="/estoque" routerLinkActive="active">
-        <mat-icon>inventory_2</mat-icon> Estoque
-      </a>
-      @if (canViewReports) {
-        <a class="nav-item" routerLink="/relatorios" routerLinkActive="active">
-          <mat-icon>assessment</mat-icon> Relatórios
-        </a>
-      }
-      @if (canManageUsers || canViewAudit || canViewSettings) {
-        <div class="nav-label" style="margin-top:8px">Administração</div>
-      }
-      @if (canManageUsers) {
-        <a class="nav-item" routerLink="/usuarios" routerLinkActive="active">
-          <mat-icon>manage_accounts</mat-icon> Usuários
-        </a>
-      }
-      @if (canViewSettings) {
-        <a class="nav-item" routerLink="/configuracoes" routerLinkActive="active">
-          <mat-icon>settings</mat-icon> Configurações
-        </a>
-      }
-      @if (canViewAudit) {
-        <a class="nav-item" routerLink="/auditoria" routerLinkActive="active">
-          <mat-icon>manage_search</mat-icon> Auditoria
-        </a>
-      }
-      @if (canViewSettings) {
-        <a class="nav-item" routerLink="/assinatura" routerLinkActive="active">
-          <mat-icon>credit_card</mat-icon> Assinatura
-        </a>
+    <nav class="nav" aria-label="Menu de navegação">
+      @for (group of navGroups; track group.label) {
+        @if (isGroupVisible(group)) {
+          <div class="nav-label">{{ group.label }}</div>
+          @for (item of visibleItems(group); track item.path) {
+            <a class="nav-item"
+               [routerLink]="item.path"
+               routerLinkActive="active"
+               [attr.aria-label]="item.label"
+               [title]="item.label">
+              <span class="nav-item-icon"><mat-icon>{{ item.icon }}</mat-icon></span>
+              <span class="nav-item-text">{{ item.label }}</span>
+              <span class="nav-item-active-indicator" aria-hidden="true"></span>
+            </a>
+          }
+        }
       }
     </nav>
 
     <div class="sidebar-footer">
-      <button class="theme-toggle" (click)="theme.toggle()" [title]="theme.isDark() ? 'Modo claro' : 'Modo escuro'">
+      <button class="footer-btn"
+              (click)="theme.toggle()"
+              [attr.aria-label]="theme.isDark() ? 'Mudar para modo claro' : 'Mudar para modo escuro'"
+              [title]="theme.isDark() ? 'Modo claro' : 'Modo escuro'">
         <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        {{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}
+        <span>{{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}</span>
       </button>
-      <a class="user-item" routerLink="/perfil">
-        <div class="user-avatar">{{ userInitial }}</div>
+
+      <a class="user-item" routerLink="/perfil" aria-label="Abrir perfil">
+        <div class="user-avatar" aria-hidden="true">{{ userInitial }}</div>
         <div class="user-info">
           <div class="user-name">{{ userName }}</div>
           <div class="user-role">
@@ -70,8 +52,12 @@
           </div>
         </div>
       </a>
-      <button class="logout-btn" (click)="logout()" title="Sair">
-        <mat-icon>logout</mat-icon> Sair
+
+      <button class="footer-btn footer-btn--danger"
+              (click)="logout()"
+              aria-label="Sair">
+        <mat-icon>logout</mat-icon>
+        <span>Sair</span>
       </button>
     </div>
   </aside>
@@ -79,60 +65,86 @@
   <!-- Main -->
   <main class="main">
 
-    <!-- Global topbar -->
-    <header class="topbar">
-      <div class="topbar-left"></div>
+    <header class="topbar" role="banner">
+      <button class="topbar-burger"
+              (click)="toggleDrawer()"
+              aria-label="Abrir menu"
+              aria-controls="sidebar">
+        <mat-icon>{{ drawerOpen() ? 'close' : 'menu' }}</mat-icon>
+      </button>
+
+      <div class="topbar-title">
+        <h1 class="topbar-title-text">{{ currentTitle() }}</h1>
+      </div>
+
       <div class="topbar-right">
-        <!-- Notification bell -->
+
         <div class="bell-wrap" (click)="$event.stopPropagation()">
-          <button class="bell-btn" (click)="toggleBell()" title="Notificações">
+          <button class="icon-btn"
+                  (click)="toggleBell()"
+                  aria-label="Notificações"
+                  [attr.aria-expanded]="showBell()"
+                  title="Notificações">
             <mat-icon>notifications</mat-icon>
             @if (notif.unreadCount() > 0) {
-              <span class="bell-badge">{{ notif.unreadCount() > 99 ? '99+' : notif.unreadCount() }}</span>
+              <span class="bell-badge" aria-live="polite">{{ notif.unreadCount() > 99 ? '99+' : notif.unreadCount() }}</span>
             }
           </button>
 
           @if (showBell()) {
-            <div class="notif-panel" (click)="$event.stopPropagation()">
+            <div class="notif-panel ui-glass" role="dialog" aria-label="Painel de notificações">
               <div class="notif-head">
                 <span class="notif-title">Notificações</span>
                 @if (notif.items().length > 0) {
-                  <button class="notif-clear" (click)="markAllRead()">Marcar lidas</button>
+                  <button class="notif-clear" (click)="markAllRead()">Marcar como lidas</button>
                 }
               </div>
+
               @if (notif.items().length === 0) {
                 <div class="notif-empty">
                   <mat-icon>notifications_none</mat-icon>
-                  <span>Nenhuma notificação</span>
+                  <span>Tudo em dia. Sem notificações.</span>
+                </div>
+              } @else {
+                <div class="notif-list" role="list">
+                  @for (n of notif.items(); track n.id) {
+                    <div class="notif-item"
+                         role="listitem"
+                         [class.unread]="!n.read"
+                         [class]="'notif-' + n.type">
+                      <mat-icon class="notif-icon" aria-hidden="true">
+                        {{ n.type === 'success' ? 'check_circle'
+                          : n.type === 'error'   ? 'error'
+                          : n.type === 'warning' ? 'warning'
+                          : 'info' }}
+                      </mat-icon>
+                      <div class="notif-body">
+                        <div class="notif-msg">{{ n.message }}</div>
+                        <div class="notif-time">{{ n.timestamp | date:'HH:mm' }}</div>
+                      </div>
+                      <button class="notif-dismiss"
+                              (click)="dismiss(n.id)"
+                              [attr.aria-label]="'Dispensar notificação'">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
                 </div>
               }
-              <div class="notif-list">
-                @for (n of notif.items(); track n.id) {
-                  <div class="notif-item" [class.unread]="!n.read" [class]="'notif-' + n.type">
-                    <mat-icon class="notif-icon">{{ n.type === 'success' ? 'check_circle' : n.type === 'error' ? 'error' : n.type === 'warning' ? 'warning' : 'info' }}</mat-icon>
-                    <div class="notif-body">
-                      <div class="notif-msg">{{ n.message }}</div>
-                      <div class="notif-time">{{ n.timestamp | date:'HH:mm' }}</div>
-                    </div>
-                    <button class="notif-dismiss" (click)="dismiss(n.id)" title="Dispensar">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                  </div>
-                }
-              </div>
             </div>
 
-            <!-- Click outside to close -->
-            <div class="bell-backdrop" (click)="closeBell()"></div>
+            <div class="bell-backdrop" (click)="closeBell()" aria-hidden="true"></div>
           }
         </div>
 
-        <span class="live"><span class="live-dot"></span>Online</span>
+        <span class="live" aria-live="polite">
+          <span class="live-dot" aria-hidden="true"></span>
+          Online
+        </span>
       </div>
     </header>
 
-    <!-- Page content -->
-    <div class="content">
+    <div class="content" id="main-content">
       <router-outlet></router-outlet>
     </div>
 
