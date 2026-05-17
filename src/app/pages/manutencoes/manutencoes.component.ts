@@ -16,6 +16,7 @@ import { MaquinaService } from '../../services/maquina.service';
 import { NotificationService } from '../../services/notification.service';
 import { Manutencao } from '../../models/manutencao.model';
 import { Maquina } from '../../models/maquina.model';
+import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
   selector: 'app-manutencoes',
@@ -23,7 +24,8 @@ import { Maquina } from '../../models/maquina.model';
   imports: [
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatCardModule, MatProgressSpinnerModule
+    MatCardModule, MatProgressSpinnerModule,
+    EmptyStateComponent
   ],
   templateUrl: './manutencoes.component.html',
   styleUrl: './manutencoes.component.css',

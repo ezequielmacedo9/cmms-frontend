@@ -154,10 +154,11 @@
           </ng-container>
         </tbody>
       </table>
-      <div class="empty-state" *ngIf="!carregando && manutencoesFiltradas.length === 0">
-        <p>{{ searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada' }}</p>
-        <small>{{ searchTerm || filterTipo ? 'Tente outros filtros' : 'Clique em "Nova Manutenção" para começar' }}</small>
-      </div>
+      <app-empty-state *ngIf="!carregando && manutencoesFiltradas.length === 0"
+        [kind]="searchTerm || filterTipo ? 'search' : 'inbox'"
+        [title]="searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada'"
+        [hint]="searchTerm || filterTipo ? 'Tente outros filtros ou limpe a busca.' : 'Registre a primeira ordem de serviço para o seu parque industrial.'">
+      </app-empty-state>
       <div class="pagination" *ngIf="manutencoesFiltradas.length > pageSize">
         <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>

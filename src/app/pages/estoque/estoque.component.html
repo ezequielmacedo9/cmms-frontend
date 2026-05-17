@@ -133,10 +133,11 @@
           </ng-container>
         </tbody>
       </table>
-      <div class="empty-state" *ngIf="!carregando && pecasFiltradas.length === 0">
-        <p>{{ searchTerm ? 'Nenhum resultado encontrado' : 'Nenhum item no estoque' }}</p>
-        <small>{{ searchTerm ? 'Tente outro termo' : 'Clique em "Nova Peça" para adicionar' }}</small>
-      </div>
+      <app-empty-state *ngIf="!carregando && pecasFiltradas.length === 0"
+        [kind]="searchTerm ? 'search' : 'package'"
+        [title]="searchTerm ? 'Nenhum resultado encontrado' : 'Estoque vazio'"
+        [hint]="searchTerm ? 'Tente outro termo de busca.' : 'Cadastre a primeira peça para começar a controlar o consumo do almoxarifado.'">
+      </app-empty-state>
       <div class="pagination" *ngIf="pecasFiltradas.length > pageSize">
         <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>

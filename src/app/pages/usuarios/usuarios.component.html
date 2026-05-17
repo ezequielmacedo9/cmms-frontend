@@ -180,10 +180,11 @@
           </ng-container>
         </tbody>
       </table>
-      <div class="empty-state" *ngIf="!carregando && filtrados.length === 0">
-        <p>{{ searchTerm || filterRole || filterAtivo ? 'Nenhum resultado' : 'Nenhum usuário cadastrado' }}</p>
-        <small>{{ searchTerm || filterRole || filterAtivo ? 'Tente outros filtros' : 'Clique em "Convidar Usuário" para começar' }}</small>
-      </div>
+      <app-empty-state *ngIf="!carregando && filtrados.length === 0"
+        [kind]="searchTerm || filterRole || filterAtivo ? 'search' : 'rocket'"
+        [title]="searchTerm || filterRole || filterAtivo ? 'Nenhum resultado' : 'Nenhum usuário cadastrado'"
+        [hint]="searchTerm || filterRole || filterAtivo ? 'Tente outros filtros.' : 'Convide a primeira pessoa para acessar o sistema.'">
+      </app-empty-state>
     </div>
 
     <!-- Role legend -->

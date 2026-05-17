@@ -8,11 +8,13 @@ import { UsuarioService } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { UserProfile, UserRole, ROLE_LABELS, ROLE_CSS, ALL_ROLES } from '../../models/user.model';
+import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule,
+    EmptyStateComponent],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })

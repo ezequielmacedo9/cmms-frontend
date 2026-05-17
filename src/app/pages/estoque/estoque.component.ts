@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { PecaService } from '../../services/peca.service';
 import { NotificationService } from '../../services/notification.service';
 import { PecaRequest, PecaResponse } from '../../models/peca.model';
+import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
   selector: 'app-estoque',
@@ -20,7 +21,8 @@ import { PecaRequest, PecaResponse } from '../../models/peca.model';
   imports: [
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    EmptyStateComponent
   ],
   templateUrl: './estoque.component.html',
   styleUrl: './estoque.component.css',

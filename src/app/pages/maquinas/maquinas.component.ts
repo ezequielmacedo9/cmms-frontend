@@ -17,6 +17,7 @@ import { NotificationService } from '../../services/notification.service';
 import { Maquina } from '../../models/maquina.model';
 import { Manutencao } from '../../models/manutencao.model';
 import { Router } from '@angular/router';
+import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
   selector: 'app-maquinas',
@@ -24,7 +25,8 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatCardModule, MatDialogModule, MatProgressSpinnerModule
+    MatCardModule, MatDialogModule, MatProgressSpinnerModule,
+    EmptyStateComponent
   ],
   templateUrl: './maquinas.component.html',
   styleUrl: './maquinas.component.css',

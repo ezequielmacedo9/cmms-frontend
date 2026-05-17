@@ -205,10 +205,14 @@
           </ng-container>
         </tbody>
       </table>
-      <div class="empty-state" *ngIf="!carregando && dataSource.data.length === 0">
-        <p>{{ searchTerm || filterStatus ? 'Nenhum resultado encontrado' : 'Nenhuma máquina cadastrada' }}</p>
-        <small>{{ searchTerm || filterStatus ? 'Tente outros filtros' : 'Clique em "Nova Máquina" para começar' }}</small>
-      </div>
+      <app-empty-state *ngIf="!carregando && dataSource.data.length === 0"
+        [kind]="searchTerm || filterStatus ? 'search' : 'gear'"
+        [title]="searchTerm || filterStatus ? 'Nenhum resultado encontrado' : 'Nenhuma máquina cadastrada'"
+        [hint]="searchTerm || filterStatus ? 'Tente outros filtros ou limpe a busca.' : 'Clique em \'Nova Máquina\' para cadastrar o primeiro equipamento.'">
+        <button class="btn-primary" *ngIf="!(searchTerm || filterStatus)" (click)="novoRegistro()">
+          <mat-icon>add</mat-icon> Nova Máquina
+        </button>
+      </app-empty-state>
       <div class="pagination" *ngIf="dataSource.data.length > pageSize">
         <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
