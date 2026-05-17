@@ -1,72 +1,161 @@
 <div class="login-page">
-  <canvas id="particles-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
-  <div class="ambient-glow"></div>
-  <div class="left">
+  <canvas #particlesCanvas class="particles" aria-hidden="true"></canvas>
+  <div class="ambient-glow ambient-glow--1" aria-hidden="true"></div>
+  <div class="ambient-glow ambient-glow--2" aria-hidden="true"></div>
+
+  <!-- Marketing column (hidden on mobile) -->
+  <section class="left" aria-label="Sobre o produto">
     <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 18 18" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
-          <path d="M9 1L1 5l8 4 8-4L9 1z"/>
-          <path d="M1 13l8 4 8-4M1 9l8 4 8-4"/>
-        </svg>
+      <div class="brand-mark" aria-hidden="true">
+        <img src="/wolf.svg" alt="" />
       </div>
       <span class="brand-name">CMMS</span>
+      <span class="brand-sub">Industrial Suite</span>
     </div>
-    <h1 class="hero-heading">Industrial<br><span>Maintenance</span><br>Platform</h1>
-    <p class="hero-sub">Gerencie máquinas, manutenções e estoque com precisão industrial.</p>
-    <div class="features">
-      <div class="feature"><div class="feature-dot"></div>Controle completo de equipamentos</div>
-      <div class="feature"><div class="feature-dot"></div>Ordens preventivas e corretivas</div>
-      <div class="feature"><div class="feature-dot"></div>Gestão de estoque em tempo real</div>
-    </div>
-  </div>
 
-  <div class="right">
-    <div class="card">
-      <div class="card-title">Entrar no sistema</div>
-      <div class="card-sub">Use suas credenciais para acessar</div>
+    <h1 class="hero-heading">
+      Indústria<br>
+      <span>sob controle.</span>
+    </h1>
+    <p class="hero-sub">
+      Disponibilidade, manutenções e estoque conectados em tempo real.
+      A plataforma que sua operação merece.
+    </p>
 
-      <div class="server-status"
-           [class.ready]="serverStatus === 'online'"
-           [class.error]="serverStatus === 'offline'">
-        <mat-spinner *ngIf="serverStatus === 'checking'" diameter="12"></mat-spinner>
-        <span class="status-dot" *ngIf="serverStatus === 'online'"></span>
-        <span class="status-dot error" *ngIf="serverStatus === 'offline'"></span>
-        <span *ngIf="serverStatus === 'checking'">Conectando ao servidor...</span>
-        <span *ngIf="serverStatus === 'online'">Servidor conectado</span>
-        <span *ngIf="serverStatus === 'offline'">Servidor iniciando — login ainda disponível</span>
-      </div>
+    <ul class="feature-list">
+      <li class="feature">
+        <span class="feature-icon"><mat-icon>insights</mat-icon></span>
+        <div class="feature-text">
+          <strong>Dashboards em tempo real</strong>
+          <span>Disponibilidade, MTBF e alertas vivos.</span>
+        </div>
+      </li>
+      <li class="feature">
+        <span class="feature-icon"><mat-icon>build</mat-icon></span>
+        <div class="feature-text">
+          <strong>Manutenções preventivas e corretivas</strong>
+          <span>Planeje, registre e audite cada intervenção.</span>
+        </div>
+      </li>
+      <li class="feature">
+        <span class="feature-icon"><mat-icon>inventory_2</mat-icon></span>
+        <div class="feature-text">
+          <strong>Estoque inteligente</strong>
+          <span>Peças, custos e consumo sob um único pano de vidro.</span>
+        </div>
+      </li>
+    </ul>
+  </section>
 
-      <form (ngSubmit)="onSubmit()">
+  <!-- Auth column -->
+  <section class="right" aria-label="Acessar o sistema">
+    <div class="card" #cardEl>
+      <header class="card-head">
+        <h2 class="card-title">Entrar no sistema</h2>
+        <p class="card-sub">Use suas credenciais para continuar.</p>
+      </header>
+
+      <!-- Server-status pill: only renders when there is something to say -->
+      @if (serverStatus() !== 'online') {
+        <div class="server-status"
+             [class.server-status--warming]="serverStatus() === 'checking'"
+             [class.server-status--offline]="serverStatus() === 'offline'"
+             role="status"
+             aria-live="polite">
+          @if (serverStatus() === 'checking') {
+            <mat-spinner diameter="14"></mat-spinner>
+            <span>Acordando o servidor… pode levar até 1 minuto na primeira chamada.</span>
+          } @else {
+            <span class="ui-dot ui-dot--danger" aria-hidden="true"></span>
+            <span>Servidor iniciando — login ainda disponível.</span>
+          }
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()" novalidate>
         <div class="field">
-          <label>Email</label>
+          <label for="login-email">Email</label>
           <div class="input-wrap">
-            <input type="email" [(ngModel)]="email" name="email"
-              placeholder="admin@empresa.com" required [disabled]="carregando" />
-            <mat-icon class="input-icon">mail</mat-icon>
+            <mat-icon class="input-icon" aria-hidden="true">mail</mat-icon>
+            <input id="login-email"
+                   type="email"
+                   autocomplete="email"
+                   inputmode="email"
+                   [(ngModel)]="email"
+                   name="email"
+                   placeholder="voce@empresa.com"
+                   required
+                   [disabled]="carregando()" />
           </div>
         </div>
+
         <div class="field">
-          <label>Senha</label>
+          <label for="login-password">Senha</label>
           <div class="input-wrap">
-            <input type="password" [(ngModel)]="senha" name="senha"
-              placeholder="••••••••" required [disabled]="carregando" />
-            <mat-icon class="input-icon">lock</mat-icon>
+            <mat-icon class="input-icon" aria-hidden="true">lock</mat-icon>
+            <input id="login-password"
+                   [type]="showPassword() ? 'text' : 'password'"
+                   autocomplete="current-password"
+                   [(ngModel)]="senha"
+                   name="senha"
+                   placeholder="••••••••"
+                   required
+                   [disabled]="carregando()"
+                   (keydown)="onPasswordKey($event)"
+                   (keyup)="onPasswordKey($event)" />
+            <button type="button"
+                    class="input-action"
+                    (click)="togglePassword()"
+                    [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+                    [title]="showPassword() ? 'Ocultar' : 'Mostrar'">
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
           </div>
+          @if (capsLockOn()) {
+            <div class="field-hint field-hint--warning">
+              <mat-icon>keyboard_capslock</mat-icon> Caps Lock está ativado.
+            </div>
+          }
         </div>
+
         <div class="forgot-link">
           <a routerLink="/forgot-password">Esqueceu a senha?</a>
         </div>
-        <button class="btn-primary" type="submit" [disabled]="carregando || googleLoading || formBlocked">
-          <mat-spinner *ngIf="carregando || formBlocked" diameter="16"></mat-spinner>
-          {{ carregando ? 'Entrando...' : formBlocked ? 'Aguardando servidor...' : 'Entrar' }}
+
+        <button class="btn-primary"
+                type="submit"
+                [disabled]="carregando() || googleLoading() || formBlocked">
+          @if (carregando() || formBlocked) {
+            <mat-spinner diameter="16"></mat-spinner>
+          }
+          <span>
+            {{ carregando() ? 'Entrando…'
+              : formBlocked ? 'Aguardando servidor…'
+              : 'Entrar' }}
+          </span>
+          @if (!carregando() && !formBlocked) {
+            <mat-icon>arrow_forward</mat-icon>
+          }
         </button>
-        <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        @if (errorMessage()) {
+          <div class="error-msg" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
       </form>
 
-      <div class="separator"><span>ou continue com</span></div>
-      <div id="google-btn" class="google-btn-wrap"></div>
+      @if (googleEnabled) {
+        <div class="separator"><span>ou continue com</span></div>
+        <div id="google-btn" class="google-btn-wrap"></div>
+      }
 
-      <div class="card-footer">developed by ezequiel · industrial suite 2026</div>
+      <footer class="card-footer">
+        <span>Industrial Suite · 2026</span>
+        <span class="card-footer-dot">·</span>
+        <span>v2.0</span>
+      </footer>
     </div>
-  </div>
+  </section>
 </div>
