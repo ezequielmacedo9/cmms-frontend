@@ -12,6 +12,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CMMS">
 
+  <!--
+    Defence-in-depth CSP via meta tag. The canonical CSP is served by Vercel
+    as a response header (vercel.json) and supersedes this one; we keep this
+    fallback for environments that bypass the Vercel edge (preview, custom
+    hosts, local file:// previews).
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.onrender.com https://accounts.google.com; frame-src https://accounts.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="16x16 32x32 48x48">
   <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
@@ -21,9 +31,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!--
+    External fonts and Google Sign-In script. Subresource Integrity (SRI) is
+    NOT used here because all three URLs serve mutable content whose hash
+    changes between deploys (Google rotates the GSI client; the CSS endpoint
+    returns user-agent-specific bundles). We mitigate with:
+      - Strict CSP (script-src / style-src whitelisted hosts above).
+      - referrerpolicy="no-referrer" on the GSI script so origin / path
+        of the host page is not leaked.
+      - crossorigin="anonymous" so credentials are not sent with the request.
+  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" crossorigin="anonymous">
+  <script src="https://accounts.google.com/gsi/client" async defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
   <app-root></app-root>
