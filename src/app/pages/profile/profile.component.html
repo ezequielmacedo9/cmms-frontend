@@ -27,8 +27,8 @@
       </div>
       <div class="avatar-name">{{ profile.nome || profile.email }}</div>
       <div class="avatar-role">
-        <span class="role-badge" [class]="'role-' + (profile.role ?? '').toLowerCase().replace('role_','').replace('_','-')">
-          {{ (profile.role ?? '').replace('ROLE_','').replace('_',' ') }}
+        <span class="role-badge" [class]="'role-' + profile.role.toLowerCase().replace('role_','').replace('_','-')">
+          {{ profile.role.replace('ROLE_','').replace('_',' ') }}
         </span>
       </div>
       <div class="avatar-meta">
