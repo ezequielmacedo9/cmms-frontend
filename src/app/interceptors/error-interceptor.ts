@@ -83,6 +83,7 @@ function logError(
 /** Endpoints where the component owns its own error UX. Add sparingly. */
 function shouldSuppressToast(url: string): boolean {
   return url.includes('/api/auth/validate-reset-token')
+      || url.includes('/api/auth/logout')   // best-effort fire-and-forget
       || url.includes('/api/wakeup')
       || url.endsWith('/ping');
 }

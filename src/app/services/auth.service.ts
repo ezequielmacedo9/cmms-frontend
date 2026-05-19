@@ -56,7 +56,23 @@ export class AuthService {
       .pipe(tap(res => this.storeTokens(res)));
   }
 
+  /**
+   * Best-effort server-side logout: revokes the refresh token on the
+   * backend. We don't await the call — local storage is wiped immediately
+   * so the UI feels instant, and the HTTP request fires in the background.
+   * If the access token already expired or the server is unreachable the
+   * client-side cleanup still happens.
+   */
   logout(): void {
+    const hasToken = !!this.getToken();
+    if (hasToken) {
+      // Fire-and-forget. Status code is irrelevant — local state is the
+      // source of truth from this point on.
+      this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+        next: () => {},
+        error: () => {}
+      });
+    }
     [
       AuthService.KEY_ACCESS, AuthService.KEY_REFRESH, AuthService.KEY_ROLE,
       AuthService.KEY_NOME,   AuthService.KEY_ID,      AuthService.KEY_EMAIL

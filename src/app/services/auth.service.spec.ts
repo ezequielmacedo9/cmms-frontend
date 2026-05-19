@@ -46,7 +46,7 @@ describe('AuthService', () => {
       expect(service.getEmail()).toBe('');
     });
 
-    it('logout limpa todas as chaves', () => {
+    it('logout limpa todas as chaves e dispara POST /logout no servidor', () => {
       localStorage.setItem('accessToken', 'A');
       localStorage.setItem('refreshToken', 'R');
       localStorage.setItem('userRole', 'ROLE_ADMIN');
@@ -56,6 +56,7 @@ describe('AuthService', () => {
 
       service.logout();
 
+      // Cleanup local imediato
       expect(service.isLoggedIn()).toBe(false);
       expect(localStorage.getItem('accessToken')).toBeNull();
       expect(localStorage.getItem('refreshToken')).toBeNull();
@@ -63,6 +64,18 @@ describe('AuthService', () => {
       expect(localStorage.getItem('userNome')).toBeNull();
       expect(localStorage.getItem('userId')).toBeNull();
       expect(localStorage.getItem('userEmail')).toBeNull();
+
+      // Servidor recebe POST best-effort
+      const req = httpMock.expectOne(`${apiBase}/logout`);
+      expect(req.request.method).toBe('POST');
+      req.flush({});
+    });
+
+    it('logout sem token previo nao chama o servidor', () => {
+      service.logout();
+      // Nenhuma chamada HTTP devera ser registrada
+      httpMock.verify();
+      expect(service.isLoggedIn()).toBe(false);
     });
 
     it('setAccessToken atualiza apenas o accessToken', () => {
