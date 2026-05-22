@@ -1,0 +1,53 @@
+<div class="error-page" role="main">
+
+  <!-- Animated background grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--left" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--right" aria-hidden="true"></div>
+
+  <article class="error-card slide-up">
+
+    <!-- Big 404 mark, SVG so it scales crisply -->
+    <div class="error-mark" aria-hidden="true">
+      <svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g404" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"  stop-color="#a78bfa"/>
+            <stop offset="50%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+        </defs>
+        <text x="50%" y="50%"
+              dominant-baseline="middle"
+              text-anchor="middle"
+              font-family="Inter, sans-serif"
+              font-weight="800"
+              font-size="120"
+              letter-spacing="-6"
+              fill="url(#g404)">4 0 4</text>
+      </svg>
+    </div>
+
+    <h1 class="error-title">Página não encontrada.</h1>
+    <p class="error-message">
+      O endereço acessado não existe ou foi movido. Verifique a URL ou
+      retorne ao painel.
+    </p>
+
+    <div class="error-actions">
+      <button type="button" class="ui-btn ui-btn--secondary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+      <a class="ui-btn ui-btn--primary" routerLink="/dashboard">
+        <mat-icon>dashboard</mat-icon>
+        Ir para o dashboard
+      </a>
+    </div>
+
+    <p class="error-hint">
+      <mat-icon>help_outline</mat-icon>
+      Se você acredita que isso é um erro, contate o suporte.
+    </p>
+  </article>
+</div>

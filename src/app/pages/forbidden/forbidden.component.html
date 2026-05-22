@@ -1,0 +1,63 @@
+<div class="error-page" role="main">
+
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--left" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--right" aria-hidden="true"></div>
+
+  <article class="error-card slide-up">
+
+    <div class="error-mark error-mark--lock" aria-hidden="true">
+      <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g403" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"  stop-color="#fbbf24"/>
+            <stop offset="50%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+        </defs>
+        <!-- Shield outline -->
+        <path d="M80 12 L138 32 V80 C138 110 110 138 80 148 C50 138 22 110 22 80 V32 Z"
+              fill="rgba(245, 158, 11, 0.08)"
+              stroke="url(#g403)"
+              stroke-width="3"/>
+        <!-- Lock body -->
+        <rect x="55" y="74" width="50" height="42" rx="6"
+              fill="url(#g403)" opacity="0.95"/>
+        <!-- Lock shackle -->
+        <path d="M65 74 V60 a15 15 0 0 1 30 0 V74"
+              fill="none"
+              stroke="url(#g403)"
+              stroke-width="5"
+              stroke-linecap="round"/>
+        <!-- Keyhole -->
+        <circle cx="80" cy="92" r="5" fill="#0a0a14"/>
+        <rect x="78" y="92" width="4" height="12" fill="#0a0a14"/>
+      </svg>
+    </div>
+
+    <h1 class="error-title">Acesso negado.</h1>
+    <p class="error-message">
+      Você não tem permissão para acessar esta área. Se precisar de acesso,
+      contate um administrador do sistema.
+    </p>
+
+    <div class="error-role-card">
+      <div class="error-role-card__row">
+        <span class="error-role-card__label">Sua role atual</span>
+        <span class="ui-badge ui-badge--accent">{{ currentRoleLabel }}</span>
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <button type="button" class="ui-btn ui-btn--secondary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+      <a class="ui-btn ui-btn--primary" routerLink="/dashboard">
+        <mat-icon>dashboard</mat-icon>
+        Ir para o dashboard
+      </a>
+    </div>
+
+  </article>
+</div>
