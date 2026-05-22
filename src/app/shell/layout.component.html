@@ -74,6 +74,19 @@
       </button>
 
       <div class="topbar-title">
+        <nav class="breadcrumb" aria-label="Trilha de navegação">
+          @for (crumb of breadcrumbs(); track crumb.label; let last = $last) {
+            @if (crumb.link && !last) {
+              <a class="breadcrumb-item breadcrumb-item--link" [routerLink]="crumb.link">{{ crumb.label }}</a>
+            } @else {
+              <span class="breadcrumb-item" [class.breadcrumb-item--current]="last"
+                    [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+            }
+            @if (!last) {
+              <mat-icon class="breadcrumb-sep" aria-hidden="true">chevron_right</mat-icon>
+            }
+          }
+        </nav>
         <h1 class="topbar-title-text">{{ currentTitle() }}</h1>
       </div>
 

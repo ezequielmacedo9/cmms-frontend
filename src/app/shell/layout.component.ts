@@ -48,6 +48,12 @@ export class LayoutComponent {
   /** True while the mobile drawer is visible. Ignored on desktop. */
   readonly drawerOpen = signal(false);
   readonly currentTitle = signal('Dashboard');
+  /**
+   * Dynamic breadcrumb derived from the active route. Always starts with
+   * the home link (Início → Dashboard) so users have a single click back
+   * to safety.
+   */
+  readonly breadcrumbs = signal<BreadcrumbItem[]>([]);
 
   /** Single source of truth for routes — keeps html + breadcrumb in sync. */
   readonly navGroups: ReadonlyArray<NavGroup> = [
@@ -82,9 +88,9 @@ export class LayoutComponent {
     // Auto-close the mobile drawer + update breadcrumb on every navigation.
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
       this.drawerOpen.set(false);
-      this.updateTitleFromUrl(this.router.url);
+      this.refreshNavState(this.router.url);
     });
-    this.updateTitleFromUrl(this.router.url);
+    this.refreshNavState(this.router.url);
   }
 
   // ── derived state ────────────────────────────────────────────────────
@@ -133,13 +139,49 @@ export class LayoutComponent {
 
   // ── helpers ──────────────────────────────────────────────────────────
 
-  private updateTitleFromUrl(url: string) {
+  /**
+   * Recomputes both the topbar title and the breadcrumb trail on every
+   * navigation. Breadcrumb shape:
+   *   Início → <Group> → <Page>
+   * Only the leaf is non-clickable.
+   */
+  private refreshNavState(url: string) {
     const segment = url.split('?')[0].split('/')[1] ?? '';
-    const match = this.navGroups
-      .flatMap(g => g.items)
-      .find(i => i.path === `/${segment}`);
-    this.currentTitle.set(match?.label ?? 'CMMS');
+    const path = `/${segment}`;
+
+    let activeItem: NavItem | undefined;
+    let activeGroup: NavGroup | undefined;
+    for (const g of this.navGroups) {
+      const found = g.items.find(i => i.path === path);
+      if (found) { activeItem = found; activeGroup = g; break; }
+    }
+
+    this.currentTitle.set(activeItem?.label ?? 'CMMS');
+
+    // Special cases: profile / 403 / 404 not in nav groups.
+    if (path === '/perfil') {
+      this.breadcrumbs.set([
+        { label: 'Início', link: '/dashboard' },
+        { label: 'Meu perfil' }
+      ]);
+      return;
+    }
+
+    const trail: BreadcrumbItem[] = [{ label: 'Início', link: '/dashboard' }];
+    if (activeGroup && activeItem && activeItem.path !== '/dashboard') {
+      trail.push({ label: activeGroup.label });
+      trail.push({ label: activeItem.label });
+    } else if (activeItem) {
+      trail.push({ label: activeItem.label });
+    }
+    this.breadcrumbs.set(trail);
   }
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  /** When present, renders as a router link. Leaf items leave this undefined. */
+  link?: string;
 }
 
 interface NavItem {
