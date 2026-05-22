@@ -1,12 +1,13 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { filter } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { NotificationService } from '../services/notification.service';
 import { ROLE_CSS, ROLE_LABELS } from '../models/user.model';
+import { routeFade } from './route-animations';
 
 /**
  * Application chrome — sidebar + topbar + content slot.
@@ -23,9 +24,20 @@ import { ROLE_CSS, ROLE_LABELS } from '../models/user.model';
   standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css'
+  styleUrl: './layout.component.css',
+  animations: [routeFade]
 })
 export class LayoutComponent {
+
+  /**
+   * Used as the {@code @routeFade} state key. Angular triggers the
+   * transition whenever this value changes between activations — we use
+   * the activated route URL because it's unique per navigation.
+   */
+  prepareRoute(outlet: RouterOutlet): unknown {
+    return outlet?.activatedRouteData?.['animation'] ?? outlet?.activatedRoute?.snapshot?.url?.join('/');
+  }
+
 
   private readonly router = inject(Router);
   readonly auth  = inject(AuthService);

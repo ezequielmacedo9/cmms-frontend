@@ -447,6 +447,18 @@
 .content::-webkit-scrollbar { width: 6px; }
 .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: var(--radius-pill); }
 
+/*
+ * `.route-stage` is the host of the routeFade animation. We need
+ * `position: relative` so the absolutely-positioned :enter / :leave
+ * pages stack on top of each other during the crossfade. `min-height`
+ * keeps the layout from collapsing when both child pages are
+ * absolutely positioned for a split second.
+ */
+.route-stage {
+  position: relative;
+  min-height: 200px;
+}
+
 /* ── Drawer backdrop (mobile only) ────────────────────────────────── */
 .drawer-backdrop {
   display: none;
