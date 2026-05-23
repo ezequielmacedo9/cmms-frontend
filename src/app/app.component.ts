@@ -4,6 +4,7 @@ import { ToastComponent } from './components/toast/toast.component';
 import { WakeupService } from './services/wakeup.service';
 import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
 import { NotificationPollingService } from './services/notification-polling.service';
+import { SeoService } from './services/seo.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -16,6 +17,7 @@ export class App implements OnInit, OnDestroy {
   private readonly wakeup = inject(WakeupService);
   private readonly shortcuts = inject(KeyboardShortcutsService);
   private readonly notifications = inject(NotificationPollingService);
+  private readonly seo = inject(SeoService);
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
@@ -35,6 +37,9 @@ export class App implements OnInit, OnDestroy {
     // Start the notifications polling loop (60s). Pauses automatically
     // when the user is logged out — see NotificationPollingService.
     this.notifications.start();
+
+    // Keep <title> and OG/Twitter meta tags in sync with the active route.
+    this.seo.install();
   }
 
   ngOnDestroy() {
