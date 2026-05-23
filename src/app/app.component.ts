@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './components/toast/toast.component';
 import { WakeupService } from './services/wakeup.service';
+import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -11,7 +12,8 @@ import { environment } from '../environments/environment';
   styleUrl: './app.css'
 })
 export class App implements OnInit, OnDestroy {
-  private wakeup = inject(WakeupService);
+  private readonly wakeup = inject(WakeupService);
+  private readonly shortcuts = inject(KeyboardShortcutsService);
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
@@ -24,6 +26,9 @@ export class App implements OnInit, OnDestroy {
 
     this.wakeup.ping().subscribe();
     this.intervalId = setInterval(() => this.wakeup.ping().subscribe(), 10 * 60 * 1000);
+
+    // Bind global keyboard shortcuts once at startup.
+    this.shortcuts.install();
   }
 
   ngOnDestroy() {
