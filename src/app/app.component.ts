@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './components/toast/toast.component';
 import { WakeupService } from './services/wakeup.service';
 import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
+import { NotificationPollingService } from './services/notification-polling.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -14,6 +15,7 @@ import { environment } from '../environments/environment';
 export class App implements OnInit, OnDestroy {
   private readonly wakeup = inject(WakeupService);
   private readonly shortcuts = inject(KeyboardShortcutsService);
+  private readonly notifications = inject(NotificationPollingService);
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
@@ -29,6 +31,10 @@ export class App implements OnInit, OnDestroy {
 
     // Bind global keyboard shortcuts once at startup.
     this.shortcuts.install();
+
+    // Start the notifications polling loop (60s). Pauses automatically
+    // when the user is logged out — see NotificationPollingService.
+    this.notifications.start();
   }
 
   ngOnDestroy() {
