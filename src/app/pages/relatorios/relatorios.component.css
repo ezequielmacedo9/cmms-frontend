@@ -1,6 +1,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 .relatorios-page { padding: 32px; }
-.page-header { margin-bottom: 28px; }
+.page-header {
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
 .page-title { font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; }
 .page-sub   { font-size: 13px; color: var(--text-faint); margin-top: 4px; }
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 28px; }

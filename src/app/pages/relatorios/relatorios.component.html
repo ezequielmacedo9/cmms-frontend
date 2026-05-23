@@ -1,7 +1,13 @@
-<div class="relatorios-page">
+<div class="relatorios-page printable">
   <div class="page-header">
-    <div class="page-title">Relatórios</div>
-    <div class="page-sub">Exporte dados do sistema em PDF ou Excel</div>
+    <div>
+      <div class="page-title">Relatórios</div>
+      <div class="page-sub">Exporte dados do sistema em PDF ou Excel</div>
+    </div>
+    <button type="button" class="ui-btn ui-btn--secondary no-print" (click)="printPage()">
+      <mat-icon>print</mat-icon>
+      Imprimir esta página
+    </button>
   </div>
 
   <div class="cards-grid">

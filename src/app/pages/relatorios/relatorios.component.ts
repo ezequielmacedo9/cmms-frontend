@@ -51,4 +51,13 @@ export class RelatoriosComponent {
   }
 
   isDownloading(id: string, format: string) { return this.downloading() === `${id}-${format}`; }
+
+  /**
+   * Triggers the browser's native print dialog. The global @media print
+   * stylesheet strips chrome (sidebar/topbar/toasts) and forces a clean
+   * white-on-black layout that fits A4.
+   */
+  printPage(): void {
+    window.print();
+  }
 }

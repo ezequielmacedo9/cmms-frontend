@@ -626,3 +626,69 @@ button { font-family: inherit; cursor: pointer; }
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Print stylesheet                                                   */
+/* Strips chrome (sidebar, topbar, toolbars) and gives the content    */
+/* a clean white-on-black layout that fits an A4 sheet. Any page that */
+/* should print well needs to add the .printable class to its root.   */
+/* ------------------------------------------------------------------ */
+@media print {
+  /* Force light scheme: PDFs/print drivers ignore dark backgrounds   */
+  /* and ink-on-white is the readable default for printed pages.       */
+  html, body, .shell, .main, .content, .route-stage {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  /* Hide everything that isn't the printable area */
+  .sidebar, .topbar, .live, .bell-wrap, .topbar-burger,
+  .ui-btn, button, .toast-host, app-toast, .no-print {
+    display: none !important;
+  }
+
+  .content {
+    overflow: visible !important;
+  }
+
+  /* Standard A4 margins; printers crop ~6mm anyway. */
+  @page {
+    size: A4;
+    margin: 15mm 12mm;
+  }
+
+  /* Generic table reset for print */
+  table, .ui-table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+  }
+  th, td, .ui-table th, .ui-table td {
+    border: 1px solid #ddd !important;
+    padding: 6px 8px !important;
+    color: #111 !important;
+    background: #ffffff !important;
+    font-size: 11pt;
+  }
+  thead { display: table-header-group; }
+  tr    { page-break-inside: avoid; }
+
+  /* Cards / panels lose their dark glass look */
+  .ui-card, .ui-glass, .ui-card--interactive, .chart-card,
+  .kpi, .alert-item, .alerts {
+    background: #ffffff !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    color: #111 !important;
+  }
+
+  a {
+    color: #111 !important;
+    text-decoration: none;
+  }
+
+  /* When the user wants a page break inside long reports */
+  .page-break {
+    page-break-before: always;
+  }
+}
