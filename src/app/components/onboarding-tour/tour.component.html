@@ -1,0 +1,91 @@
+@if (step) {
+
+  <!--
+    Backdrop com clip-path em forma de "donut": cobre toda a viewport
+    EXCEPT a moldura do elemento destacado. Quando o target nao foi
+    encontrado (ready=false) o backdrop fica solido normal.
+  -->
+  <div class="tour-backdrop"
+       [class.tour-backdrop--solid]="!spotlight.ready"
+       [style.--sl-top.px]="spotlight.top"
+       [style.--sl-left.px]="spotlight.left"
+       [style.--sl-width.px]="spotlight.width"
+       [style.--sl-height.px]="spotlight.height"
+       aria-hidden="true">
+  </div>
+
+  <!-- Spotlight border ring -->
+  @if (spotlight.ready) {
+    <div class="tour-spotlight"
+         [style.top.px]="spotlight.top"
+         [style.left.px]="spotlight.left"
+         [style.width.px]="spotlight.width"
+         [style.height.px]="spotlight.height"
+         aria-hidden="true"></div>
+  }
+
+  <!-- Tooltip card -->
+  <div #tooltipEl
+       class="tour-tooltip tour-tooltip--{{ tooltip.placement }}"
+       role="dialog"
+       aria-modal="true"
+       [attr.aria-labelledby]="'tour-title-' + current"
+       [style.top.px]="tooltip.top"
+       [style.left.px]="tooltip.left">
+
+    <header class="tour-tooltip__head">
+      <span class="tour-tooltip__progress">
+        Passo {{ current + 1 }} de {{ steps.length }}
+      </span>
+      <button class="tour-tooltip__close"
+              type="button"
+              (click)="skip.emit()"
+              aria-label="Pular tour">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <h3 id="tour-title-{{ current }}" class="tour-tooltip__title">{{ step.title }}</h3>
+    <p class="tour-tooltip__body">{{ step.description }}</p>
+
+    <!-- Progress dots -->
+    <div class="tour-tooltip__dots" aria-hidden="true">
+      @for (s of steps; track s.selector; let i = $index) {
+        <span class="tour-dot" [class.tour-dot--active]="i === current"></span>
+      }
+    </div>
+
+    <footer class="tour-tooltip__actions">
+      <button class="ui-btn ui-btn--ghost ui-btn--sm"
+              type="button"
+              (click)="skip.emit()">
+        Pular
+      </button>
+      <div class="tour-tooltip__nav">
+        <button class="ui-btn ui-btn--secondary ui-btn--sm"
+                type="button"
+                (click)="goBack.emit()"
+                [disabled]="isFirst">
+          Voltar
+        </button>
+        @if (!isLast) {
+          <button class="ui-btn ui-btn--primary ui-btn--sm"
+                  type="button"
+                  (click)="advance.emit()"
+                  autofocus>
+            Próximo
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        } @else {
+          <button class="ui-btn ui-btn--primary ui-btn--sm"
+                  type="button"
+                  (click)="complete.emit()"
+                  autofocus>
+            <mat-icon>check</mat-icon>
+            Concluir
+          </button>
+        }
+      </div>
+    </footer>
+  </div>
+}
