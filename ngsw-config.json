@@ -11,9 +11,24 @@
           "/favicon.ico",
           "/favicon.svg",
           "/manifest.webmanifest",
-          "/icons/**",
+          "/index.html",
           "/*.css",
           "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "icons-and-images",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/icons/**",
+          "/*.svg",
+          "/*.png",
+          "/*.jpg",
+          "/*.jpeg",
+          "/*.webp"
         ]
       }
     },
@@ -32,7 +47,10 @@
   "dataGroups": [
     {
       "name": "api-freshness",
-      "urls": ["/api/**"],
+      "urls": [
+        "https://cmms-backend-8y7h.onrender.com/api/**",
+        "https://*.onrender.com/api/**"
+      ],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 100,
@@ -40,5 +58,11 @@
         "timeout": "10s"
       }
     }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/api/**",
+    "!/actuator/**"
   ]
 }

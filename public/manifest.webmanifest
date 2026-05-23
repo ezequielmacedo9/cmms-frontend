@@ -1,13 +1,17 @@
 {
+  "id": "/?source=pwa",
   "name": "CMMS Industrial Suite",
   "short_name": "CMMS",
-  "description": "Sistema de Gerenciamento de Manutenção Industrial",
-  "start_url": "/",
+  "description": "Plataforma de gerenciamento de manutenção industrial: máquinas, manutenções preventivas/corretivas, estoque de peças e ferramentas.",
+  "start_url": "/dashboard?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
   "background_color": "#0a0a18",
   "theme_color": "#7c3aed",
   "orientation": "any",
   "lang": "pt-BR",
+  "dir": "ltr",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -19,7 +23,13 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "favicon.ico",
@@ -30,14 +40,29 @@
   "shortcuts": [
     {
       "name": "Dashboard",
+      "short_name": "Dashboard",
       "url": "/dashboard",
-      "description": "Painel de controle"
+      "description": "Painel com KPIs e alertas"
     },
     {
       "name": "Manutenções",
+      "short_name": "Manutenções",
       "url": "/manutencoes",
       "description": "Ordens de serviço"
+    },
+    {
+      "name": "Máquinas",
+      "short_name": "Máquinas",
+      "url": "/maquinas",
+      "description": "Cadastro de equipamentos"
+    },
+    {
+      "name": "Estoque",
+      "short_name": "Estoque",
+      "url": "/estoque",
+      "description": "Peças e insumos"
     }
   ],
-  "categories": ["productivity", "utilities"]
+  "categories": ["productivity", "business", "utilities"],
+  "prefer_related_applications": false
 }
