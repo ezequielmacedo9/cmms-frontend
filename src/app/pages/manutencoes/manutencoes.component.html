@@ -19,7 +19,7 @@
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
         <div>
           <div class="hero-title">Manutenções</div>
           <div class="hero-sub">Registre e acompanhe as ordens de serviço</div>
@@ -39,7 +39,7 @@
         <mat-icon class="search-icon">search</mat-icon>
         <input class="search-input" type="text" placeholder="Buscar por máquina, técnico ou descrição..."
           [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''; applyFilter()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; applyFilter()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -59,7 +59,7 @@
             <div class="form-head-sub">Preencha os dados da ordem de serviço</div>
           </div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
       </div>
       <div class="form-fields">
         <mat-form-field appearance="outline" class="dark-field">
@@ -145,7 +145,7 @@
               <td>{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(m.id!)" title="Excluir">
+                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(m.id!)" aria-label="Excluir registro" title="Excluir">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -160,9 +160,9 @@
         [hint]="searchTerm || filterTipo ? 'Tente outros filtros ou limpe a busca.' : 'Registre a primeira ordem de serviço para o seu parque industrial.'">
       </app-empty-state>
       <div class="pagination" *ngIf="manutencoesFiltradas.length > pageSize">
-        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1"><mat-icon>chevron_right</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 

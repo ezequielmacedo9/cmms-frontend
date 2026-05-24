@@ -18,7 +18,7 @@
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
         <div>
           <div class="hero-title">Estoque</div>
           <div class="hero-sub">Controle de peças e componentes</div>
@@ -38,7 +38,7 @@
         <mat-icon class="search-icon">search</mat-icon>
         <input class="search-input" type="text" placeholder="Buscar por nome ou código..."
           [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''; applyFilter()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; applyFilter()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -52,7 +52,7 @@
             <div class="form-head-sub">{{ editando ? 'Atualize os dados do item' : 'Preencha os dados do novo item' }}</div>
           </div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
       </div>
       <div class="form-fields">
         <mat-form-field appearance="outline" class="dark-field">
@@ -125,8 +125,8 @@
               <td>{{ p.vidaUtilHoras }}h</td>
               <td>
                 <div class="row-actions">
-                  <button mat-icon-button class="action-icon" (click)="editar(p)" title="Editar"><mat-icon>edit</mat-icon></button>
-                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(p.id!)" title="Excluir"><mat-icon>delete</mat-icon></button>
+                  <button mat-icon-button class="action-icon" (click)="editar(p)" aria-label="Editar registro" title="Editar"><mat-icon>edit</mat-icon></button>
+                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(p.id!)" aria-label="Excluir registro" title="Excluir"><mat-icon>delete</mat-icon></button>
                 </div>
               </td>
             </tr>
@@ -139,9 +139,9 @@
         [hint]="searchTerm ? 'Tente outro termo de busca.' : 'Cadastre a primeira peça para começar a controlar o consumo do almoxarifado.'">
       </app-empty-state>
       <div class="pagination" *ngIf="pecasFiltradas.length > pageSize">
-        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0"><mat-icon>chevron_left</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1"><mat-icon>chevron_right</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 

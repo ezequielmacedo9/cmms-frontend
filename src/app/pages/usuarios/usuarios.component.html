@@ -22,7 +22,7 @@
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
         <div>
           <div class="hero-title">Gerenciamento de Usuários</div>
           <div class="hero-sub">Convide, ative/desative e gerencie as permissões da equipe</div>
@@ -44,7 +44,7 @@
         <mat-icon class="search-icon">search</mat-icon>
         <input class="search-input" type="text" placeholder="Buscar por nome ou e-mail..."
           [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" (click)="searchTerm=''; applyFilter()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; applyFilter()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -66,7 +66,7 @@
           <div class="form-head-title">Convidar Usuário</div>
           <div class="form-head-sub">Crie as credenciais de acesso para o novo membro</div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
       </div>
       <div class="form-fields">
         <div class="field-group">

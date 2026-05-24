@@ -1,5 +1,30 @@
 :host { display: block; }
 
+/* Skip-to-content link (WCAG 2.4.1). Hidden off-screen until focused
+   by Tab — then jumps to the top-left corner with high contrast so
+   keyboard users can skip the sidebar/topbar. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-toast, 9999);
+  padding: 10px 16px;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  border-bottom-right-radius: var(--radius-sm);
+  transform: translateY(-100%);
+  transition: transform 160ms var(--ease-out, ease);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* =============================================================================
  * Shell — sidebar + topbar + content slot
  * Uses tokens from styles.scss. Component-scoped CSS only adjusts the chrome.
