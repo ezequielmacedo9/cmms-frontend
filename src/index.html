@@ -60,11 +60,86 @@
         of the host page is not leaked.
       - crossorigin="anonymous" so credentials are not sent with the request.
   -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" crossorigin="anonymous">
+  <!--
+    Fonts são carregadas async ("print" trick): o browser nao bloqueia
+    a renderizacao no link, mas o onload promove para 'all' e aplica
+    quando estiverem prontas. Fallback <noscript> garante para crawlers.
+  -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        crossorigin="anonymous"
+        media="print"
+        onload="this.media='all'">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap"
+        crossorigin="anonymous"
+        media="print"
+        onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" crossorigin="anonymous">
+  </noscript>
   <script src="https://accounts.google.com/gsi/client" async defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!--
+    JSON-LD structured data — ajuda crawlers (Google, LinkedIn,
+    WhatsApp preview cards) a entender o tipo de aplicacao.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CMMS Industrial Suite",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "Plataforma enterprise de gestão de manutenção industrial: máquinas, manutenções preventivas/corretivas, estoque de peças e relatórios.",
+    "inLanguage": "pt-BR"
+  }
+  </script>
+
+  <style>
+    /* Inline critical bootstrap loader — visivel antes do bundle JS
+       carregar e antes do app montar. Sem isso o usuario ve tela em
+       branco por 200-800ms (especialmente em mobile / 3G). */
+    .boot-loader {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+      background: #0a0a14;
+      color: #fafafa;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      z-index: 0;
+    }
+    .boot-loader__spinner {
+      width: 42px; height: 42px;
+      border: 3px solid rgba(139, 92, 246, 0.18);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: boot-spin 720ms linear infinite;
+    }
+    .boot-loader__brand {
+      font-size: 13px; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    @keyframes boot-spin { to { transform: rotate(360deg); } }
+    /* Once Angular mounts <app-root>, the loader is naturally
+       overlaid by the app DOM. */
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <div class="boot-loader" role="status" aria-label="Carregando aplicação">
+      <div class="boot-loader__spinner" aria-hidden="true"></div>
+      <div class="boot-loader__brand">CMMS · Industrial Suite</div>
+    </div>
+  </app-root>
+  <noscript>
+    <div style="padding:24px;text-align:center;font-family:sans-serif;color:#fff;background:#0a0a14;">
+      Esta aplicação exige JavaScript habilitado para funcionar.
+    </div>
+  </noscript>
 </body>
 </html>
