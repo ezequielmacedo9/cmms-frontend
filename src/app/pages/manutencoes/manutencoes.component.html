@@ -1,18 +1,5 @@
 <div class="page-container">
 
-  <!-- Delete Confirmation -->
-  <div class="overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
-    <div class="confirm-box" (click)="$event.stopPropagation()">
-      <mat-icon class="confirm-icon">warning_amber</mat-icon>
-      <div class="confirm-title">Excluir manutenção?</div>
-      <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
-      <div class="confirm-btns">
-        <button class="btn-cancel" (click)="cancelarDelete()">Cancelar</button>
-        <button class="btn-del" (click)="deletar(deletandoId!)"><mat-icon style="font-size:14px;width:14px;height:14px">delete</mat-icon>Excluir</button>
-      </div>
-    </div>
-  </div>
-
   <div class="page-hero">
     <div class="breadcrumb">
       <mat-icon>home</mat-icon> Dashboard <mat-icon>chevron_right</mat-icon> <span>Manutenções</span>
@@ -38,8 +25,8 @@
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
         <input class="search-input" type="text" placeholder="Buscar por máquina, técnico ou descrição..."
-          [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; applyFilter()">
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; onSearch()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -98,16 +85,32 @@
     <div class="table-card">
       <div class="table-head">
         <span class="table-head-title">Ordens de Serviço</span>
-        <span class="count-badge">{{ manutencoesFiltradas.length }} registros</span>
+        <span class="count-badge">{{ table.filtered().length }} registros</span>
       </div>
       <table class="data-table">
         <thead>
           <tr>
             <th>Máquina</th>
-            <th>Tipo</th>
-            <th>Prioridade</th>
-            <th>Técnico</th>
-            <th>Data</th>
+            <th class="sortable" [class.is-sorted]="sortDir('tipo')" (click)="onSort('tipo')" (keydown.enter)="onSort('tipo')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('tipo') === 'asc' ? 'ascending' : sortDir('tipo') === 'desc' ? 'descending' : 'none'">
+              Tipo
+              <mat-icon class="sort-caret" *ngIf="sortDir('tipo') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('prioridade')" (click)="onSort('prioridade')" (keydown.enter)="onSort('prioridade')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('prioridade') === 'asc' ? 'ascending' : sortDir('prioridade') === 'desc' ? 'descending' : 'none'">
+              Prioridade
+              <mat-icon class="sort-caret" *ngIf="sortDir('prioridade') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('tecnico')" (click)="onSort('tecnico')" (keydown.enter)="onSort('tecnico')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('tecnico') === 'asc' ? 'ascending' : sortDir('tecnico') === 'desc' ? 'descending' : 'none'">
+              Técnico
+              <mat-icon class="sort-caret" *ngIf="sortDir('tecnico') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('dataManutencao')" (click)="onSort('dataManutencao')" (keydown.enter)="onSort('dataManutencao')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('dataManutencao') === 'asc' ? 'ascending' : sortDir('dataManutencao') === 'desc' ? 'descending' : 'none'">
+              Data
+              <mat-icon class="sort-caret" *ngIf="sortDir('dataManutencao') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
             <th></th>
           </tr>
         </thead>
@@ -122,7 +125,7 @@
             </tr>
           </ng-container>
           <ng-container *ngIf="!carregando">
-            <tr *ngFor="let m of pagedManutencoes; trackBy: trackById">
+            <tr *ngFor="let m of table.view(); trackBy: trackById">
               <td>{{ m.maquina?.nome || '—' }}</td>
               <td>
                 <span class="badge"
@@ -145,7 +148,7 @@
               <td>{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button mat-icon-button class="action-icon del" (click)="confirmarDelete(m.id!)" aria-label="Excluir registro" title="Excluir">
+                  <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(m)" aria-label="Excluir registro" title="Excluir">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -154,15 +157,15 @@
           </ng-container>
         </tbody>
       </table>
-      <app-empty-state *ngIf="!carregando && manutencoesFiltradas.length === 0"
+      <app-empty-state *ngIf="!carregando && table.filtered().length === 0"
         [kind]="searchTerm || filterTipo ? 'search' : 'inbox'"
         [title]="searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada'"
         [hint]="searchTerm || filterTipo ? 'Tente outros filtros ou limpe a busca.' : 'Registre a primeira ordem de serviço para o seu parque industrial.'">
       </app-empty-state>
-      <div class="pagination" *ngIf="manutencoesFiltradas.length > pageSize">
-        <button mat-icon-button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
-        <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-        <button mat-icon-button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
+      <div class="pagination" *ngIf="table.filtered().length > table.pageSize()">
+        <button mat-icon-button class="page-btn" (click)="table.prevPage()" [disabled]="table.page() === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
+        <span class="page-info">{{ table.page() + 1 }} / {{ table.totalPages() }}</span>
+        <button mat-icon-button class="page-btn" (click)="table.nextPage()" [disabled]="table.page() === table.totalPages() - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 
