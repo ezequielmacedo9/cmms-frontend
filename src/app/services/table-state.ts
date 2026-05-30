@@ -32,7 +32,7 @@ export interface SortState {
  * onSort(col: string) { this.table.toggleSort(col); }
  * </pre>
  */
-export class TableState<T extends Record<string, unknown>> {
+export class TableState<T extends object> {
 
   /** Raw input list. */
   private readonly _data = signal<T[]>([]);
@@ -146,8 +146,8 @@ export class TableState<T extends Record<string, unknown>> {
     const dir = s.direction === 'asc' ? 1 : -1;
 
     copy.sort((a, b) => {
-      const va = (a as Record<string, unknown>)[s.column];
-      const vb = (b as Record<string, unknown>)[s.column];
+      const va = (a as unknown as Record<string, unknown>)[s.column];
+      const vb = (b as unknown as Record<string, unknown>)[s.column];
       return compare(va, vb) * dir;
     });
     return copy;
