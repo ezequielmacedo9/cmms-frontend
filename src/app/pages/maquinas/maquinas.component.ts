@@ -1,19 +1,19 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subscription } from 'rxjs';
 import { MaquinaService } from '../../services/maquina.service';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { NotificationService } from '../../services/notification.service';
+import { ExportService } from '../../services/export.service';
+import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
+import { TableState } from '../../services/table-state';
 import { Maquina } from '../../models/maquina.model';
 import { Manutencao } from '../../models/manutencao.model';
 import { Router } from '@angular/router';
@@ -23,9 +23,9 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
   selector: 'app-maquinas',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatTableModule, MatButtonModule,
+    CommonModule, FormsModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatCardModule, MatDialogModule, MatProgressSpinnerModule,
+    MatProgressSpinnerModule,
     EmptyStateComponent
   ],
   templateUrl: './maquinas.component.html',
@@ -36,24 +36,29 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   private maquinaService = inject(MaquinaService);
   private manutencaoService = inject(ManutencaoService);
   private notify = inject(NotificationService);
+  private exporter = inject(ExportService);
+  private confirm = inject(ConfirmDialogService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
 
+  /** Source list straight from the API — the dropdown filter narrows this. */
   maquinas: Maquina[] = [];
-  dataSource = new MatTableDataSource<Maquina>([]);
-  displayedColumns = ['nome', 'setor', 'status', 'acoes'];
+
+  /** Search + sort + pagination, signal-driven. */
+  readonly table = new TableState<Maquina>(
+    m => [m.nome, m.setor, m.status, m.prioridade],
+    { column: 'nome', direction: 'asc' }
+  );
+
   showForm = false;
   editando = false;
   salvando = false;
-  deletandoId: number | null = null;
   form: Maquina = { nome: '', setor: '', status: 'ATIVO' };
 
   carregando = true;
   searchTerm = '';
   filterStatus = '';
-  pageSize = 10;
-  currentPage = 0;
 
   // History modal
   showHistory = false;
@@ -82,32 +87,17 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
+  /** Re-feeds the table with the status-filtered slice (search stays applied). */
   applyFilter() {
-    let filtered = [...this.maquinas];
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(m =>
-        m.nome.toLowerCase().includes(term) || m.setor.toLowerCase().includes(term)
-      );
-    }
-    if (this.filterStatus) {
-      filtered = filtered.filter(m => m.status === this.filterStatus);
-    }
-    this.dataSource.data = filtered;
-    this.currentPage = 0;
+    const rows = this.filterStatus
+      ? this.maquinas.filter(m => m.status === this.filterStatus)
+      : this.maquinas;
+    this.table.setData(rows);
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.dataSource.data.length / this.pageSize) || 1;
-  }
-
-  get pagedMaquinas(): Maquina[] {
-    const start = this.currentPage * this.pageSize;
-    return this.dataSource.data.slice(start, start + this.pageSize);
-  }
-
-  nextPage() { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
-  prevPage() { if (this.currentPage > 0) this.currentPage--; }
+  onSearch() { this.table.setSearch(this.searchTerm); }
+  onSort(column: string) { this.table.toggleSort(column); }
+  sortDir(column: string) { return this.table.directionOf(column); }
 
   novoRegistro() {
     this.form = { nome: '', setor: '', status: 'ATIVO' };
@@ -153,12 +143,17 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  confirmarDelete(id: number) {
-    this.deletandoId = id;
+  async confirmarExclusao(maquina: Maquina) {
+    const ok = await this.confirm.ask({
+      title: 'Excluir máquina?',
+      message: `"${maquina.nome}" será removida permanentemente. Esta ação não pode ser desfeita.`,
+      variant: 'danger',
+      confirmLabel: 'Excluir'
+    });
+    if (ok && maquina.id != null) this.deletar(maquina.id);
   }
 
-  deletar(id: number) {
-    this.deletandoId = null;
+  private deletar(id: number) {
     const sub = this.maquinaService.deletar(id).subscribe({
       next: () => {
         this.notify.success('Máquina removida!');
@@ -171,10 +166,6 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  cancelarDelete() {
-    this.deletandoId = null;
-  }
-
   verHistorico(maquina: Maquina) {
     this.historyMaquina = maquina;
     this.showHistory = true;
@@ -184,10 +175,12 @@ export class MaquinasComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.historicoManutencoes = data;
         this.carregandoHistorico = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.carregandoHistorico = false;
         this.notify.error('Erro ao carregar histórico.');
+        this.cdr.markForCheck();
       }
     });
     this.subs.add(sub);
@@ -200,28 +193,14 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   }
 
   exportarCSV() {
-    const header = 'ID,Nome,Setor,Status,Intervalo Preventiva (dias),Última Manutenção';
-    const rows = this.dataSource.data.map(m =>
-      `${m.id ?? ''},${this.csvEscape(m.nome)},${this.csvEscape(m.setor)},${m.status},${m.intervaloPreventivaDias ?? 0},${m.dataUltimaManutencao ?? ''}`
-    );
-    this.downloadCsv([header, ...rows].join('\n'), 'maquinas.csv');
-  }
-
-  private csvEscape(value: string): string {
-    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-      return `"${value.replace(/"/g, '""')}"`;
-    }
-    return value;
-  }
-
-  private downloadCsv(content: string, filename: string) {
-    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    this.exporter.downloadCsv(this.table.filtered(), [
+      { header: 'ID',                           value: m => m.id ?? '' },
+      { header: 'Nome',                         value: m => m.nome },
+      { header: 'Setor',                        value: m => m.setor },
+      { header: 'Status',                       value: m => m.status },
+      { header: 'Intervalo Preventiva (dias)',  value: m => m.intervaloPreventivaDias ?? 0 },
+      { header: 'Última Manutenção',            value: m => m.dataUltimaManutencao ?? '' }
+    ], 'maquinas');
   }
 
   cancelar() { this.showForm = false; }
