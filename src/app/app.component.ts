@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './components/toast/toast.component';
+import { ShortcutsHelpComponent } from './components/shortcuts-help/shortcuts-help.component';
 import { WakeupService } from './services/wakeup.service';
 import { KeyboardShortcutsService } from './services/keyboard-shortcuts.service';
 import { NotificationPollingService } from './services/notification-polling.service';
@@ -9,7 +10,7 @@ import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ToastComponent],
+  imports: [RouterOutlet, ToastComponent, ShortcutsHelpComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
