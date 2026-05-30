@@ -628,6 +628,33 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* ------------------------------------------------------------------ */
+/* Sortable table headers                                             */
+/* Shared by every list page (.data-table is component-scoped, but    */
+/* these helpers ride on top via the unencapsulated global sheet).    */
+/* ------------------------------------------------------------------ */
+.data-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color var(--t-fast);
+}
+.data-table th.sortable:hover { color: var(--text); }
+.data-table th.sortable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius-xs);
+}
+.data-table th.sortable.is-sorted { color: var(--accent); }
+.data-table th .sort-caret {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-left: 2px;
+  opacity: 0.9;
+}
+
+/* ------------------------------------------------------------------ */
 /* Print stylesheet                                                   */
 /* Strips chrome (sidebar, topbar, toolbars) and gives the content    */
 /* a clean white-on-black layout that fits an A4 sheet. Any page that */
