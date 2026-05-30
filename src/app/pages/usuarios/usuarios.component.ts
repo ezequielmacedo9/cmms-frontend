@@ -7,6 +7,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UsuarioService } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
+import { TableState } from '../../services/table-state';
 import { UserProfile, UserRole, ROLE_LABELS, ROLE_CSS, ALL_ROLES } from '../../models/user.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
 
@@ -23,15 +25,22 @@ export class UsuariosComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
   private authService    = inject(AuthService);
   private toast          = inject(ToastService);
+  private confirm        = inject(ConfirmDialogService);
   private router         = inject(Router);
 
   readonly ROLE_LABELS = ROLE_LABELS;
   readonly ROLE_CSS    = ROLE_CSS;
   readonly ALL_ROLES   = ALL_ROLES;
 
-  usuarios: UserProfile[]         = [];
-  filtrados: UserProfile[]        = [];
-  carregando                      = true;
+  /** Source list straight from the API — the dropdowns narrow this. */
+  usuarios: UserProfile[] = [];
+  carregando              = true;
+
+  /** Live search + sort (full list — no pagination on this page). */
+  readonly table = new TableState<UserProfile>(
+    u => [u.nome, u.email],
+    { column: 'nome', direction: 'asc' }
+  );
 
   searchTerm  = '';
   filterRole  = '';
@@ -39,7 +48,6 @@ export class UsuariosComponent implements OnInit {
 
   showForm    = false;
   salvando    = false;
-  deletandoId: number | null = null;
 
   form = { nome: '', email: '', senha: '', roleNome: 'ROLE_TECNICO' };
 
@@ -59,16 +67,17 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
+  /** Re-feeds the table with the role/status-filtered slice (search stays applied). */
   applyFilter() {
-    this.filtrados = this.usuarios.filter(u => {
-      const matchText = !this.searchTerm ||
-        u.nome.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        u.email.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchRole  = !this.filterRole  || u.role === this.filterRole;
-      const matchAtivo = !this.filterAtivo || String(u.ativo) === this.filterAtivo;
-      return matchText && matchRole && matchAtivo;
-    });
+    let rows = this.usuarios;
+    if (this.filterRole)  rows = rows.filter(u => u.role === this.filterRole);
+    if (this.filterAtivo) rows = rows.filter(u => String(u.ativo) === this.filterAtivo);
+    this.table.setData(rows);
   }
+
+  onSearch() { this.table.setSearch(this.searchTerm); }
+  onSort(column: string) { this.table.toggleSort(column); }
+  sortDir(column: string) { return this.table.directionOf(column); }
 
   novoConvite() {
     this.form = { nome: '', email: '', senha: '', roleNome: 'ROLE_TECNICO' };
@@ -130,15 +139,21 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  confirmarDelete(id: number) { this.deletandoId = id; }
-  cancelarDelete()            { this.deletandoId = null; }
+  async confirmarExclusao(usuario: UserProfile) {
+    const ok = await this.confirm.ask({
+      title: 'Remover usuário?',
+      message: `"${usuario.nome}" será removido permanentemente. Esta ação não pode ser desfeita.`,
+      variant: 'danger',
+      confirmLabel: 'Remover'
+    });
+    if (ok) this.deletar(usuario.id);
+  }
 
-  deletar(id: number) {
+  private deletar(id: number) {
     this.usuarioService.deletar(id).subscribe({
       next: () => {
         this.usuarios = this.usuarios.filter(u => u.id !== id);
         this.applyFilter();
-        this.deletandoId = null;
         this.toast.show('Usuário removido', 'success');
       },
       error: () => this.toast.show('Erro ao remover usuário', 'error')

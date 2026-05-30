@@ -1,20 +1,5 @@
 <div class="page-container">
 
-  <!-- Delete Confirm -->
-  <div class="overlay" *ngIf="deletandoId !== null" (click)="cancelarDelete()">
-    <div class="confirm-box" (click)="$event.stopPropagation()">
-      <mat-icon class="confirm-icon">warning_amber</mat-icon>
-      <div class="confirm-title">Remover usuário?</div>
-      <div class="confirm-sub">Esta ação não pode ser desfeita.</div>
-      <div class="confirm-btns">
-        <button class="btn-cancel" (click)="cancelarDelete()">Cancelar</button>
-        <button class="btn-del" (click)="deletar(deletandoId!)">
-          <mat-icon style="font-size:14px;width:14px;height:14px">delete</mat-icon>Remover
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Hero -->
   <div class="page-hero">
     <div class="breadcrumb">
@@ -43,8 +28,8 @@
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
         <input class="search-input" type="text" placeholder="Buscar por nome ou e-mail..."
-          [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; applyFilter()">
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; onSearch()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -101,15 +86,31 @@
     <div class="table-card">
       <div class="table-head">
         <span class="table-head-title">Membros da Equipe</span>
-        <span class="count-badge">{{ filtrados.length }} usuário{{ filtrados.length !== 1 ? 's' : '' }}</span>
+        <span class="count-badge">{{ table.filtered().length }} usuário{{ table.filtered().length !== 1 ? 's' : '' }}</span>
       </div>
       <table class="data-table">
         <thead>
           <tr>
-            <th>Usuário</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Criado em</th>
+            <th class="sortable" [class.is-sorted]="sortDir('nome')" (click)="onSort('nome')" (keydown.enter)="onSort('nome')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('nome') === 'asc' ? 'ascending' : sortDir('nome') === 'desc' ? 'descending' : 'none'">
+              Usuário
+              <mat-icon class="sort-caret" *ngIf="sortDir('nome') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('role')" (click)="onSort('role')" (keydown.enter)="onSort('role')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('role') === 'asc' ? 'ascending' : sortDir('role') === 'desc' ? 'descending' : 'none'">
+              Role
+              <mat-icon class="sort-caret" *ngIf="sortDir('role') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('ativo')" (click)="onSort('ativo')" (keydown.enter)="onSort('ativo')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('ativo') === 'asc' ? 'ascending' : sortDir('ativo') === 'desc' ? 'descending' : 'none'">
+              Status
+              <mat-icon class="sort-caret" *ngIf="sortDir('ativo') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
+            <th class="sortable" [class.is-sorted]="sortDir('dataCriacao')" (click)="onSort('dataCriacao')" (keydown.enter)="onSort('dataCriacao')" tabindex="0" role="button"
+              [attr.aria-sort]="sortDir('dataCriacao') === 'asc' ? 'ascending' : sortDir('dataCriacao') === 'desc' ? 'descending' : 'none'">
+              Criado em
+              <mat-icon class="sort-caret" *ngIf="sortDir('dataCriacao') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </th>
             <th>Alterar Role</th>
             <th></th>
           </tr>
@@ -126,7 +127,7 @@
           </ng-container>
 
           <ng-container *ngIf="!carregando">
-            <tr *ngFor="let u of filtrados; trackBy: trackById" [class.row-inactive]="!u.ativo">
+            <tr *ngFor="let u of table.filtered(); trackBy: trackById" [class.row-inactive]="!u.ativo">
               <td>
                 <div class="user-cell">
                   <div class="avatar" [class.avatar-me]="u.id === meuId">{{ iniciais(u.nome) }}</div>
@@ -170,7 +171,7 @@
                   </button>
                   <button *ngIf="isSuperAdmin && u.id !== meuId"
                     class="action-icon del"
-                    (click)="confirmarDelete(u.id)"
+                    (click)="confirmarExclusao(u)"
                     title="Remover permanentemente">
                     <mat-icon>delete</mat-icon>
                   </button>
@@ -180,7 +181,7 @@
           </ng-container>
         </tbody>
       </table>
-      <app-empty-state *ngIf="!carregando && filtrados.length === 0"
+      <app-empty-state *ngIf="!carregando && table.filtered().length === 0"
         [kind]="searchTerm || filterRole || filterAtivo ? 'search' : 'rocket'"
         [title]="searchTerm || filterRole || filterAtivo ? 'Nenhum resultado' : 'Nenhum usuário cadastrado'"
         [hint]="searchTerm || filterRole || filterAtivo ? 'Tente outros filtros.' : 'Convide a primeira pessoa para acessar o sistema.'">
