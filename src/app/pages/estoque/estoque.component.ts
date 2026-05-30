@@ -12,6 +12,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subscription } from 'rxjs';
 import { PecaService } from '../../services/peca.service';
 import { NotificationService } from '../../services/notification.service';
+import { ExportService } from '../../services/export.service';
+import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
+import { TableState } from '../../services/table-state';
 import { PecaRequest, PecaResponse } from '../../models/peca.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
 
@@ -31,52 +34,42 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
 export class EstoqueComponent implements OnInit, OnDestroy {
   private pecaService = inject(PecaService);
   private notify = inject(NotificationService);
+  private exporter = inject(ExportService);
+  private confirm = inject(ConfirmDialogService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
 
+  /** Source list straight from the API. */
   pecas: PecaResponse[] = [];
-  displayedColumns = ['codigo', 'nome', 'quantidade', 'custo', 'vidaUtil', 'acoes'];
+
+  /** Search + sort + pagination, signal-driven. */
+  readonly table = new TableState<PecaResponse>(
+    p => [p.nome, p.codigo],
+    { column: 'nome', direction: 'asc' }
+  );
+
   showForm = false;
   editando = false;
   salvando = false;
   editandoId: number | null = null;
-  deletandoId: number | null = null;
   carregando = true;
   searchTerm = '';
-  pageSize = 10;
-  currentPage = 0;
   form: PecaRequest = { nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 };
 
   ngOnInit() { this.carregar(); }
   ngOnDestroy() { this.subs.unsubscribe(); }
 
-  get pecasFiltradas(): PecaResponse[] {
-    if (!this.searchTerm.trim()) return this.pecas;
-    const term = this.searchTerm.toLowerCase();
-    return this.pecas.filter(p =>
-      p.nome.toLowerCase().includes(term) || p.codigo.toLowerCase().includes(term)
-    );
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.pecasFiltradas.length / this.pageSize) || 1;
-  }
-
-  get pagedPecas(): PecaResponse[] {
-    const start = this.currentPage * this.pageSize;
-    return this.pecasFiltradas.slice(start, start + this.pageSize);
-  }
-
-  applyFilter() { this.currentPage = 0; }
-  nextPage() { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
-  prevPage() { if (this.currentPage > 0) this.currentPage--; }
+  onSearch() { this.table.setSearch(this.searchTerm); }
+  onSort(column: string) { this.table.toggleSort(column); }
+  sortDir(column: string) { return this.table.directionOf(column); }
 
   carregar() {
     this.carregando = true;
     const sub = this.pecaService.listar().subscribe({
       next: data => {
         this.pecas = data;
+        this.table.setData(this.pecas);
         this.carregando = false;
         this.cdr.markForCheck();
       },
@@ -125,6 +118,7 @@ export class EstoqueComponent implements OnInit, OnDestroy {
         } else {
           this.pecas = [...this.pecas, saved];
         }
+        this.table.setData(this.pecas);
         this.cdr.markForCheck();
       },
       error: () => {
@@ -135,16 +129,22 @@ export class EstoqueComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  confirmarDelete(id: number) {
-    this.deletandoId = id;
+  async confirmarExclusao(peca: PecaResponse) {
+    const ok = await this.confirm.ask({
+      title: 'Excluir peça?',
+      message: `"${peca.nome}" (${peca.codigo}) será removida do estoque. Esta ação não pode ser desfeita.`,
+      variant: 'danger',
+      confirmLabel: 'Excluir'
+    });
+    if (ok && peca.id != null) this.deletar(peca.id);
   }
 
-  deletar(id: number) {
-    this.deletandoId = null;
+  private deletar(id: number) {
     const sub = this.pecaService.deletar(id).subscribe({
       next: () => {
         this.notify.success('Peça removida!');
         this.pecas = this.pecas.filter(p => p.id !== id);
+        this.table.setData(this.pecas);
         this.cdr.markForCheck();
       },
       error: () => this.notify.error('Erro ao excluir.')
@@ -152,33 +152,15 @@ export class EstoqueComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  cancelarDelete() {
-    this.deletandoId = null;
-  }
-
   exportarCSV() {
-    const header = 'ID,Código,Nome,Qtd Estoque,Custo Unitário (R$),Vida Útil (h)';
-    const rows = this.pecas.map(p =>
-      `${p.id ?? ''},${this.csvEscape(p.codigo)},${this.csvEscape(p.nome)},${p.quantidadeEmEstoque},${p.custoUnitario},${p.vidaUtilHoras}`
-    );
-    this.downloadCsv([header, ...rows].join('\n'), 'estoque.csv');
-  }
-
-  private csvEscape(value: string): string {
-    if (value.includes(',') || value.includes('"')) {
-      return `"${value.replace(/"/g, '""')}"`;
-    }
-    return value;
-  }
-
-  private downloadCsv(content: string, filename: string) {
-    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    this.exporter.downloadCsv(this.table.filtered(), [
+      { header: 'ID',                  value: p => p.id ?? '' },
+      { header: 'Código',              value: p => p.codigo },
+      { header: 'Nome',                value: p => p.nome },
+      { header: 'Qtd Estoque',         value: p => p.quantidadeEmEstoque },
+      { header: 'Custo Unitário (R$)', value: p => p.custoUnitario },
+      { header: 'Vida Útil (h)',       value: p => p.vidaUtilHoras }
+    ], 'estoque');
   }
 
   voltar() { this.router.navigate(['/dashboard']); }
