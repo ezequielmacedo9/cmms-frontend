@@ -182,17 +182,5 @@ mat-form-field { width: 100%; }
 .page-btn:not([disabled]):hover { color: #a78bfa !important; }
 .page-info { font-size: 12px; color: rgba(255,255,255,0.25); min-width: 48px; text-align: center; }
 
-/* Delete modal */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); animation: fadeIn 0.15s ease; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.confirm-box { background: #12122a; border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; padding: 28px; text-align: center; max-width: 320px; width: 90%; animation: boxIn 0.2s cubic-bezier(0.16,1,0.3,1); }
-@keyframes boxIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
-.confirm-icon { font-size: 32px !important; width: 32px !important; height: 32px !important; color: #f59e0b; margin-bottom: 12px; }
-.confirm-title { font-size: 15px; font-weight: 600; color: #fafafa; margin-bottom: 6px; }
-.confirm-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
-.confirm-btns { display: flex; gap: 8px; justify-content: center; }
-.btn-del { background: #ef4444; border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 500; padding: 8px 18px; cursor: pointer; font-family: inherit; transition: background 0.15s ease; display: flex; align-items: center; gap: 6px; }
-.btn-del:hover { background: #dc2626; }
-
 /* Currency cell */
 .currency { font-variant-numeric: tabular-nums; }
