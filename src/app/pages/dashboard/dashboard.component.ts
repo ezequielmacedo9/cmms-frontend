@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal
+  ChangeDetectionStrategy, Component, DestroyRef, afterNextRender, computed, inject, signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -13,6 +13,8 @@ import {
   NgApexchartsModule
 } from 'ng-apexcharts';
 import { DashboardService, DashboardStats } from '../../services/dashboard.service';
+import { OnboardingTourService } from '../../components/onboarding-tour/tour.service';
+import { TourStep } from '../../components/onboarding-tour/tour.model';
 
 /** Polling cadence for live stats (ms). */
 const POLL_INTERVAL_MS = 30_000;
@@ -29,6 +31,41 @@ export class DashboardComponent {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly dashboardService = inject(DashboardService);
+  private readonly tour = inject(OnboardingTourService);
+
+  /** First-login walkthrough. Runs once per device (localStorage gate). */
+  private readonly tourSteps: TourStep[] = [
+    {
+      selector: '.kpi-grid',
+      title: 'Bem-vindo ao CMMS!',
+      description: 'Este é o seu painel. Aqui você vê, em tempo real, os principais indicadores do parque industrial.',
+      placement: 'bottom'
+    },
+    {
+      selector: '.nav-item[href$="/maquinas"]',
+      title: 'Máquinas',
+      description: 'Cadastre os equipamentos e defina os intervalos de manutenção preventiva.',
+      placement: 'right'
+    },
+    {
+      selector: '.nav-item[href$="/manutencoes"]',
+      title: 'Manutenções',
+      description: 'Registre ordens de serviço corretivas e preventivas para cada equipamento.',
+      placement: 'right'
+    },
+    {
+      selector: '.nav-item[href$="/estoque"]',
+      title: 'Estoque',
+      description: 'Controle as peças e componentes do almoxarifado e o custo de cada item.',
+      placement: 'right'
+    },
+    {
+      selector: '.charts',
+      title: 'Indicadores visuais',
+      description: 'Acompanhe a evolução das manutenções, o tipo de serviço e o status do parque.',
+      placement: 'top'
+    }
+  ];
 
   // ── reactive state ──────────────────────────────────────────────────
   readonly stats   = signal<DashboardStats | null>(null);
@@ -76,6 +113,16 @@ export class DashboardComponent {
     ).subscribe(s => {
       if (s) this.stats.set(s);
       this.loading.set(false);
+    });
+
+    // Kick off the onboarding tour once, after the first render so the
+    // sidebar/KPIs exist. Guarded to the shell layout + desktop width so
+    // it never highlights off-canvas drawer items (or fires in isolation).
+    afterNextRender(() => {
+      const inShell = !!document.querySelector('.sidebar .nav-item');
+      if (inShell && window.innerWidth >= 960) {
+        this.tour.startIfFirstTime(this.tourSteps);
+      }
     });
   }
 
