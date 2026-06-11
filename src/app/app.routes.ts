@@ -20,6 +20,11 @@ export const routes: Routes = [
     title: 'Entrar · CMMS'
   },
   {
+    path: 'cadastro',
+    loadComponent: () => import('./pages/signup/signup.component').then(m => m.SignupComponent),
+    title: 'Criar conta · CMMS'
+  },
+  {
     path: 'forgot-password',
     loadComponent: () => import('./pages/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
     title: 'Recuperar senha · CMMS'

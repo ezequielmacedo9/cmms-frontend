@@ -51,6 +51,16 @@ export class AuthService {
       .pipe(tap(res => this.storeTokens(res)));
   }
 
+  /**
+   * Self-service sign-up: creates a new empresa (tenant) plus its first admin
+   * and logs the user straight in (stores the returned tokens).
+   */
+  register(empresaNome: string, nome: string, email: string, senha: string): Observable<AuthTokenResponse> {
+    return this.http.post<AuthTokenResponse>(`${this.apiUrl}/register`,
+      { empresaNome, nome, email, senha })
+      .pipe(tap(res => this.storeTokens(res)));
+  }
+
   refreshToken(token: string): Observable<AuthTokenResponse> {
     return this.http.post<AuthTokenResponse>(`${this.apiUrl}/refresh`, { refreshToken: token })
       .pipe(tap(res => this.storeTokens(res)));
