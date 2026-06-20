@@ -1,0 +1,34 @@
+name: CI
+
+# Build + test gate. Runs on every push and PR to main so a red build is
+# caught before it reaches Vercel.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    name: Build & test (Node 20)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        # --legacy-peer-deps tolerates a pre-existing Angular patch-version drift
+        # in the lockfile (animations/service-worker ahead of core). Remove once
+        # the @angular/* packages are realigned via `ng update`.
+        run: npm ci --legacy-peer-deps
+
+      - name: Production build
+        run: npx ng build --configuration production
+
+      - name: Unit tests
+        run: npx ng test --watch=false
