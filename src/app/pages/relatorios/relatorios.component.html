@@ -10,6 +10,49 @@
     </button>
   </div>
 
+  @if (!carregandoGerencial() && gerencial(); as g) {
+    <section class="gerencial">
+      <h2 class="gerencial-title">Visão gerencial</h2>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <span class="kpi-label">Cumprimento de preventiva</span>
+          <span class="kpi-value">{{ g.cumprimentoPreventivaPct | number:'1.0-1' }}%</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Disponibilidade</span>
+          <span class="kpi-value">{{ g.disponibilidade | number:'1.0-1' }}%</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">MTBF</span>
+          <span class="kpi-value">{{ g.mtbfDias | number:'1.0-1' }} <small>dias</small></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Preventivas vencidas</span>
+          <span class="kpi-value">{{ g.preventivasVencidas }}</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Valor em estoque</span>
+          <span class="kpi-value">{{ formatBRL(g.valorTotalEstoque) }}</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Manutenções (prev/corr)</span>
+          <span class="kpi-value">{{ g.manutencoesPreventivas }}/{{ g.manutencoesCorretivas }}</span>
+        </div>
+      </div>
+
+      @if (g.topOfensores.length) {
+        <div class="ofensores">
+          <h3 class="ofensores-title">Top máquinas por corretivas</h3>
+          <ul class="ofensores-list">
+            @for (o of g.topOfensores; track o.maquinaId) {
+              <li><span>{{ o.maquinaNome }}</span><span class="ofensor-count">{{ o.corretivas }}</span></li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+  }
+
   <div class="cards-grid">
     @for (r of reports; track r.id) {
       <div class="report-card">

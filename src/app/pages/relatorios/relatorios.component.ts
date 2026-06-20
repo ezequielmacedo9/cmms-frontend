@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { ReportService, ReportEntity } from '../../services/report.service';
+import { ReportService, ReportEntity, RelatorioGerencial } from '../../services/report.service';
 import { NotificationService } from '../../services/notification.service';
 
 interface ReportCard {
@@ -19,11 +19,24 @@ interface ReportCard {
   templateUrl: './relatorios.component.html',
   styleUrl: './relatorios.component.css'
 })
-export class RelatoriosComponent {
+export class RelatoriosComponent implements OnInit {
   private reportSvc = inject(ReportService);
   private notify    = inject(NotificationService);
 
   downloading = signal<string | null>(null);
+  gerencial   = signal<RelatorioGerencial | null>(null);
+  carregandoGerencial = signal(true);
+
+  ngOnInit(): void {
+    this.reportSvc.getGerencial().subscribe({
+      next: g => { this.gerencial.set(g); this.carregandoGerencial.set(false); },
+      error: () => this.carregandoGerencial.set(false)
+    });
+  }
+
+  formatBRL(v: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
+  }
 
   reports: ReportCard[] = [
     { id: 'manutencoes', title: 'Manutenções',  description: 'Histórico completo de ordens de serviço e manutenções preventivas/corretivas.', icon: 'build',       color: '#7c3aed' },

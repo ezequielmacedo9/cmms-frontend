@@ -6,6 +6,26 @@ import { environment } from '../../environments/environment';
 export type ReportEntity = 'manutencoes' | 'maquinas' | 'estoque';
 export type ReportFormat = 'pdf' | 'xlsx';
 
+export interface Ofensor {
+  maquinaId: number;
+  maquinaNome: string;
+  corretivas: number;
+}
+
+export interface RelatorioGerencial {
+  totalMaquinas: number;
+  totalManutencoes: number;
+  manutencoesPreventivas: number;
+  manutencoesCorretivas: number;
+  maquinasComPreventiva: number;
+  preventivasVencidas: number;
+  cumprimentoPreventivaPct: number;
+  disponibilidade: number;
+  mtbfDias: number;
+  valorTotalEstoque: number;
+  topOfensores: Ofensor[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportService {
   private http = inject(HttpClient);
@@ -15,6 +35,10 @@ export class ReportService {
     return this.http.get(`${this.base}/${entity}?format=${format}`, {
       responseType: 'blob'
     });
+  }
+
+  getGerencial(): Observable<RelatorioGerencial> {
+    return this.http.get<RelatorioGerencial>(`${this.base}/gerencial`);
   }
 
   triggerDownload(blob: Blob, filename: string) {
