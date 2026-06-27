@@ -27,8 +27,16 @@
           <span class="kpi-value">{{ g.mtbfDias | number:'1.0-1' }} <small>dias</small></span>
         </div>
         <div class="kpi">
+          <span class="kpi-label">MTTR</span>
+          <span class="kpi-value">{{ g.mttrDias | number:'1.0-1' }} <small>dias</small></span>
+        </div>
+        <div class="kpi">
           <span class="kpi-label">Preventivas vencidas</span>
           <span class="kpi-value">{{ g.preventivasVencidas }}</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Custo de manutenção</span>
+          <span class="kpi-value">{{ formatBRL(g.custoTotalManutencoes) }}</span>
         </div>
         <div class="kpi">
           <span class="kpi-label">Valor em estoque</span>

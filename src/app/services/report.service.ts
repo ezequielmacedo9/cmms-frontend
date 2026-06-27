@@ -22,6 +22,8 @@ export interface RelatorioGerencial {
   cumprimentoPreventivaPct: number;
   disponibilidade: number;
   mtbfDias: number;
+  mttrDias: number;
+  custoTotalManutencoes: number;
   valorTotalEstoque: number;
   topOfensores: Ofensor[];
 }
