@@ -85,3 +85,17 @@ mat-form-field { width: 100%; }
 .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-top: 1px solid rgba(139,92,246,0.1); }
 .page-btn { color: rgba(255,255,255,0.3) !important; }
 .page-info { font-size: 12px; color: rgba(255,255,255,0.25); min-width: 48px; text-align: center; }
+
+/* Peças consumidas (OS) */
+.pecas-section { padding: 0 4px 8px; }
+.pecas-head { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+.pecas-head small { text-transform: none; font-weight: 400; color: rgba(255,255,255,0.35); }
+.pecas-add { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pecas-add .filter-select { min-width: 240px; }
+.pecas-qtd { width: 80px; background: rgba(255,255,255,0.03); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; color: #fafafa; padding: 8px 10px; font-family: inherit; font-size: 13px; }
+.pecas-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.pecas-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.03); border-radius: 8px; padding: 6px 10px; }
+.pecas-name { flex: 1; }
+.pecas-subtotal { color: #a78bfa; font-weight: 600; }
+.pecas-total { text-align: right; font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.status-chip-ok { margin-left: 8px; font-size: 11px; color: #4ade80; font-weight: 600; }

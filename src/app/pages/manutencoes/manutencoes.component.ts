@@ -13,12 +13,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subscription } from 'rxjs';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { MaquinaService } from '../../services/maquina.service';
+import { PecaService } from '../../services/peca.service';
 import { NotificationService } from '../../services/notification.service';
 import { ExportService } from '../../services/export.service';
 import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 import { TableState } from '../../services/table-state';
 import { Manutencao } from '../../models/manutencao.model';
 import { Maquina } from '../../models/maquina.model';
+import { PecaResponse } from '../../models/peca.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
@@ -37,6 +39,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
 export class ManutencoesComponent implements OnInit, OnDestroy {
   private manutencaoService = inject(ManutencaoService);
   private maquinaService = inject(MaquinaService);
+  private pecaService = inject(PecaService);
   private notify = inject(NotificationService);
   private exporter = inject(ExportService);
   private confirm = inject(ConfirmDialogService);
@@ -59,6 +62,12 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   maquinaIdSelecionada: number | null = null;
   form: Manutencao = { tipo: '', tecnico: '' };
 
+  /** Catalog of parts + the parts the user is adding to the current work order. */
+  pecas: PecaResponse[] = [];
+  pecasConsumo: { pecaId: number; nome: string; quantidade: number; custo: number }[] = [];
+  novaPecaId: number | null = null;
+  novaPecaQtd = 1;
+
   carregando = true;
   searchTerm = '';
   filterTipo = '';
@@ -70,6 +79,11 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
     this.subs.add(sub);
+    const subP = this.pecaService.listar().subscribe(p => {
+      this.pecas = p;
+      this.cdr.markForCheck();
+    });
+    this.subs.add(subP);
   }
 
   ngOnDestroy() { this.subs.unsubscribe(); }
@@ -106,7 +120,29 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   novoRegistro() {
     this.form = { tipo: '', tecnico: '' };
     this.maquinaIdSelecionada = null;
+    this.pecasConsumo = [];
+    this.novaPecaId = null;
+    this.novaPecaQtd = 1;
     this.showForm = true;
+  }
+
+  addPeca() {
+    if (this.novaPecaId == null || this.novaPecaQtd <= 0) return;
+    const peca = this.pecas.find(p => p.id === this.novaPecaId);
+    if (!peca) return;
+    this.pecasConsumo = [...this.pecasConsumo, {
+      pecaId: peca.id!, nome: peca.nome, quantidade: this.novaPecaQtd, custo: peca.custoUnitario
+    }];
+    this.novaPecaId = null;
+    this.novaPecaQtd = 1;
+  }
+
+  removePeca(index: number) {
+    this.pecasConsumo = this.pecasConsumo.filter((_, i) => i !== index);
+  }
+
+  get custoPecasPreview(): number {
+    return this.pecasConsumo.reduce((sum, p) => sum + p.quantidade * p.custo, 0);
   }
 
   salvar() {
@@ -116,19 +152,41 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
     }
     if (this.salvando) return;
     this.salvando = true;
-    const sub = this.manutencaoService.cadastrar(this.maquinaIdSelecionada, this.form).subscribe({
+    const payload: Manutencao = {
+      ...this.form,
+      pecas: this.pecasConsumo.length
+        ? this.pecasConsumo.map(p => ({ pecaId: p.pecaId, quantidade: p.quantidade }))
+        : undefined
+    };
+    const sub = this.manutencaoService.cadastrar(this.maquinaIdSelecionada, payload).subscribe({
       next: (saved) => {
         this.salvando = false;
         this.showForm = false;
-        this.notify.success('Manutenção registrada!');
+        this.notify.success('Ordem de serviço registrada!');
         this.manutencoes = [...this.manutencoes, saved];
         this.applyFilter();
         this.cdr.markForCheck();
       },
-      error: () => {
+      error: (err) => {
         this.salvando = false;
-        this.notify.error('Erro ao registrar. Tente novamente.');
+        this.notify.error(err?.status === 403
+          ? 'Sem permissão ou limite do plano atingido.'
+          : 'Erro ao registrar. Verifique o estoque das peças.');
       }
+    });
+    this.subs.add(sub);
+  }
+
+  concluir(m: Manutencao) {
+    if (m.id == null || m.status === 'CONCLUIDA') return;
+    const sub = this.manutencaoService.alterarStatus(m.id, 'CONCLUIDA').subscribe({
+      next: (saved) => {
+        this.notify.success('OS concluída!');
+        this.manutencoes = this.manutencoes.map(x => x.id === saved.id ? saved : x);
+        this.applyFilter();
+        this.cdr.markForCheck();
+      },
+      error: () => this.notify.error('Erro ao concluir a OS.')
     });
     this.subs.add(sub);
   }

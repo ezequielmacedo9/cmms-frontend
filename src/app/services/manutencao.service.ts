@@ -38,6 +38,10 @@ export class ManutencaoService {
     return this.http.post<Manutencao>(`${this.apiUrl}/${maquinaId}`, manutencao);
   }
 
+  alterarStatus(id: number, status: string): Observable<Manutencao> {
+    return this.http.put<Manutencao>(`${this.apiUrl}/${id}/status`, { status });
+  }
+
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

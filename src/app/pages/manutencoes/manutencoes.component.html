@@ -72,7 +72,36 @@
           <mat-label>Descrição</mat-label>
           <textarea matInput [(ngModel)]="form.descricao" name="descricao" rows="1" placeholder="Descreva o serviço..."></textarea>
         </mat-form-field>
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Tempo de execução (min)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.tempoExecucaoMinutos" name="tempo" placeholder="Ex: 90" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="dark-field">
+          <mat-label>Custo mão de obra (R$)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.custoMaoObra" name="custoMaoObra" placeholder="0.00" />
+        </mat-form-field>
       </div>
+
+      <div class="pecas-section">
+        <div class="pecas-head">Peças consumidas <small>(dão baixa no estoque)</small></div>
+        <div class="pecas-add">
+          <select class="filter-select" [(ngModel)]="novaPecaId" name="novaPeca">
+            <option [ngValue]="null" disabled>Selecione uma peça...</option>
+            <option *ngFor="let p of pecas" [ngValue]="p.id">{{ p.nome }} ({{ p.quantidadeEmEstoque }} em estoque)</option>
+          </select>
+          <input class="pecas-qtd" type="number" min="1" [(ngModel)]="novaPecaQtd" name="novaPecaQtd" placeholder="Qtd" />
+          <button type="button" class="btn-ghost" (click)="addPeca()" [disabled]="novaPecaId == null"><mat-icon>add</mat-icon> Adicionar</button>
+        </div>
+        <div class="pecas-list" *ngIf="pecasConsumo.length">
+          <div class="pecas-item" *ngFor="let pc of pecasConsumo; let i = index">
+            <span class="pecas-name">{{ pc.nome }} — {{ pc.quantidade }}x</span>
+            <span class="pecas-subtotal">R$ {{ (pc.quantidade * pc.custo) | number:'1.2-2' }}</span>
+            <button type="button" class="action-icon del" (click)="removePeca(i)" aria-label="Remover peça"><mat-icon>close</mat-icon></button>
+          </div>
+          <div class="pecas-total">Total em peças: <strong>R$ {{ custoPecasPreview | number:'1.2-2' }}</strong></div>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
         <button class="btn-save" (click)="salvar()" [disabled]="salvando">
@@ -144,10 +173,16 @@
                   {{ m.prioridade === 'CRITICA' ? 'Crítica' : m.prioridade === 'ALTA' ? 'Alta' : m.prioridade === 'BAIXA' ? 'Baixa' : 'Média' }}
                 </span>
               </td>
-              <td>{{ m.tecnico }}</td>
+              <td>
+                {{ m.tecnico }}
+                <span *ngIf="m.status === 'CONCLUIDA'" class="status-chip-ok">✓ Concluída</span>
+              </td>
               <td>{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
+                  <button *ngIf="m.status !== 'CONCLUIDA'" mat-icon-button class="action-icon" (click)="concluir(m)" aria-label="Concluir OS" title="Concluir OS">
+                    <mat-icon>task_alt</mat-icon>
+                  </button>
                   <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(m)" aria-label="Excluir registro" title="Excluir">
                     <mat-icon>delete</mat-icon>
                   </button>
