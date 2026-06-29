@@ -655,6 +655,46 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* ------------------------------------------------------------------ */
+/* Responsive data tables — stack each row into a card on phones so    */
+/* the factory-floor user never has to scroll a wide table sideways.   */
+/* Cells optionally show a `data-label` as the field caption.          */
+/* ------------------------------------------------------------------ */
+@media (max-width: 700px) {
+  .data-table thead { display: none; }
+  .data-table,
+  .data-table tbody { display: block; width: 100%; }
+  .data-table tr {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    margin: 0 0 10px;
+    border: 1px solid var(--border-strong, rgba(139, 92, 246, 0.2));
+    border-radius: var(--radius-md, 10px);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .data-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0 !important;
+    border: none !important;
+    text-align: right;
+  }
+  .data-table td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: var(--text-4, rgba(255, 255, 255, 0.45));
+    text-align: left;
+  }
+  .data-table td .row-actions { justify-content: flex-end; }
+}
+
+/* ------------------------------------------------------------------ */
 /* Print stylesheet                                                   */
 /* Strips chrome (sidebar, topbar, toolbars) and gives the content    */
 /* a clean white-on-black layout that fits an A4 sheet. Any page that */
