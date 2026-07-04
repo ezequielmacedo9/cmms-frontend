@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Manutencao } from '../models/manutencao.model';
+import { AnexoDownload, Manutencao } from '../models/manutencao.model';
 import { PagedResponse } from '../models/paged-response.model';
 import { environment } from '../../environments/environment';
 
@@ -44,6 +44,34 @@ export class ManutencaoService {
 
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  buscarPorId(id: number): Observable<Manutencao> {
+    return this.http.get<Manutencao>(`${this.apiUrl}/${id}`);
+  }
+
+  addChecklistItem(manutencaoId: number, descricao: string): Observable<Manutencao> {
+    return this.http.post<Manutencao>(`${this.apiUrl}/${manutencaoId}/checklist`, { descricao });
+  }
+
+  toggleChecklistItem(itemId: number): Observable<Manutencao> {
+    return this.http.put<Manutencao>(`${this.apiUrl}/checklist/${itemId}/toggle`, {});
+  }
+
+  removeChecklistItem(itemId: number): Observable<Manutencao> {
+    return this.http.delete<Manutencao>(`${this.apiUrl}/checklist/${itemId}`);
+  }
+
+  addAnexo(manutencaoId: number, nome: string, contentType: string, dadosBase64: string): Observable<Manutencao> {
+    return this.http.post<Manutencao>(`${this.apiUrl}/${manutencaoId}/anexos`, { nome, contentType, dadosBase64 });
+  }
+
+  downloadAnexo(anexoId: number): Observable<AnexoDownload> {
+    return this.http.get<AnexoDownload>(`${this.apiUrl}/anexos/${anexoId}`);
+  }
+
+  removeAnexo(anexoId: number): Observable<Manutencao> {
+    return this.http.delete<Manutencao>(`${this.apiUrl}/anexos/${anexoId}`);
   }
 }
 

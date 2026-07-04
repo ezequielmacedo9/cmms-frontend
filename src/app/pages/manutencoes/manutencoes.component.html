@@ -180,6 +180,9 @@
               <td>{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
+                  <button mat-icon-button class="action-icon" (click)="abrirDetalhe(m)" aria-label="Detalhes da OS" title="Detalhes (checklist e anexos)">
+                    <mat-icon>fact_check</mat-icon>
+                  </button>
                   <button *ngIf="m.status !== 'CONCLUIDA'" mat-icon-button class="action-icon" (click)="concluir(m)" aria-label="Concluir OS" title="Concluir OS">
                     <mat-icon>task_alt</mat-icon>
                   </button>
@@ -204,5 +207,78 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- Detail modal: checklist + attachments -->
+  <div class="overlay" *ngIf="detalhe" (click)="fecharDetalhe()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div class="modal-head-left">
+          <mat-icon class="modal-head-icon">fact_check</mat-icon>
+          <div>
+            <div class="modal-head-title">OS #{{ detalhe.id }} — {{ detalhe.maquina?.nome || '—' }}</div>
+            <div class="modal-head-sub">{{ detalhe.tipo }} · {{ detalhe.tecnico }} · {{ detalhe.dataManutencao | date:'dd/MM/yyyy' }}</div>
+          </div>
+        </div>
+        <button mat-icon-button class="form-close" (click)="fecharDetalhe()" aria-label="Fechar detalhes"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-loading" *ngIf="detalheCarregando">
+          <mat-spinner diameter="22"></mat-spinner>
+        </div>
+
+        <ng-container *ngIf="!detalheCarregando">
+          <!-- Checklist -->
+          <div class="detail-section-title">Checklist</div>
+          <div class="check-add">
+            <input class="check-input" type="text" placeholder="Novo item do checklist..."
+              [(ngModel)]="novoItemChecklist" name="novoItemChecklist" (keydown.enter)="addChecklistItem()" />
+            <button type="button" class="btn-ghost" (click)="addChecklistItem()" [disabled]="!novoItemChecklist.trim()">
+              <mat-icon>add</mat-icon> Adicionar
+            </button>
+          </div>
+          <div class="check-empty" *ngIf="!detalhe.checklist?.length">Nenhum item no checklist.</div>
+          <div class="check-list" *ngIf="detalhe.checklist?.length">
+            <div class="check-item" *ngFor="let item of detalhe.checklist; trackBy: trackChecklist">
+              <label class="check-label">
+                <input type="checkbox" [checked]="item.concluido" (change)="toggleChecklistItem(item)" />
+                <span [class.check-done]="item.concluido">{{ item.descricao }}</span>
+              </label>
+              <button mat-icon-button class="action-icon del" (click)="removeChecklistItem(item)" aria-label="Remover item" title="Remover">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Attachments -->
+          <div class="detail-section-title anexos-title">Anexos</div>
+          <div class="anexo-add">
+            <label class="btn-ghost anexo-upload-btn" [class.disabled]="anexoEnviando">
+              <mat-icon>attach_file</mat-icon>
+              {{ anexoEnviando ? 'Enviando...' : 'Anexar arquivo' }}
+              <input type="file" hidden (change)="onAnexoSelecionado($event)" [disabled]="anexoEnviando" />
+            </label>
+            <small class="anexo-hint">máx. ~3MB</small>
+          </div>
+          <div class="check-empty" *ngIf="!detalhe.anexos?.length">Nenhum anexo.</div>
+          <div class="check-list" *ngIf="detalhe.anexos?.length">
+            <div class="check-item" *ngFor="let a of detalhe.anexos; trackBy: trackAnexo">
+              <span class="anexo-nome">
+                <mat-icon class="anexo-icon">description</mat-icon>
+                {{ a.nome }} <small class="anexo-size">{{ formatBytes(a.tamanho) }}</small>
+              </span>
+              <span class="anexo-actions">
+                <button mat-icon-button class="action-icon" (click)="baixarAnexo(a)" aria-label="Baixar anexo" title="Baixar">
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button class="action-icon del" (click)="removerAnexo(a)" aria-label="Remover anexo" title="Remover">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
   </div>
 </div>

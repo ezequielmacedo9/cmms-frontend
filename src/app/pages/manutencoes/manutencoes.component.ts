@@ -18,7 +18,7 @@ import { NotificationService } from '../../services/notification.service';
 import { ExportService } from '../../services/export.service';
 import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 import { TableState } from '../../services/table-state';
-import { Manutencao } from '../../models/manutencao.model';
+import { AnexoMeta, ChecklistItem, Manutencao } from '../../models/manutencao.model';
 import { Maquina } from '../../models/maquina.model';
 import { PecaResponse } from '../../models/peca.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
@@ -71,6 +71,15 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   carregando = true;
   searchTerm = '';
   filterTipo = '';
+
+  /** Detail modal (checklist + attachments). */
+  detalhe: Manutencao | null = null;
+  detalheCarregando = false;
+  novoItemChecklist = '';
+  anexoEnviando = false;
+
+  /** Base64 length cap (~3MB binary) — must match the backend limit. */
+  private static readonly MAX_ANEXO_BASE64 = 4_000_000;
 
   ngOnInit() {
     this.carregar();
@@ -213,6 +222,136 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
     });
     this.subs.add(sub);
   }
+
+  // ── detail modal: checklist + attachments ─────────────────────────
+
+  abrirDetalhe(m: Manutencao) {
+    if (m.id == null) return;
+    this.detalheCarregando = true;
+    this.detalhe = m;
+    this.novoItemChecklist = '';
+    const sub = this.manutencaoService.buscarPorId(m.id).subscribe({
+      next: d => {
+        this.detalhe = d;
+        this.detalheCarregando = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.detalheCarregando = false;
+        this.notify.error('Erro ao carregar o detalhe da OS.');
+        this.cdr.markForCheck();
+      }
+    });
+    this.subs.add(sub);
+  }
+
+  fecharDetalhe() { this.detalhe = null; }
+
+  /** Replaces the modal content and the corresponding table row. */
+  private aplicarDetalhe(d: Manutencao) {
+    this.detalhe = d;
+    this.manutencoes = this.manutencoes.map(x => x.id === d.id ? d : x);
+    this.applyFilter();
+    this.cdr.markForCheck();
+  }
+
+  addChecklistItem() {
+    const descricao = this.novoItemChecklist.trim();
+    if (!descricao || this.detalhe?.id == null) return;
+    const sub = this.manutencaoService.addChecklistItem(this.detalhe.id, descricao).subscribe({
+      next: d => { this.novoItemChecklist = ''; this.aplicarDetalhe(d); },
+      error: () => this.notify.error('Erro ao adicionar item.')
+    });
+    this.subs.add(sub);
+  }
+
+  toggleChecklistItem(item: ChecklistItem) {
+    const sub = this.manutencaoService.toggleChecklistItem(item.id).subscribe({
+      next: d => this.aplicarDetalhe(d),
+      error: () => this.notify.error('Erro ao atualizar item.')
+    });
+    this.subs.add(sub);
+  }
+
+  removeChecklistItem(item: ChecklistItem) {
+    const sub = this.manutencaoService.removeChecklistItem(item.id).subscribe({
+      next: d => this.aplicarDetalhe(d),
+      error: () => this.notify.error('Erro ao remover item.')
+    });
+    this.subs.add(sub);
+  }
+
+  onAnexoSelecionado(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file || this.detalhe?.id == null) return;
+    const manutencaoId = this.detalhe.id;
+    this.anexoEnviando = true;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const base64 = dataUrl.substring(dataUrl.indexOf(',') + 1);
+      if (base64.length > ManutencoesComponent.MAX_ANEXO_BASE64) {
+        this.anexoEnviando = false;
+        this.notify.error('Arquivo muito grande (máx. ~3MB).');
+        this.cdr.markForCheck();
+        return;
+      }
+      const sub = this.manutencaoService
+        .addAnexo(manutencaoId, file.name, file.type || 'application/octet-stream', base64)
+        .subscribe({
+          next: d => {
+            this.anexoEnviando = false;
+            this.notify.success('Anexo enviado!');
+            this.aplicarDetalhe(d);
+          },
+          error: () => {
+            this.anexoEnviando = false;
+            this.notify.error('Erro ao enviar anexo.');
+            this.cdr.markForCheck();
+          }
+        });
+      this.subs.add(sub);
+    };
+    reader.onerror = () => {
+      this.anexoEnviando = false;
+      this.notify.error('Erro ao ler o arquivo.');
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  baixarAnexo(a: AnexoMeta) {
+    const sub = this.manutencaoService.downloadAnexo(a.id).subscribe({
+      next: full => {
+        const link = document.createElement('a');
+        link.href = `data:${full.contentType || 'application/octet-stream'};base64,${full.dadosBase64}`;
+        link.download = full.nome;
+        link.click();
+      },
+      error: () => this.notify.error('Erro ao baixar anexo.')
+    });
+    this.subs.add(sub);
+  }
+
+  removerAnexo(a: AnexoMeta) {
+    const sub = this.manutencaoService.removeAnexo(a.id).subscribe({
+      next: d => this.aplicarDetalhe(d),
+      error: () => this.notify.error('Erro ao remover anexo.')
+    });
+    this.subs.add(sub);
+  }
+
+  formatBytes(n?: number): string {
+    if (!n) return '';
+    if (n < 1024) return `${n} B`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  trackChecklist(_i: number, item: ChecklistItem): number { return item.id; }
+  trackAnexo(_i: number, a: AnexoMeta): number { return a.id; }
 
   exportarCSV() {
     this.exporter.downloadCsv(this.table.filtered(), [
