@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,7 +25,7 @@ import { QrScannerComponent } from '../../components/qr-scanner.component';
   selector: 'app-maquinas',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatButtonModule,
+    CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatProgressSpinnerModule,
     EmptyStateComponent, QrScannerComponent
@@ -44,6 +44,7 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
+  private fb = inject(NonNullableFormBuilder);
   private subs = new Subscription();
 
   /** Machine id coming from a QR-code deep link (?id=...), consumed once. */
@@ -61,7 +62,17 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   showForm = false;
   editando = false;
   salvando = false;
-  form: Maquina = { nome: '', setor: '', status: 'ATIVO' };
+
+  /** Reactive form with inline validation (replaces the old ngModel object). */
+  readonly maquinaForm = this.fb.group({
+    nome:  ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    setor: ['', [Validators.required, Validators.maxLength(60)]],
+    status: ['ATIVO'],
+    intervaloPreventivaDias: this.fb.control<number | null>(null, [Validators.min(1), Validators.max(3650)])
+  });
+
+  /** Original row while editing — merged on save so untouched fields survive. */
+  private editandoOriginal: Maquina | null = null;
 
   carregando = true;
   searchTerm = '';
@@ -132,26 +143,48 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   sortDir(column: string) { return this.table.directionOf(column); }
 
   novoRegistro() {
-    this.form = { nome: '', setor: '', status: 'ATIVO' };
+    this.maquinaForm.reset({ nome: '', setor: '', status: 'ATIVO', intervaloPreventivaDias: null });
+    this.editandoOriginal = null;
     this.editando = false;
     this.showForm = true;
   }
 
   editar(maquina: Maquina) {
-    this.form = { ...maquina };
+    this.maquinaForm.reset({
+      nome: maquina.nome,
+      setor: maquina.setor,
+      status: maquina.status ?? 'ATIVO',
+      intervaloPreventivaDias: maquina.intervaloPreventivaDias ?? null
+    });
+    this.editandoOriginal = maquina;
     this.editando = true;
     this.showForm = true;
   }
 
+  /** Convenience for the template's inline error hints. */
+  campoInvalido(nome: 'nome' | 'setor' | 'intervaloPreventivaDias'): boolean {
+    const c = this.maquinaForm.controls[nome];
+    return c.invalid && (c.touched || c.dirty);
+  }
+
   salvar() {
-    if (!this.form.nome?.trim() || !this.form.setor?.trim()) {
-      this.notify.error('Preencha nome e setor');
+    if (this.maquinaForm.invalid) {
+      this.maquinaForm.markAllAsTouched();
+      this.notify.error('Corrija os campos destacados.');
       return;
     }
     this.salvando = true;
-    const op = this.editando && this.form.id
-      ? this.maquinaService.atualizar(this.form.id, this.form)
-      : this.maquinaService.cadastrar(this.form);
+    const v = this.maquinaForm.getRawValue();
+    const payload: Maquina = {
+      ...(this.editandoOriginal ?? {}),
+      nome: v.nome.trim(),
+      setor: v.setor.trim(),
+      status: v.status,
+      intervaloPreventivaDias: v.intervaloPreventivaDias ?? undefined
+    };
+    const op = this.editando && this.editandoOriginal?.id
+      ? this.maquinaService.atualizar(this.editandoOriginal.id, payload)
+      : this.maquinaService.cadastrar(payload);
 
     const isEditing = this.editando;
     const sub = op.subscribe({
