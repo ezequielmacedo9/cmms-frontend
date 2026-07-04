@@ -19,6 +19,7 @@ import { Maquina } from '../../models/maquina.model';
 import { Manutencao } from '../../models/manutencao.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmptyStateComponent } from '../../components/empty-state.component';
+import { QrScannerComponent } from '../../components/qr-scanner.component';
 
 @Component({
   selector: 'app-maquinas',
@@ -27,7 +28,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
     CommonModule, FormsModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatProgressSpinnerModule,
-    EmptyStateComponent
+    EmptyStateComponent, QrScannerComponent
   ],
   templateUrl: './maquinas.component.html',
   styleUrl: './maquinas.component.css',
@@ -65,6 +66,9 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   carregando = true;
   searchTerm = '';
   filterStatus = '';
+
+  /** In-app QR scanner overlay. */
+  showScanner = false;
 
   // History modal
   showHistory = false;
@@ -218,6 +222,44 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     this.showHistory = false;
     this.historyMaquina = null;
     this.historicoManutencoes = [];
+  }
+
+  // ── in-app QR scanner ─────────────────────────────────────────────
+
+  abrirScanner() { this.showScanner = true; }
+  fecharScanner() { this.showScanner = false; }
+
+  /**
+   * Handles the decoded QR text. Accepts either the machine deep-link URL
+   * (…/maquinas?id=N) or a bare numeric id.
+   */
+  onQrLido(texto: string) {
+    this.showScanner = false;
+    const id = this.extrairMaquinaId(texto);
+    if (id == null) {
+      this.notify.error('QR code não reconhecido como uma máquina.');
+      return;
+    }
+    const alvo = this.maquinas.find(m => m.id === id);
+    if (!alvo) {
+      this.notify.error('Máquina do QR code não encontrada.');
+      return;
+    }
+    this.searchTerm = alvo.nome;
+    this.onSearch();
+    this.verHistorico(alvo);
+    this.cdr.markForCheck();
+  }
+
+  private extrairMaquinaId(texto: string): number | null {
+    if (/^\d+$/.test(texto.trim())) return Number(texto.trim());
+    try {
+      const url = new URL(texto);
+      const raw = url.searchParams.get('id');
+      return raw && /^\d+$/.test(raw) ? Number(raw) : null;
+    } catch {
+      return null;
+    }
   }
 
   /** Downloads the printable QR label that deep-links back to this machine. */

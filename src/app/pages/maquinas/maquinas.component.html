@@ -1,5 +1,11 @@
 <div class="page-container">
 
+  <!-- In-app QR scanner -->
+  <app-qr-scanner *ngIf="showScanner"
+    (scanned)="onQrLido($event)"
+    (closed)="fecharScanner()">
+  </app-qr-scanner>
+
   <!-- History Modal -->
   <div class="overlay" *ngIf="showHistory" (click)="fecharHistorico()">
     <div class="modal-panel" (click)="$event.stopPropagation()">
@@ -51,6 +57,9 @@
         </div>
       </div>
       <div class="hero-actions">
+        <button class="btn-ghost" (click)="abrirScanner()">
+          <mat-icon>qr_code_scanner</mat-icon> Escanear
+        </button>
         <button class="btn-ghost" (click)="exportarCSV()">
           <mat-icon>download</mat-icon> CSV
         </button>
