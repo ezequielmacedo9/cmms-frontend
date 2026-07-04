@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── form state ──────────────────────────────────────────────────────
   email = '';
   senha = '';
+  totpCode = '';
+  readonly totpRequired  = signal(false);
   readonly carregando    = signal(false);
   readonly googleLoading = signal(false);
   readonly showPassword  = signal(false);
@@ -85,13 +87,25 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSubmit() {
     if (this.carregando() || this.formBlocked || !this.email || !this.senha) return;
+    if (this.totpRequired() && !this.totpCode) return;
     this.carregando.set(true);
     this.errorMessage.set('');
 
-    this.auth.login(this.email, this.senha).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+    this.auth.login(this.email, this.senha, this.totpCode || undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (res) => this.router.navigate(
+        [res.twoFactorSetupRequired ? '/perfil' : '/dashboard'],
+        res.twoFactorSetupRequired ? { queryParams: { setup2fa: 1 } } : {}),
       error: (err) => {
-        if (err.status === 400 || err.status === 401) {
+        const code = err?.error?.errorCode;
+        if (code === 'TOTP_REQUIRED') {
+          // Password was accepted; ask for the authenticator code.
+          this.totpRequired.set(true);
+          this.errorMessage.set('Informe o código do autenticador (2FA).');
+        } else if (code === 'TOTP_INVALID') {
+          this.totpRequired.set(true);
+          this.errorMessage.set('Código 2FA inválido. Tente novamente.');
+        } else if (err.status === 400 || err.status === 401) {
           this.errorMessage.set('Email ou senha incorretos.');
         } else if (err.status === 0) {
           this.errorMessage.set('Servidor indisponível. Aguarde e tente novamente.');

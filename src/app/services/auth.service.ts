@@ -32,8 +32,10 @@ export class AuthService {
    * Logs in with email/password. Retries on transient (>=500) failures to
    * cover Render free-tier cold starts; surfaces 4xx errors immediately.
    */
-  login(email: string, senha: string): Observable<AuthTokenResponse> {
-    return this.http.post<AuthTokenResponse>(`${this.apiUrl}/login`, { email, senha }).pipe(
+  login(email: string, senha: string, totpCode?: string): Observable<AuthTokenResponse> {
+    const body: Record<string, string> = { email, senha };
+    if (totpCode) body['totpCode'] = totpCode;
+    return this.http.post<AuthTokenResponse>(`${this.apiUrl}/login`, body).pipe(
       retry({
         count: 6,
         delay: (error) => {

@@ -8,4 +8,6 @@ export interface AuthTokenResponse {
   nome: string;
   userId: number;
   email?: string;
+  /** True when the empresa enforces 2FA and the user hasn't enrolled yet. */
+  twoFactorSetupRequired?: boolean;
 }
