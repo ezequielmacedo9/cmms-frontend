@@ -2,19 +2,19 @@
 
   <div class="page-hero">
     <div class="breadcrumb">
-      <mat-icon>home</mat-icon> Dashboard <mat-icon>chevron_right</mat-icon> <span>Estoque</span>
+      <mat-icon>home</mat-icon> {{ 'Dashboard' | t }} <mat-icon>chevron_right</mat-icon> <span>{{ 'Estoque' | t }}</span>
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" [attr.aria-label]="'Voltar para dashboard' | t"><mat-icon>arrow_back</mat-icon></button>
         <div>
-          <div class="hero-title">Estoque</div>
-          <div class="hero-sub">Controle de peças e componentes</div>
+          <div class="hero-title">{{ 'Estoque' | t }}</div>
+          <div class="hero-sub">{{ 'Controle de peças e componentes' | t }}</div>
         </div>
       </div>
       <div class="hero-actions">
         <button class="btn-ghost" (click)="exportarCSV()"><mat-icon>download</mat-icon> CSV</button>
-        <button class="btn-primary" (click)="novoRegistro()"><mat-icon>add</mat-icon> Nova Peça</button>
+        <button class="btn-primary" (click)="novoRegistro()"><mat-icon>add</mat-icon> {{ 'Nova Peça' | t }}</button>
       </div>
     </div>
   </div>
@@ -24,9 +24,9 @@
     <div class="filter-bar">
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
-        <input class="search-input" type="text" placeholder="Buscar por nome ou código..."
+        <input class="search-input" type="text" [placeholder]="'Buscar por nome ou código...' | t"
           [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; onSearch()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" [attr.aria-label]="'Limpar busca' | t" (click)="searchTerm=''; onSearch()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -36,83 +36,83 @@
       <div class="form-head">
         <div class="form-head-left">
           <div>
-            <div class="form-head-title">{{ editando ? 'Editar Peça' : 'Nova Peça' }}</div>
-            <div class="form-head-sub">{{ editando ? 'Atualize os dados do item' : 'Preencha os dados do novo item' }}</div>
+            <div class="form-head-title">{{ (editando ? 'Editar Peça' : 'Nova Peça') | t }}</div>
+            <div class="form-head-sub">{{ (editando ? 'Atualize os dados do item' : 'Preencha os dados do novo item') | t }}</div>
           </div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" [attr.aria-label]="'Fechar formulário' | t"><mat-icon>close</mat-icon></button>
       </div>
       <form class="form-fields" [formGroup]="pecaForm">
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Nome da Peça</mat-label>
+          <mat-label>{{ 'Nome da Peça' | t }}</mat-label>
           <input matInput formControlName="nome" placeholder="Ex: Rolamento 6205" required />
           <mat-error *ngIf="campoInvalido('nome')">
-            {{ pecaForm.controls.nome.hasError('required') ? 'Nome é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.' }}
+            {{ (pecaForm.controls.nome.hasError('required') ? 'Nome é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.') | t }}
           </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Código</mat-label>
+          <mat-label>{{ 'Código' | t }}</mat-label>
           <input matInput formControlName="codigo" placeholder="Ex: ROL-6205" required />
           <mat-error *ngIf="campoInvalido('codigo')">
-            {{ pecaForm.controls.codigo.hasError('required') ? 'Código é obrigatório.' : 'Código deve ter no máximo 40 caracteres.' }}
+            {{ (pecaForm.controls.codigo.hasError('required') ? 'Código é obrigatório.' : 'Código deve ter no máximo 40 caracteres.') | t }}
           </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Quantidade em Estoque</mat-label>
+          <mat-label>{{ 'Quantidade em Estoque' | t }}</mat-label>
           <input matInput type="number" formControlName="quantidadeEmEstoque" placeholder="0" />
-          <mat-error *ngIf="campoInvalido('quantidadeEmEstoque')">Informe uma quantidade ≥ 0.</mat-error>
+          <mat-error *ngIf="campoInvalido('quantidadeEmEstoque')">{{ 'Informe uma quantidade ≥ 0.' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Custo Unitário (R$)</mat-label>
+          <mat-label>{{ 'Custo Unitário (R$)' | t }}</mat-label>
           <input matInput type="number" formControlName="custoUnitario" placeholder="0.00" />
-          <mat-error *ngIf="campoInvalido('custoUnitario')">Informe um custo ≥ 0.</mat-error>
+          <mat-error *ngIf="campoInvalido('custoUnitario')">{{ 'Informe um custo ≥ 0.' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Vida Útil (horas)</mat-label>
+          <mat-label>{{ 'Vida Útil (horas)' | t }}</mat-label>
           <input matInput type="number" formControlName="vidaUtilHoras" placeholder="0" />
-          <mat-error *ngIf="campoInvalido('vidaUtilHoras')">Informe um valor ≥ 0.</mat-error>
+          <mat-error *ngIf="campoInvalido('vidaUtilHoras')">{{ 'Informe um valor ≥ 0.' | t }}</mat-error>
         </mat-form-field>
       </form>
       <div class="form-actions">
-        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">{{ 'Cancelar' | t }}</button>
         <button class="btn-save" (click)="salvar()" [disabled]="salvando">
           <mat-spinner *ngIf="salvando" diameter="14"></mat-spinner>
-          {{ salvando ? 'Salvando...' : 'Salvar' }}
+          {{ (salvando ? 'Salvando...' : 'Salvar') | t }}
         </button>
       </div>
     </div>
 
     <div class="table-card">
       <div class="table-head">
-        <span class="table-head-title">Itens em Estoque</span>
-        <span class="count-badge">{{ table.filtered().length }} itens</span>
+        <span class="table-head-title">{{ 'Itens em Estoque' | t }}</span>
+        <span class="count-badge">{{ table.filtered().length }} {{ 'itens' | t }}</span>
       </div>
       <table class="data-table">
         <thead>
           <tr>
             <th class="sortable" [class.is-sorted]="sortDir('codigo')" (click)="onSort('codigo')" (keydown.enter)="onSort('codigo')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('codigo') === 'asc' ? 'ascending' : sortDir('codigo') === 'desc' ? 'descending' : 'none'">
-              Código
+              {{ 'Código' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('codigo') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('nome')" (click)="onSort('nome')" (keydown.enter)="onSort('nome')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('nome') === 'asc' ? 'ascending' : sortDir('nome') === 'desc' ? 'descending' : 'none'">
-              Nome
+              {{ 'Nome' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('nome') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('quantidadeEmEstoque')" (click)="onSort('quantidadeEmEstoque')" (keydown.enter)="onSort('quantidadeEmEstoque')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('quantidadeEmEstoque') === 'asc' ? 'ascending' : sortDir('quantidadeEmEstoque') === 'desc' ? 'descending' : 'none'">
-              Qtd
+              {{ 'Qtd' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('quantidadeEmEstoque') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('custoUnitario')" (click)="onSort('custoUnitario')" (keydown.enter)="onSort('custoUnitario')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('custoUnitario') === 'asc' ? 'ascending' : sortDir('custoUnitario') === 'desc' ? 'descending' : 'none'">
-              Custo Unit.
+              {{ 'Custo Unit.' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('custoUnitario') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('vidaUtilHoras')" (click)="onSort('vidaUtilHoras')" (keydown.enter)="onSort('vidaUtilHoras')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('vidaUtilHoras') === 'asc' ? 'ascending' : sortDir('vidaUtilHoras') === 'desc' ? 'descending' : 'none'">
-              Vida Útil
+              {{ 'Vida Útil' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('vidaUtilHoras') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th></th>
@@ -142,8 +142,8 @@
               <td>{{ p.vidaUtilHoras }}h</td>
               <td>
                 <div class="row-actions">
-                  <button mat-icon-button class="action-icon" (click)="editar(p)" aria-label="Editar registro" title="Editar"><mat-icon>edit</mat-icon></button>
-                  <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(p)" aria-label="Excluir registro" title="Excluir"><mat-icon>delete</mat-icon></button>
+                  <button mat-icon-button class="action-icon" (click)="editar(p)" [attr.aria-label]="'Editar registro' | t" [title]="'Editar' | t"><mat-icon>edit</mat-icon></button>
+                  <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(p)" [attr.aria-label]="'Excluir registro' | t" [title]="'Excluir' | t"><mat-icon>delete</mat-icon></button>
                 </div>
               </td>
             </tr>
@@ -152,13 +152,13 @@
       </table>
       <app-empty-state *ngIf="!carregando && table.filtered().length === 0"
         [kind]="searchTerm ? 'search' : 'package'"
-        [title]="searchTerm ? 'Nenhum resultado encontrado' : 'Estoque vazio'"
-        [hint]="searchTerm ? 'Tente outro termo de busca.' : 'Cadastre a primeira peça para começar a controlar o consumo do almoxarifado.'">
+        [title]="(searchTerm ? 'Nenhum resultado encontrado' : 'Estoque vazio') | t"
+        [hint]="(searchTerm ? 'Tente outro termo de busca.' : 'Cadastre a primeira peça para começar a controlar o consumo do almoxarifado.') | t">
       </app-empty-state>
       <div class="pagination" *ngIf="table.filtered().length > table.pageSize()">
-        <button mat-icon-button class="page-btn" (click)="table.prevPage()" [disabled]="table.page() === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="table.prevPage()" [disabled]="table.page() === 0" [attr.aria-label]="'Página anterior' | t"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ table.page() + 1 }} / {{ table.totalPages() }}</span>
-        <button mat-icon-button class="page-btn" (click)="table.nextPage()" [disabled]="table.page() === table.totalPages() - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="table.nextPage()" [disabled]="table.page() === table.totalPages() - 1" [attr.aria-label]="'Próxima página' | t"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 

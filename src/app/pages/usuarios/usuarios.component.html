@@ -3,19 +3,19 @@
   <!-- Hero -->
   <div class="page-hero">
     <div class="breadcrumb">
-      <mat-icon>home</mat-icon> Dashboard <mat-icon>chevron_right</mat-icon> <span>Usuários</span>
+      <mat-icon>home</mat-icon> {{ 'Dashboard' | t }} <mat-icon>chevron_right</mat-icon> <span>{{ 'Usuários' | t }}</span>
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" [attr.aria-label]="'Voltar para dashboard' | t"><mat-icon>arrow_back</mat-icon></button>
         <div>
-          <div class="hero-title">Gerenciamento de Usuários</div>
-          <div class="hero-sub">Convide, ative/desative e gerencie as permissões da equipe</div>
+          <div class="hero-title">{{ 'Gerenciamento de Usuários' | t }}</div>
+          <div class="hero-sub">{{ 'Convide, ative/desative e gerencie as permissões da equipe' | t }}</div>
         </div>
       </div>
       <div class="hero-actions">
         <button class="btn-primary" (click)="novoConvite()">
-          <mat-icon>person_add</mat-icon> Convidar Usuário
+          <mat-icon>person_add</mat-icon> {{ 'Convidar Usuário' | t }}
         </button>
       </div>
     </div>
@@ -27,20 +27,20 @@
     <div class="filter-bar">
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
-        <input class="search-input" type="text" placeholder="Buscar por nome ou e-mail..."
+        <input class="search-input" type="text" [placeholder]="'Buscar por nome ou e-mail...' | t"
           [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; onSearch()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" [attr.aria-label]="'Limpar busca' | t" (click)="searchTerm=''; onSearch()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
       <select class="filter-select" [(ngModel)]="filterRole" (ngModelChange)="applyFilter()">
-        <option value="">Todas as roles</option>
-        <option *ngFor="let r of ALL_ROLES" [value]="r">{{ ROLE_LABELS[r] }}</option>
+        <option value="">{{ 'Todas as roles' | t }}</option>
+        <option *ngFor="let r of ALL_ROLES" [value]="r">{{ ROLE_LABELS[r] | t }}</option>
       </select>
       <select class="filter-select" [(ngModel)]="filterAtivo" (ngModelChange)="applyFilter()">
-        <option value="">Todos os status</option>
-        <option value="true">Ativos</option>
-        <option value="false">Inativos</option>
+        <option value="">{{ 'Todos os status' | t }}</option>
+        <option value="true">{{ 'Ativos' | t }}</option>
+        <option value="false">{{ 'Inativos' | t }}</option>
       </select>
     </div>
 
@@ -48,18 +48,18 @@
     <div class="form-wrap" *ngIf="showForm">
       <div class="form-head">
         <div>
-          <div class="form-head-title">Convidar Usuário</div>
-          <div class="form-head-sub">Crie as credenciais de acesso para o novo membro</div>
+          <div class="form-head-title">{{ 'Convidar Usuário' | t }}</div>
+          <div class="form-head-sub">{{ 'Crie as credenciais de acesso para o novo membro' | t }}</div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" [attr.aria-label]="'Fechar formulário' | t"><mat-icon>close</mat-icon></button>
       </div>
       <form class="form-fields" [formGroup]="inviteForm">
         <div class="field-group">
-          <label class="field-label">Nome completo</label>
+          <label class="field-label">{{ 'Nome completo' | t }}</label>
           <input class="field-input" type="text" formControlName="nome" placeholder="Ex: João Silva"
             [class.field-invalid]="campoInvalido('nome')" />
           <div class="field-error" *ngIf="campoInvalido('nome')">
-            {{ inviteForm.controls.nome.hasError('required') ? 'Nome é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.' }}
+            {{ (inviteForm.controls.nome.hasError('required') ? 'Nome é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.') | t }}
           </div>
         </div>
         <div class="field-group">
@@ -67,29 +67,29 @@
           <input class="field-input" type="email" formControlName="email" placeholder="joao@empresa.com"
             [class.field-invalid]="campoInvalido('email')" />
           <div class="field-error" *ngIf="campoInvalido('email')">
-            {{ inviteForm.controls.email.hasError('required') ? 'E-mail é obrigatório.' : 'Informe um e-mail válido.' }}
+            {{ (inviteForm.controls.email.hasError('required') ? 'E-mail é obrigatório.' : 'Informe um e-mail válido.') | t }}
           </div>
         </div>
         <div class="field-group">
-          <label class="field-label">Senha inicial</label>
-          <input class="field-input" type="password" formControlName="senha" placeholder="Mínimo 8 caracteres"
+          <label class="field-label">{{ 'Senha inicial' | t }}</label>
+          <input class="field-input" type="password" formControlName="senha" [placeholder]="'Mínimo 8 caracteres' | t"
             [class.field-invalid]="campoInvalido('senha')" />
           <div class="field-error" *ngIf="campoInvalido('senha')">
-            {{ inviteForm.controls.senha.hasError('required') ? 'Senha é obrigatória.' : 'Senha deve ter pelo menos 8 caracteres.' }}
+            {{ (inviteForm.controls.senha.hasError('required') ? 'Senha é obrigatória.' : 'Senha deve ter pelo menos 8 caracteres.') | t }}
           </div>
         </div>
         <div class="field-group">
-          <label class="field-label">Role / Perfil</label>
+          <label class="field-label">{{ 'Role / Perfil' | t }}</label>
           <select class="field-select" formControlName="roleNome">
-            <option *ngFor="let r of rolesDisponiveisParaOp()" [value]="r">{{ ROLE_LABELS[r] }}</option>
+            <option *ngFor="let r of rolesDisponiveisParaOp()" [value]="r">{{ ROLE_LABELS[r] | t }}</option>
           </select>
         </div>
       </form>
       <div class="form-actions">
-        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">{{ 'Cancelar' | t }}</button>
         <button class="btn-save" (click)="salvar()" [disabled]="salvando">
           <mat-spinner *ngIf="salvando" diameter="14"></mat-spinner>
-          {{ salvando ? 'Criando...' : 'Criar Usuário' }}
+          {{ (salvando ? 'Criando...' : 'Criar Usuário') | t }}
         </button>
       </div>
     </div>
@@ -97,15 +97,15 @@
     <!-- Table -->
     <div class="table-card">
       <div class="table-head">
-        <span class="table-head-title">Membros da Equipe</span>
-        <span class="count-badge">{{ table.filtered().length }} usuário{{ table.filtered().length !== 1 ? 's' : '' }}</span>
+        <span class="table-head-title">{{ 'Membros da Equipe' | t }}</span>
+        <span class="count-badge">{{ table.filtered().length }} {{ (table.filtered().length !== 1 ? 'usuários' : 'usuário') | t }}</span>
       </div>
       <table class="data-table">
         <thead>
           <tr>
             <th class="sortable" [class.is-sorted]="sortDir('nome')" (click)="onSort('nome')" (keydown.enter)="onSort('nome')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('nome') === 'asc' ? 'ascending' : sortDir('nome') === 'desc' ? 'descending' : 'none'">
-              Usuário
+              {{ 'Usuário' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('nome') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('role')" (click)="onSort('role')" (keydown.enter)="onSort('role')" tabindex="0" role="button"
@@ -115,15 +115,15 @@
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('ativo')" (click)="onSort('ativo')" (keydown.enter)="onSort('ativo')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('ativo') === 'asc' ? 'ascending' : sortDir('ativo') === 'desc' ? 'descending' : 'none'">
-              Status
+              {{ 'Status' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('ativo') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('dataCriacao')" (click)="onSort('dataCriacao')" (keydown.enter)="onSort('dataCriacao')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('dataCriacao') === 'asc' ? 'ascending' : sortDir('dataCriacao') === 'desc' ? 'descending' : 'none'">
-              Criado em
+              {{ 'Criado em' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('dataCriacao') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
-            <th>Alterar Role</th>
+            <th>{{ 'Alterar Role' | t }}</th>
             <th></th>
           </tr>
         </thead>
@@ -146,19 +146,19 @@
                   <div>
                     <div class="user-name">
                       {{ u.nome }}
-                      <span class="me-badge" *ngIf="u.id === meuId">você</span>
+                      <span class="me-badge" *ngIf="u.id === meuId">{{ 'você' | t }}</span>
                     </div>
                     <div class="user-email">{{ u.email }}</div>
                   </div>
                 </div>
               </td>
               <td>
-                <span class="role-badge" [class]="ROLE_CSS[u.role]">{{ ROLE_LABELS[u.role] || u.role }}</span>
+                <span class="role-badge" [class]="ROLE_CSS[u.role]">{{ (ROLE_LABELS[u.role] || u.role) | t }}</span>
               </td>
               <td>
                 <span class="status-pill" [class.active]="u.ativo" [class.inactive]="!u.ativo">
                   <span class="status-dot"></span>
-                  {{ u.ativo ? 'Ativo' : 'Inativo' }}
+                  {{ (u.ativo ? 'Ativo' : 'Inativo') | t }}
                 </span>
               </td>
               <td class="date-cell">{{ u.dataCriacao ? (u.dataCriacao | date:'dd/MM/yyyy') : '—' }}</td>
@@ -167,8 +167,8 @@
                   [value]="u.role"
                   [disabled]="!podeGerenciar(u)"
                   (change)="alterarRole(u, $any($event.target).value)">
-                  <option *ngFor="let r of rolesDisponiveisParaOp()" [value]="r">{{ ROLE_LABELS[r] }}</option>
-                  <option *ngIf="!rolesDisponiveisParaOp().includes(u.role)" [value]="u.role" disabled>{{ ROLE_LABELS[u.role] }}</option>
+                  <option *ngFor="let r of rolesDisponiveisParaOp()" [value]="r">{{ ROLE_LABELS[r] | t }}</option>
+                  <option *ngIf="!rolesDisponiveisParaOp().includes(u.role)" [value]="u.role" disabled>{{ ROLE_LABELS[u.role] | t }}</option>
                 </select>
               </td>
               <td>
@@ -178,13 +178,13 @@
                     [class.toggle-on]="u.ativo"
                     [class.toggle-off]="!u.ativo"
                     (click)="toggleAtivo(u)"
-                    [title]="u.ativo ? 'Desativar usuário' : 'Ativar usuário'">
+                    [title]="(u.ativo ? 'Desativar usuário' : 'Ativar usuário') | t">
                     <mat-icon>{{ u.ativo ? 'person_off' : 'person' }}</mat-icon>
                   </button>
                   <button *ngIf="isSuperAdmin && u.id !== meuId"
                     class="action-icon del"
                     (click)="confirmarExclusao(u)"
-                    title="Remover permanentemente">
+                    [title]="'Remover permanentemente' | t">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -195,20 +195,20 @@
       </table>
       <app-empty-state *ngIf="!carregando && table.filtered().length === 0"
         [kind]="searchTerm || filterRole || filterAtivo ? 'search' : 'rocket'"
-        [title]="searchTerm || filterRole || filterAtivo ? 'Nenhum resultado' : 'Nenhum usuário cadastrado'"
-        [hint]="searchTerm || filterRole || filterAtivo ? 'Tente outros filtros.' : 'Convide a primeira pessoa para acessar o sistema.'">
+        [title]="(searchTerm || filterRole || filterAtivo ? 'Nenhum resultado' : 'Nenhum usuário cadastrado') | t"
+        [hint]="(searchTerm || filterRole || filterAtivo ? 'Tente outros filtros.' : 'Convide a primeira pessoa para acessar o sistema.') | t">
       </app-empty-state>
     </div>
 
     <!-- Role legend -->
     <div class="legend">
-      <span class="legend-title">Permissões por role:</span>
+      <span class="legend-title">{{ 'Permissões por role:' | t }}</span>
       <div class="legend-items">
-        <div class="legend-item"><span class="role-badge role-superadmin">Super Admin</span> — acesso total, gerencia todos os usuários e roles</div>
-        <div class="legend-item"><span class="role-badge role-admin">Administrador</span> — gerencia Gestores, Técnicos e Visualizadores; CRUD completo</div>
-        <div class="legend-item"><span class="role-badge role-gestor">Gestor</span> — cria/edita máquinas, manutenções e estoque; sem acesso a usuários</div>
-        <div class="legend-item"><span class="role-badge role-tecnico">Técnico</span> — cria/edita manutenções; visualiza máquinas e estoque</div>
-        <div class="legend-item"><span class="role-badge role-vis">Visualizador</span> — acesso somente leitura em todo o sistema</div>
+        <div class="legend-item"><span class="role-badge role-superadmin">Super Admin</span> — {{ 'acesso total, gerencia todos os usuários e roles' | t }}</div>
+        <div class="legend-item"><span class="role-badge role-admin">{{ 'Administrador' | t }}</span> — {{ 'gerencia Gestores, Técnicos e Visualizadores; CRUD completo' | t }}</div>
+        <div class="legend-item"><span class="role-badge role-gestor">{{ 'Gestor' | t }}</span> — {{ 'cria/edita máquinas, manutenções e estoque; sem acesso a usuários' | t }}</div>
+        <div class="legend-item"><span class="role-badge role-tecnico">{{ 'Técnico' | t }}</span> — {{ 'cria/edita manutenções; visualiza máquinas e estoque' | t }}</div>
+        <div class="legend-item"><span class="role-badge role-vis">{{ 'Visualizador' | t }}</span> — {{ 'acesso somente leitura em todo o sistema' | t }}</div>
       </div>
     </div>
 

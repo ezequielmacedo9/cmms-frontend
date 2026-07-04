@@ -11,12 +11,13 @@ import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-di
 import { TableState } from '../../services/table-state';
 import { UserProfile, UserRole, ROLE_LABELS, ROLE_CSS, ALL_ROLES } from '../../models/user.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule,
-    EmptyStateComponent],
+    EmptyStateComponent, TranslatePipe],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
 })

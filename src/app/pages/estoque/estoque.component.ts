@@ -17,6 +17,7 @@ import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-di
 import { TableState } from '../../services/table-state';
 import { PecaRequest, PecaResponse } from '../../models/peca.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
   selector: 'app-estoque',
@@ -25,7 +26,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
     CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule,
     MatProgressSpinnerModule,
-    EmptyStateComponent
+    EmptyStateComponent, TranslatePipe
   ],
   templateUrl: './estoque.component.html',
   styleUrl: './estoque.component.css',
