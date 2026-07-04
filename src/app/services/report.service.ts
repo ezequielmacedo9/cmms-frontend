@@ -55,4 +55,9 @@ export class ReportService {
   getQrCodeUrl(maquinaId: number): string {
     return `${environment.apiUrl}/api/maquinas/${maquinaId}/qrcode`;
   }
+
+  /** Fetches the machine QR PNG through HttpClient so the auth header applies. */
+  downloadQrCode(maquinaId: number, size = 300): Observable<Blob> {
+    return this.http.get(`${this.getQrCodeUrl(maquinaId)}?size=${size}`, { responseType: 'blob' });
+  }
 }

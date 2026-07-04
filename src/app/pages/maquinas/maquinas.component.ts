@@ -12,11 +12,12 @@ import { MaquinaService } from '../../services/maquina.service';
 import { ManutencaoService } from '../../services/manutencao.service';
 import { NotificationService } from '../../services/notification.service';
 import { ExportService } from '../../services/export.service';
+import { ReportService } from '../../services/report.service';
 import { ConfirmDialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 import { TableState } from '../../services/table-state';
 import { Maquina } from '../../models/maquina.model';
 import { Manutencao } from '../../models/manutencao.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EmptyStateComponent } from '../../components/empty-state.component';
 
 @Component({
@@ -37,10 +38,15 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   private manutencaoService = inject(ManutencaoService);
   private notify = inject(NotificationService);
   private exporter = inject(ExportService);
+  private reports = inject(ReportService);
   private confirm = inject(ConfirmDialogService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
   private subs = new Subscription();
+
+  /** Machine id coming from a QR-code deep link (?id=...), consumed once. */
+  private deepLinkId: number | null = null;
 
   /** Source list straight from the API — the dropdown filter narrows this. */
   maquinas: Maquina[] = [];
@@ -66,7 +72,11 @@ export class MaquinasComponent implements OnInit, OnDestroy {
   historicoManutencoes: Manutencao[] = [];
   carregandoHistorico = false;
 
-  ngOnInit() { this.carregar(); }
+  ngOnInit() {
+    const raw = this.route.snapshot.queryParamMap.get('id');
+    this.deepLinkId = raw && /^\d+$/.test(raw) ? Number(raw) : null;
+    this.carregar();
+  }
 
   ngOnDestroy() { this.subs.unsubscribe(); }
 
@@ -77,6 +87,7 @@ export class MaquinasComponent implements OnInit, OnDestroy {
         this.maquinas = data;
         this.applyFilter();
         this.carregando = false;
+        this.consumeDeepLink();
         this.cdr.markForCheck();
       },
       error: () => {
@@ -85,6 +96,23 @@ export class MaquinasComponent implements OnInit, OnDestroy {
       }
     });
     this.subs.add(sub);
+  }
+
+  /**
+   * QR-code deep link: after the list loads, focus the referenced machine —
+   * narrows the table to it and opens its history modal.
+   */
+  private consumeDeepLink() {
+    if (this.deepLinkId == null) return;
+    const alvo = this.maquinas.find(m => m.id === this.deepLinkId);
+    this.deepLinkId = null;
+    if (!alvo) {
+      this.notify.error('Máquina do QR code não encontrada.');
+      return;
+    }
+    this.searchTerm = alvo.nome;
+    this.onSearch();
+    this.verHistorico(alvo);
   }
 
   /** Re-feeds the table with the status-filtered slice (search stays applied). */
@@ -190,6 +218,16 @@ export class MaquinasComponent implements OnInit, OnDestroy {
     this.showHistory = false;
     this.historyMaquina = null;
     this.historicoManutencoes = [];
+  }
+
+  /** Downloads the printable QR label that deep-links back to this machine. */
+  baixarQr(m: Maquina) {
+    if (m.id == null) return;
+    const sub = this.reports.downloadQrCode(m.id).subscribe({
+      next: blob => this.reports.triggerDownload(blob, `maquina-${m.id}-qr.png`),
+      error: () => this.notify.error('Erro ao gerar o QR code.')
+    });
+    this.subs.add(sub);
   }
 
   exportarCSV() {
