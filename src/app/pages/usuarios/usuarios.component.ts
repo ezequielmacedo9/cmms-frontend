@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,7 +15,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule,
     EmptyStateComponent],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css'
@@ -27,6 +27,7 @@ export class UsuariosComponent implements OnInit {
   private toast          = inject(ToastService);
   private confirm        = inject(ConfirmDialogService);
   private router         = inject(Router);
+  private fb             = inject(NonNullableFormBuilder);
 
   readonly ROLE_LABELS = ROLE_LABELS;
   readonly ROLE_CSS    = ROLE_CSS;
@@ -49,7 +50,13 @@ export class UsuariosComponent implements OnInit {
   showForm    = false;
   salvando    = false;
 
-  form = { nome: '', email: '', senha: '', roleNome: 'ROLE_TECNICO' };
+  /** Reactive invite form with inline validation. */
+  readonly inviteForm = this.fb.group({
+    nome:     ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    email:    ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+    senha:    ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
+    roleNome: ['ROLE_TECNICO']
+  });
 
   meuId      = this.authService.getUserId();
   minhaRole  = this.authService.getRole();
@@ -80,18 +87,27 @@ export class UsuariosComponent implements OnInit {
   sortDir(column: string) { return this.table.directionOf(column); }
 
   novoConvite() {
-    this.form = { nome: '', email: '', senha: '', roleNome: 'ROLE_TECNICO' };
+    this.inviteForm.reset({ nome: '', email: '', senha: '', roleNome: 'ROLE_TECNICO' });
     this.showForm = true;
   }
 
   cancelar() { this.showForm = false; }
 
+  /** Convenience for the template's inline error hints. */
+  campoInvalido(nome: 'nome' | 'email' | 'senha'): boolean {
+    const c = this.inviteForm.controls[nome];
+    return c.invalid && (c.touched || c.dirty);
+  }
+
   salvar() {
-    if (!this.form.nome || !this.form.email || !this.form.senha) {
-      this.toast.show('Preencha todos os campos', 'error'); return;
+    if (this.inviteForm.invalid) {
+      this.inviteForm.markAllAsTouched();
+      this.toast.show('Corrija os campos destacados', 'error');
+      return;
     }
     this.salvando = true;
-    this.usuarioService.convidar(this.form).subscribe({
+    const v = this.inviteForm.getRawValue();
+    this.usuarioService.convidar({ ...v, nome: v.nome.trim(), email: v.email.trim() }).subscribe({
       next: u => {
         this.usuarios.unshift(u);
         this.applyFilter();

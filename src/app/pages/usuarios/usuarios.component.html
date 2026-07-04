@@ -53,26 +53,38 @@
         </div>
         <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
       </div>
-      <div class="form-fields">
+      <form class="form-fields" [formGroup]="inviteForm">
         <div class="field-group">
           <label class="field-label">Nome completo</label>
-          <input class="field-input" type="text" [(ngModel)]="form.nome" placeholder="Ex: João Silva" />
+          <input class="field-input" type="text" formControlName="nome" placeholder="Ex: João Silva"
+            [class.field-invalid]="campoInvalido('nome')" />
+          <div class="field-error" *ngIf="campoInvalido('nome')">
+            {{ inviteForm.controls.nome.hasError('required') ? 'Nome é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.' }}
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">E-mail</label>
-          <input class="field-input" type="email" [(ngModel)]="form.email" placeholder="joao@empresa.com" />
+          <input class="field-input" type="email" formControlName="email" placeholder="joao@empresa.com"
+            [class.field-invalid]="campoInvalido('email')" />
+          <div class="field-error" *ngIf="campoInvalido('email')">
+            {{ inviteForm.controls.email.hasError('required') ? 'E-mail é obrigatório.' : 'Informe um e-mail válido.' }}
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">Senha inicial</label>
-          <input class="field-input" type="password" [(ngModel)]="form.senha" placeholder="Mínimo 6 caracteres" />
+          <input class="field-input" type="password" formControlName="senha" placeholder="Mínimo 8 caracteres"
+            [class.field-invalid]="campoInvalido('senha')" />
+          <div class="field-error" *ngIf="campoInvalido('senha')">
+            {{ inviteForm.controls.senha.hasError('required') ? 'Senha é obrigatória.' : 'Senha deve ter pelo menos 8 caracteres.' }}
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">Role / Perfil</label>
-          <select class="field-select" [(ngModel)]="form.roleNome">
+          <select class="field-select" formControlName="roleNome">
             <option *ngFor="let r of rolesDisponiveisParaOp()" [value]="r">{{ ROLE_LABELS[r] }}</option>
           </select>
         </div>
-      </div>
+      </form>
       <div class="form-actions">
         <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
         <button class="btn-save" (click)="salvar()" [disabled]="salvando">

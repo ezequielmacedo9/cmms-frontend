@@ -226,3 +226,7 @@
   .page-hero, .page-body { padding: 16px; }
   .data-table th:nth-child(4), .data-table td:nth-child(4) { display: none; }
 }
+
+/* Inline validation */
+.field-invalid { border-color: rgba(239,68,68,0.6) !important; }
+.field-error { font-size: 11px; color: #fca5a5; margin-top: 4px; }

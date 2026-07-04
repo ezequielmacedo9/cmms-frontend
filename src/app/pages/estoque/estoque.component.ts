@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +22,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
   selector: 'app-estoque',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatTableModule, MatButtonModule,
+    CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule,
     MatProgressSpinnerModule,
     EmptyStateComponent
@@ -38,6 +38,7 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   private confirm = inject(ConfirmDialogService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private fb = inject(NonNullableFormBuilder);
   private subs = new Subscription();
 
   /** Source list straight from the API. */
@@ -55,7 +56,15 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   editandoId: number | null = null;
   carregando = true;
   searchTerm = '';
-  form: PecaRequest = { nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 };
+
+  /** Reactive form with inline validation. */
+  readonly pecaForm = this.fb.group({
+    nome:   ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    codigo: ['', [Validators.required, Validators.maxLength(40)]],
+    quantidadeEmEstoque: [0, [Validators.required, Validators.min(0), Validators.max(1_000_000)]],
+    custoUnitario:       [0, [Validators.required, Validators.min(0), Validators.max(10_000_000)]],
+    vidaUtilHoras:       [0, [Validators.required, Validators.min(0), Validators.max(1_000_000)]]
+  });
 
   ngOnInit() { this.carregar(); }
   ngOnDestroy() { this.subs.unsubscribe(); }
@@ -82,30 +91,43 @@ export class EstoqueComponent implements OnInit, OnDestroy {
   }
 
   novoRegistro() {
-    this.form = { nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 };
+    this.pecaForm.reset({ nome: '', codigo: '', quantidadeEmEstoque: 0, custoUnitario: 0, vidaUtilHoras: 0 });
     this.editando = false;
     this.editandoId = null;
     this.showForm = true;
   }
 
   editar(peca: PecaResponse) {
-    this.form = {
+    this.pecaForm.reset({
       nome: peca.nome, codigo: peca.codigo,
       quantidadeEmEstoque: peca.quantidadeEmEstoque,
       custoUnitario: peca.custoUnitario,
       vidaUtilHoras: peca.vidaUtilHoras
-    };
+    });
     this.editando = true;
     this.editandoId = peca.id!;
     this.showForm = true;
   }
 
+  /** Convenience for the template's inline error hints. */
+  campoInvalido(nome: keyof typeof this.pecaForm.controls): boolean {
+    const c = this.pecaForm.controls[nome];
+    return c.invalid && (c.touched || c.dirty);
+  }
+
   salvar() {
+    if (this.pecaForm.invalid) {
+      this.pecaForm.markAllAsTouched();
+      this.notify.error('Corrija os campos destacados.');
+      return;
+    }
     if (this.salvando) return;
     this.salvando = true;
+    const v = this.pecaForm.getRawValue();
+    const payload: PecaRequest = { ...v, nome: v.nome.trim(), codigo: v.codigo.trim() };
     const op = this.editando && this.editandoId
-      ? this.pecaService.atualizar(this.editandoId, this.form)
-      : this.pecaService.cadastrar(this.form);
+      ? this.pecaService.atualizar(this.editandoId, payload)
+      : this.pecaService.cadastrar(payload);
 
     const isEditing = this.editando;
     const sub = op.subscribe({
