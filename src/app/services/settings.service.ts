@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -17,7 +17,8 @@ export class SettingsService {
   private base = `${environment.apiUrl}/api/configuracoes`;
 
   list(): Observable<ConfigItem[]> {
-    return this.http.get<ConfigItem[]>(this.base);
+    // Backend defaults to a paged envelope; the settings page wants all keys.
+    return this.http.get<ConfigItem[]>(this.base, { params: new HttpParams().set('unpaged', 'true') });
   }
 
   save(values: Record<string, string>): Observable<{ message: string }> {
