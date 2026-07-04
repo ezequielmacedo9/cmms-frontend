@@ -22,6 +22,7 @@ import { AnexoMeta, ChecklistItem, Manutencao } from '../../models/manutencao.mo
 import { Maquina } from '../../models/maquina.model';
 import { PecaResponse } from '../../models/peca.model';
 import { EmptyStateComponent } from '../../components/empty-state.component';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
   selector: 'app-manutencoes',
@@ -30,7 +31,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
     CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatCardModule, MatProgressSpinnerModule,
-    EmptyStateComponent
+    EmptyStateComponent, TranslatePipe
   ],
   templateUrl: './manutencoes.component.html',
   styleUrl: './manutencoes.component.css',

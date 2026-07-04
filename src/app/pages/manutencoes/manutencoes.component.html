@@ -2,19 +2,19 @@
 
   <div class="page-hero">
     <div class="breadcrumb">
-      <mat-icon>home</mat-icon> Dashboard <mat-icon>chevron_right</mat-icon> <span>Manutenções</span>
+      <mat-icon>home</mat-icon> {{ 'Dashboard' | t }} <mat-icon>chevron_right</mat-icon> <span>{{ 'Manutenções' | t }}</span>
     </div>
     <div class="hero-row">
       <div class="hero-left">
-        <button mat-icon-button class="back-btn" (click)="voltar()" aria-label="Voltar para dashboard"><mat-icon>arrow_back</mat-icon></button>
+        <button mat-icon-button class="back-btn" (click)="voltar()" [attr.aria-label]="'Voltar para dashboard' | t"><mat-icon>arrow_back</mat-icon></button>
         <div>
-          <div class="hero-title">Manutenções</div>
-          <div class="hero-sub">Registre e acompanhe as ordens de serviço</div>
+          <div class="hero-title">{{ 'Manutenções' | t }}</div>
+          <div class="hero-sub">{{ 'Registre e acompanhe as ordens de serviço' | t }}</div>
         </div>
       </div>
       <div class="hero-actions">
         <button class="btn-ghost" (click)="exportarCSV()"><mat-icon>download</mat-icon> CSV</button>
-        <button class="btn-primary" (click)="novoRegistro()"><mat-icon>add</mat-icon> Nova Manutenção</button>
+        <button class="btn-primary" (click)="novoRegistro()"><mat-icon>add</mat-icon> {{ 'Nova Manutenção' | t }}</button>
       </div>
     </div>
   </div>
@@ -24,17 +24,17 @@
     <div class="filter-bar">
       <div class="search-wrap">
         <mat-icon class="search-icon">search</mat-icon>
-        <input class="search-input" type="text" placeholder="Buscar por máquina, técnico ou descrição..."
+        <input class="search-input" type="text" [placeholder]="'Buscar por máquina, técnico ou descrição...' | t"
           [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
-        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" aria-label="Limpar busca" (click)="searchTerm=''; onSearch()">
+        <button *ngIf="searchTerm" mat-icon-button class="clear-btn" [attr.aria-label]="'Limpar busca' | t" (click)="searchTerm=''; onSearch()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
       <select class="filter-select" [(ngModel)]="filterTipo" (ngModelChange)="applyFilter()">
-        <option value="">Todos os tipos</option>
-        <option value="PREVENTIVA">Preventiva</option>
-        <option value="CORRETIVA">Corretiva</option>
-        <option value="PREDITIVA">Preditiva</option>
+        <option value="">{{ 'Todos os tipos' | t }}</option>
+        <option value="PREVENTIVA">{{ 'Preventiva' | t }}</option>
+        <option value="CORRETIVA">{{ 'Corretiva' | t }}</option>
+        <option value="PREDITIVA">{{ 'Preditiva' | t }}</option>
       </select>
     </div>
 
@@ -42,110 +42,110 @@
       <div class="form-head">
         <div class="form-head-left">
           <div>
-            <div class="form-head-title">Registrar Manutenção</div>
-            <div class="form-head-sub">Preencha os dados da ordem de serviço</div>
+            <div class="form-head-title">{{ 'Registrar Manutenção' | t }}</div>
+            <div class="form-head-sub">{{ 'Preencha os dados da ordem de serviço' | t }}</div>
           </div>
         </div>
-        <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="cancelar()" [attr.aria-label]="'Fechar formulário' | t"><mat-icon>close</mat-icon></button>
       </div>
       <form class="form-fields" [formGroup]="osForm">
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Máquina</mat-label>
+          <mat-label>{{ 'Máquina' | t }}</mat-label>
           <mat-select formControlName="maquinaId">
-            <mat-option *ngIf="maquinas.length === 0" disabled>Carregando...</mat-option>
+            <mat-option *ngIf="maquinas.length === 0" disabled>{{ 'Carregando...' | t }}</mat-option>
             <mat-option *ngFor="let m of maquinas" [value]="m.id">{{ m.nome }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="campoInvalido('maquinaId')">Selecione uma máquina.</mat-error>
+          <mat-error *ngIf="campoInvalido('maquinaId')">{{ 'Selecione uma máquina.' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Tipo</mat-label>
+          <mat-label>{{ 'Tipo' | t }}</mat-label>
           <mat-select formControlName="tipo">
-            <mat-option value="PREVENTIVA">Preventiva</mat-option>
-            <mat-option value="CORRETIVA">Corretiva</mat-option>
-            <mat-option value="PREDITIVA">Preditiva</mat-option>
+            <mat-option value="PREVENTIVA">{{ 'Preventiva' | t }}</mat-option>
+            <mat-option value="CORRETIVA">{{ 'Corretiva' | t }}</mat-option>
+            <mat-option value="PREDITIVA">{{ 'Preditiva' | t }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="campoInvalido('tipo')">Selecione o tipo da OS.</mat-error>
+          <mat-error *ngIf="campoInvalido('tipo')">{{ 'Selecione o tipo da OS.' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Técnico Responsável</mat-label>
-          <input matInput formControlName="tecnico" placeholder="Nome do técnico" required />
+          <mat-label>{{ 'Técnico Responsável' | t }}</mat-label>
+          <input matInput formControlName="tecnico" [placeholder]="'Nome do técnico' | t" required />
           <mat-error *ngIf="campoInvalido('tecnico')">
-            {{ osForm.controls.tecnico.hasError('required') ? 'Técnico é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.' }}
+            {{ (osForm.controls.tecnico.hasError('required') ? 'Técnico é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.') | t }}
           </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Descrição</mat-label>
-          <textarea matInput formControlName="descricao" rows="1" placeholder="Descreva o serviço..."></textarea>
-          <mat-error *ngIf="campoInvalido('descricao')">Máximo de 500 caracteres.</mat-error>
+          <mat-label>{{ 'Descrição' | t }}</mat-label>
+          <textarea matInput formControlName="descricao" rows="1" [placeholder]="'Descreva o serviço...' | t"></textarea>
+          <mat-error *ngIf="campoInvalido('descricao')">{{ 'Máximo de 500 caracteres.' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Tempo de execução (min)</mat-label>
+          <mat-label>{{ 'Tempo de execução (min)' | t }}</mat-label>
           <input matInput type="number" formControlName="tempoExecucaoMinutos" placeholder="Ex: 90" />
-          <mat-error *ngIf="campoInvalido('tempoExecucaoMinutos')">Informe um tempo válido (min. 1).</mat-error>
+          <mat-error *ngIf="campoInvalido('tempoExecucaoMinutos')">{{ 'Informe um tempo válido (min. 1).' | t }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
-          <mat-label>Custo mão de obra (R$)</mat-label>
+          <mat-label>{{ 'Custo mão de obra (R$)' | t }}</mat-label>
           <input matInput type="number" formControlName="custoMaoObra" placeholder="0.00" />
-          <mat-error *ngIf="campoInvalido('custoMaoObra')">Informe um custo válido (≥ 0).</mat-error>
+          <mat-error *ngIf="campoInvalido('custoMaoObra')">{{ 'Informe um custo válido (≥ 0).' | t }}</mat-error>
         </mat-form-field>
       </form>
 
       <div class="pecas-section">
-        <div class="pecas-head">Peças consumidas <small>(dão baixa no estoque)</small></div>
+        <div class="pecas-head">{{ 'Peças consumidas' | t }} <small>{{ '(dão baixa no estoque)' | t }}</small></div>
         <div class="pecas-add">
           <select class="filter-select" [(ngModel)]="novaPecaId" name="novaPeca">
-            <option [ngValue]="null" disabled>Selecione uma peça...</option>
-            <option *ngFor="let p of pecas" [ngValue]="p.id">{{ p.nome }} ({{ p.quantidadeEmEstoque }} em estoque)</option>
+            <option [ngValue]="null" disabled>{{ 'Selecione uma peça...' | t }}</option>
+            <option *ngFor="let p of pecas" [ngValue]="p.id">{{ p.nome }} ({{ p.quantidadeEmEstoque }} {{ 'em estoque' | t }})</option>
           </select>
-          <input class="pecas-qtd" type="number" min="1" [(ngModel)]="novaPecaQtd" name="novaPecaQtd" placeholder="Qtd" />
-          <button type="button" class="btn-ghost" (click)="addPeca()" [disabled]="novaPecaId == null"><mat-icon>add</mat-icon> Adicionar</button>
+          <input class="pecas-qtd" type="number" min="1" [(ngModel)]="novaPecaQtd" name="novaPecaQtd" [placeholder]="'Qtd' | t" />
+          <button type="button" class="btn-ghost" (click)="addPeca()" [disabled]="novaPecaId == null"><mat-icon>add</mat-icon> {{ 'Adicionar' | t }}</button>
         </div>
         <div class="pecas-list" *ngIf="pecasConsumo.length">
           <div class="pecas-item" *ngFor="let pc of pecasConsumo; let i = index">
             <span class="pecas-name">{{ pc.nome }} — {{ pc.quantidade }}x</span>
             <span class="pecas-subtotal">R$ {{ (pc.quantidade * pc.custo) | number:'1.2-2' }}</span>
-            <button type="button" class="action-icon del" (click)="removePeca(i)" aria-label="Remover peça"><mat-icon>close</mat-icon></button>
+            <button type="button" class="action-icon del" (click)="removePeca(i)" [attr.aria-label]="'Remover peça' | t"><mat-icon>close</mat-icon></button>
           </div>
-          <div class="pecas-total">Total em peças: <strong>R$ {{ custoPecasPreview | number:'1.2-2' }}</strong></div>
+          <div class="pecas-total">{{ 'Total em peças:' | t }} <strong>R$ {{ custoPecasPreview | number:'1.2-2' }}</strong></div>
         </div>
       </div>
 
       <div class="form-actions">
-        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+        <button class="btn-cancel" (click)="cancelar()" [disabled]="salvando">{{ 'Cancelar' | t }}</button>
         <button class="btn-save" (click)="salvar()" [disabled]="salvando">
           <mat-spinner *ngIf="salvando" diameter="14"></mat-spinner>
-          {{ salvando ? 'Salvando...' : 'Registrar' }}
+          {{ (salvando ? 'Salvando...' : 'Registrar') | t }}
         </button>
       </div>
     </div>
 
     <div class="table-card">
       <div class="table-head">
-        <span class="table-head-title">Ordens de Serviço</span>
-        <span class="count-badge">{{ table.filtered().length }} registros</span>
+        <span class="table-head-title">{{ 'Ordens de Serviço' | t }}</span>
+        <span class="count-badge">{{ table.filtered().length }} {{ 'registros' | t }}</span>
       </div>
       <table class="data-table">
         <thead>
           <tr>
-            <th>Máquina</th>
+            <th>{{ 'Máquina' | t }}</th>
             <th class="sortable" [class.is-sorted]="sortDir('tipo')" (click)="onSort('tipo')" (keydown.enter)="onSort('tipo')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('tipo') === 'asc' ? 'ascending' : sortDir('tipo') === 'desc' ? 'descending' : 'none'">
-              Tipo
+              {{ 'Tipo' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('tipo') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('prioridade')" (click)="onSort('prioridade')" (keydown.enter)="onSort('prioridade')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('prioridade') === 'asc' ? 'ascending' : sortDir('prioridade') === 'desc' ? 'descending' : 'none'">
-              Prioridade
+              {{ 'Prioridade' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('prioridade') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('tecnico')" (click)="onSort('tecnico')" (keydown.enter)="onSort('tecnico')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('tecnico') === 'asc' ? 'ascending' : sortDir('tecnico') === 'desc' ? 'descending' : 'none'">
-              Técnico
+              {{ 'Técnico' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('tecnico') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th class="sortable" [class.is-sorted]="sortDir('dataManutencao')" (click)="onSort('dataManutencao')" (keydown.enter)="onSort('dataManutencao')" tabindex="0" role="button"
               [attr.aria-sort]="sortDir('dataManutencao') === 'asc' ? 'ascending' : sortDir('dataManutencao') === 'desc' ? 'descending' : 'none'">
-              Data
+              {{ 'Data' | t }}
               <mat-icon class="sort-caret" *ngIf="sortDir('dataManutencao') as d">{{ d === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
             </th>
             <th></th>
@@ -169,7 +169,7 @@
                   [class.badge-green]="m.tipo === 'PREVENTIVA'"
                   [class.badge-red]="m.tipo === 'CORRETIVA'"
                   [class.badge-violet]="m.tipo === 'PREDITIVA'">
-                  {{ m.tipo }}
+                  {{ m.tipo | t }}
                 </span>
               </td>
               <td>
@@ -178,23 +178,23 @@
                   [class.prio-alta]="m.prioridade === 'ALTA'"
                   [class.prio-media]="!m.prioridade || m.prioridade === 'MEDIA'"
                   [class.prio-baixa]="m.prioridade === 'BAIXA'">
-                  {{ m.prioridade === 'CRITICA' ? 'Crítica' : m.prioridade === 'ALTA' ? 'Alta' : m.prioridade === 'BAIXA' ? 'Baixa' : 'Média' }}
+                  {{ (m.prioridade === 'CRITICA' ? 'Crítica' : m.prioridade === 'ALTA' ? 'Alta' : m.prioridade === 'BAIXA' ? 'Baixa' : 'Média') | t }}
                 </span>
               </td>
               <td>
                 {{ m.tecnico }}
-                <span *ngIf="m.status === 'CONCLUIDA'" class="status-chip-ok">✓ Concluída</span>
+                <span *ngIf="m.status === 'CONCLUIDA'" class="status-chip-ok">✓ {{ 'Concluída' | t }}</span>
               </td>
               <td>{{ m.dataManutencao | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button mat-icon-button class="action-icon" (click)="abrirDetalhe(m)" aria-label="Detalhes da OS" title="Detalhes (checklist e anexos)">
+                  <button mat-icon-button class="action-icon" (click)="abrirDetalhe(m)" [attr.aria-label]="'Detalhes da OS' | t" [title]="'Detalhes (checklist e anexos)' | t">
                     <mat-icon>fact_check</mat-icon>
                   </button>
-                  <button *ngIf="m.status !== 'CONCLUIDA'" mat-icon-button class="action-icon" (click)="concluir(m)" aria-label="Concluir OS" title="Concluir OS">
+                  <button *ngIf="m.status !== 'CONCLUIDA'" mat-icon-button class="action-icon" (click)="concluir(m)" [attr.aria-label]="'Concluir OS' | t" [title]="'Concluir OS' | t">
                     <mat-icon>task_alt</mat-icon>
                   </button>
-                  <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(m)" aria-label="Excluir registro" title="Excluir">
+                  <button mat-icon-button class="action-icon del" (click)="confirmarExclusao(m)" [attr.aria-label]="'Excluir registro' | t" [title]="'Excluir' | t">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -205,13 +205,13 @@
       </table>
       <app-empty-state *ngIf="!carregando && table.filtered().length === 0"
         [kind]="searchTerm || filterTipo ? 'search' : 'inbox'"
-        [title]="searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada'"
-        [hint]="searchTerm || filterTipo ? 'Tente outros filtros ou limpe a busca.' : 'Registre a primeira ordem de serviço para o seu parque industrial.'">
+        [title]="(searchTerm || filterTipo ? 'Nenhum resultado encontrado' : 'Nenhuma manutenção registrada') | t"
+        [hint]="(searchTerm || filterTipo ? 'Tente outros filtros ou limpe a busca.' : 'Registre a primeira ordem de serviço para o seu parque industrial.') | t">
       </app-empty-state>
       <div class="pagination" *ngIf="table.filtered().length > table.pageSize()">
-        <button mat-icon-button class="page-btn" (click)="table.prevPage()" [disabled]="table.page() === 0" aria-label="Página anterior"><mat-icon>chevron_left</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="table.prevPage()" [disabled]="table.page() === 0" [attr.aria-label]="'Página anterior' | t"><mat-icon>chevron_left</mat-icon></button>
         <span class="page-info">{{ table.page() + 1 }} / {{ table.totalPages() }}</span>
-        <button mat-icon-button class="page-btn" (click)="table.nextPage()" [disabled]="table.page() === table.totalPages() - 1" aria-label="Próxima página"><mat-icon>chevron_right</mat-icon></button>
+        <button mat-icon-button class="page-btn" (click)="table.nextPage()" [disabled]="table.page() === table.totalPages() - 1" [attr.aria-label]="'Próxima página' | t"><mat-icon>chevron_right</mat-icon></button>
       </div>
     </div>
 
@@ -225,10 +225,10 @@
           <mat-icon class="modal-head-icon">fact_check</mat-icon>
           <div>
             <div class="modal-head-title">OS #{{ detalhe.id }} — {{ detalhe.maquina?.nome || '—' }}</div>
-            <div class="modal-head-sub">{{ detalhe.tipo }} · {{ detalhe.tecnico }} · {{ detalhe.dataManutencao | date:'dd/MM/yyyy' }}</div>
+            <div class="modal-head-sub">{{ detalhe.tipo | t }} · {{ detalhe.tecnico }} · {{ detalhe.dataManutencao | date:'dd/MM/yyyy' }}</div>
           </div>
         </div>
-        <button mat-icon-button class="form-close" (click)="fecharDetalhe()" aria-label="Fechar detalhes"><mat-icon>close</mat-icon></button>
+        <button mat-icon-button class="form-close" (click)="fecharDetalhe()" [attr.aria-label]="'Fechar detalhes' | t"><mat-icon>close</mat-icon></button>
       </div>
       <div class="modal-body">
         <div class="detail-loading" *ngIf="detalheCarregando">
@@ -237,38 +237,38 @@
 
         <ng-container *ngIf="!detalheCarregando">
           <!-- Checklist -->
-          <div class="detail-section-title">Checklist</div>
+          <div class="detail-section-title">{{ 'Checklist' | t }}</div>
           <div class="check-add">
-            <input class="check-input" type="text" placeholder="Novo item do checklist..."
+            <input class="check-input" type="text" [placeholder]="'Novo item do checklist...' | t"
               [(ngModel)]="novoItemChecklist" name="novoItemChecklist" (keydown.enter)="addChecklistItem()" />
             <button type="button" class="btn-ghost" (click)="addChecklistItem()" [disabled]="!novoItemChecklist.trim()">
-              <mat-icon>add</mat-icon> Adicionar
+              <mat-icon>add</mat-icon> {{ 'Adicionar' | t }}
             </button>
           </div>
-          <div class="check-empty" *ngIf="!detalhe.checklist?.length">Nenhum item no checklist.</div>
+          <div class="check-empty" *ngIf="!detalhe.checklist?.length">{{ 'Nenhum item no checklist.' | t }}</div>
           <div class="check-list" *ngIf="detalhe.checklist?.length">
             <div class="check-item" *ngFor="let item of detalhe.checklist; trackBy: trackChecklist">
               <label class="check-label">
                 <input type="checkbox" [checked]="item.concluido" (change)="toggleChecklistItem(item)" />
                 <span [class.check-done]="item.concluido">{{ item.descricao }}</span>
               </label>
-              <button mat-icon-button class="action-icon del" (click)="removeChecklistItem(item)" aria-label="Remover item" title="Remover">
+              <button mat-icon-button class="action-icon del" (click)="removeChecklistItem(item)" [attr.aria-label]="'Remover item' | t" [title]="'Remover' | t">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
           </div>
 
           <!-- Attachments -->
-          <div class="detail-section-title anexos-title">Anexos</div>
+          <div class="detail-section-title anexos-title">{{ 'Anexos' | t }}</div>
           <div class="anexo-add">
             <label class="btn-ghost anexo-upload-btn" [class.disabled]="anexoEnviando">
               <mat-icon>attach_file</mat-icon>
-              {{ anexoEnviando ? 'Enviando...' : 'Anexar arquivo' }}
+              {{ (anexoEnviando ? 'Enviando...' : 'Anexar arquivo') | t }}
               <input type="file" hidden (change)="onAnexoSelecionado($event)" [disabled]="anexoEnviando" />
             </label>
-            <small class="anexo-hint">máx. ~3MB</small>
+            <small class="anexo-hint">{{ 'máx. ~3MB' | t }}</small>
           </div>
-          <div class="check-empty" *ngIf="!detalhe.anexos?.length">Nenhum anexo.</div>
+          <div class="check-empty" *ngIf="!detalhe.anexos?.length">{{ 'Nenhum anexo.' | t }}</div>
           <div class="check-list" *ngIf="detalhe.anexos?.length">
             <div class="check-item" *ngFor="let a of detalhe.anexos; trackBy: trackAnexo">
               <span class="anexo-nome">
@@ -276,10 +276,10 @@
                 {{ a.nome }} <small class="anexo-size">{{ formatBytes(a.tamanho) }}</small>
               </span>
               <span class="anexo-actions">
-                <button mat-icon-button class="action-icon" (click)="baixarAnexo(a)" aria-label="Baixar anexo" title="Baixar">
+                <button mat-icon-button class="action-icon" (click)="baixarAnexo(a)" [attr.aria-label]="'Baixar anexo' | t" [title]="'Baixar' | t">
                   <mat-icon>download</mat-icon>
                 </button>
-                <button mat-icon-button class="action-icon del" (click)="removerAnexo(a)" aria-label="Remover anexo" title="Remover">
+                <button mat-icon-button class="action-icon del" (click)="removerAnexo(a)" [attr.aria-label]="'Remover anexo' | t" [title]="'Remover' | t">
                   <mat-icon>close</mat-icon>
                 </button>
               </span>

@@ -15,6 +15,7 @@ import {
 import { DashboardService, DashboardStats } from '../../services/dashboard.service';
 import { OnboardingTourService } from '../../components/onboarding-tour/tour.service';
 import { TourStep } from '../../components/onboarding-tour/tour.model';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 /** Polling cadence for live stats (ms). */
 const POLL_INTERVAL_MS = 30_000;
@@ -23,7 +24,7 @@ const POLL_INTERVAL_MS = 30_000;
   selector: 'app-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, MatIconModule, NgApexchartsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, NgApexchartsModule, TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

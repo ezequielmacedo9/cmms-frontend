@@ -20,6 +20,7 @@ import { Manutencao } from '../../models/manutencao.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmptyStateComponent } from '../../components/empty-state.component';
 import { QrScannerComponent } from '../../components/qr-scanner.component';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
   selector: 'app-maquinas',
@@ -28,7 +29,7 @@ import { QrScannerComponent } from '../../components/qr-scanner.component';
     CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatProgressSpinnerModule,
-    EmptyStateComponent, QrScannerComponent
+    EmptyStateComponent, QrScannerComponent, TranslatePipe
   ],
   templateUrl: './maquinas.component.html',
   styleUrl: './maquinas.component.css',
