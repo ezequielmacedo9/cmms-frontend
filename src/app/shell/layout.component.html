@@ -1,5 +1,5 @@
 <!-- Skip-to-content: WCAG 2.4.1. Visible only when focused via Tab. -->
-<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+<a href="#main-content" class="skip-link">{{ 'Pular para o conteúdo' | t }}</a>
 
 <div class="shell" [class.light]="!theme.isDark()" [class.drawer-open]="drawerOpen()">
 
@@ -21,15 +21,15 @@
     <nav class="nav" aria-label="Menu de navegação">
       @for (group of navGroups; track group.label) {
         @if (isGroupVisible(group)) {
-          <div class="nav-label">{{ group.label }}</div>
+          <div class="nav-label">{{ group.label | t }}</div>
           @for (item of visibleItems(group); track item.path) {
             <a class="nav-item"
                [routerLink]="item.path"
                routerLinkActive="active"
-               [attr.aria-label]="item.label"
-               [title]="item.label">
+               [attr.aria-label]="item.label | t"
+               [title]="item.label | t">
               <span class="nav-item-icon"><mat-icon>{{ item.icon }}</mat-icon></span>
-              <span class="nav-item-text">{{ item.label }}</span>
+              <span class="nav-item-text">{{ item.label | t }}</span>
               <span class="nav-item-active-indicator" aria-hidden="true"></span>
             </a>
           }
@@ -38,12 +38,22 @@
     </nav>
 
     <div class="sidebar-footer">
+      <div class="footer-lang" title="Idioma / Language">
+        <mat-icon aria-hidden="true">language</mat-icon>
+        <select class="lang-select" [value]="i18n.lang"
+                (change)="setLang($any($event.target).value)" aria-label="Idioma">
+          <option value="pt">Português</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </div>
+
       <button class="footer-btn"
               (click)="theme.toggle()"
-              [attr.aria-label]="theme.isDark() ? 'Mudar para modo claro' : 'Mudar para modo escuro'"
-              [title]="theme.isDark() ? 'Modo claro' : 'Modo escuro'">
+              [attr.aria-label]="(theme.isDark() ? 'Modo claro' : 'Modo escuro') | t"
+              [title]="(theme.isDark() ? 'Modo claro' : 'Modo escuro') | t">
         <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        <span>{{ theme.isDark() ? 'Modo claro' : 'Modo escuro' }}</span>
+        <span>{{ (theme.isDark() ? 'Modo claro' : 'Modo escuro') | t }}</span>
       </button>
 
       <a class="user-item" routerLink="/perfil" aria-label="Abrir perfil">
@@ -58,9 +68,9 @@
 
       <button class="footer-btn footer-btn--danger"
               (click)="logout()"
-              aria-label="Sair">
+              [attr.aria-label]="'Sair' | t">
         <mat-icon>logout</mat-icon>
-        <span>Sair</span>
+        <span>{{ 'Sair' | t }}</span>
       </button>
     </div>
   </aside>
@@ -80,17 +90,17 @@
         <nav class="breadcrumb" aria-label="Trilha de navegação">
           @for (crumb of breadcrumbs(); track crumb.label; let last = $last) {
             @if (crumb.link && !last) {
-              <a class="breadcrumb-item breadcrumb-item--link" [routerLink]="crumb.link">{{ crumb.label }}</a>
+              <a class="breadcrumb-item breadcrumb-item--link" [routerLink]="crumb.link">{{ crumb.label | t }}</a>
             } @else {
               <span class="breadcrumb-item" [class.breadcrumb-item--current]="last"
-                    [attr.aria-current]="last ? 'page' : null">{{ crumb.label }}</span>
+                    [attr.aria-current]="last ? 'page' : null">{{ crumb.label | t }}</span>
             }
             @if (!last) {
               <mat-icon class="breadcrumb-sep" aria-hidden="true">chevron_right</mat-icon>
             }
           }
         </nav>
-        <h1 class="topbar-title-text">{{ currentTitle() }}</h1>
+        <h1 class="topbar-title-text">{{ currentTitle() | t }}</h1>
       </div>
 
       <div class="topbar-right">
@@ -110,16 +120,16 @@
           @if (showBell()) {
             <div class="notif-panel ui-glass" role="dialog" aria-label="Painel de notificações">
               <div class="notif-head">
-                <span class="notif-title">Notificações</span>
+                <span class="notif-title">{{ 'Notificações' | t }}</span>
                 @if (notif.items().length > 0) {
-                  <button class="notif-clear" (click)="markAllRead()">Marcar como lidas</button>
+                  <button class="notif-clear" (click)="markAllRead()">{{ 'Marcar como lidas' | t }}</button>
                 }
               </div>
 
               @if (notif.items().length === 0) {
                 <div class="notif-empty">
                   <mat-icon>notifications_none</mat-icon>
-                  <span>Tudo em dia. Sem notificações.</span>
+                  <span>{{ 'Tudo em dia. Sem notificações.' | t }}</span>
                 </div>
               } @else {
                 <div class="notif-list" role="list">
@@ -155,7 +165,7 @@
 
         <span class="live" aria-live="polite">
           <span class="live-dot" aria-hidden="true"></span>
-          Online
+          {{ 'Online' | t }}
         </span>
       </div>
     </header>

@@ -8,6 +8,8 @@ import { ThemeService } from '../services/theme.service';
 import { NotificationService } from '../services/notification.service';
 import { ROLE_CSS, ROLE_LABELS } from '../models/user.model';
 import { routeFade } from './route-animations';
+import { AppLang, I18nService } from '../i18n/i18n.service';
+import { TranslatePipe } from '../i18n/translate.pipe';
 
 /**
  * Application chrome — sidebar + topbar + content slot.
@@ -22,7 +24,7 @@ import { routeFade } from './route-animations';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
   animations: [routeFade]
@@ -43,6 +45,7 @@ export class LayoutComponent {
   readonly auth  = inject(AuthService);
   readonly theme = inject(ThemeService);
   readonly notif = inject(NotificationService);
+  readonly i18n  = inject(I18nService);
 
   readonly showBell = signal(false);
   /** True while the mobile drawer is visible. Ignored on desktop. */
@@ -119,6 +122,8 @@ export class LayoutComponent {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
+
+  setLang(lang: string) { this.i18n.setLang(lang as AppLang); }
 
   toggleBell()    { this.showBell.update(v => !v); }
   closeBell()     { this.showBell.set(false); }

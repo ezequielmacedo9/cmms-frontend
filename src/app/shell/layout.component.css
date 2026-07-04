@@ -574,3 +574,13 @@
   .topbar-title-text { font-size: var(--fs-md); }
   .notif-panel { right: -8px; width: calc(100vw - 16px); }
 }
+
+/* Language selector */
+.footer-lang { display: flex; align-items: center; gap: 8px; padding: 6px 10px; margin-bottom: 4px; }
+.footer-lang mat-icon { font-size: 16px; width: 16px; height: 16px; color: rgba(255,255,255,0.35); }
+.lang-select { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.6); font-size: 12px; font-family: inherit; padding: 5px 8px; outline: none; cursor: pointer; }
+.lang-select:hover { border-color: rgba(139,92,246,0.4); color: #fafafa; }
+.lang-select option { background: #12122a; color: #fafafa; }
+.shell.light .lang-select { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.6); }
+.shell.light .lang-select option { background: #fff; color: #111; }
+.shell.light .footer-lang mat-icon { color: rgba(0,0,0,0.35); }
