@@ -48,39 +48,47 @@
         </div>
         <button mat-icon-button class="form-close" (click)="cancelar()" aria-label="Fechar formulário"><mat-icon>close</mat-icon></button>
       </div>
-      <div class="form-fields">
+      <form class="form-fields" [formGroup]="osForm">
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Máquina</mat-label>
-          <mat-select [(ngModel)]="maquinaIdSelecionada" name="maquina">
+          <mat-select formControlName="maquinaId">
             <mat-option *ngIf="maquinas.length === 0" disabled>Carregando...</mat-option>
             <mat-option *ngFor="let m of maquinas" [value]="m.id">{{ m.nome }}</mat-option>
           </mat-select>
+          <mat-error *ngIf="campoInvalido('maquinaId')">Selecione uma máquina.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Tipo</mat-label>
-          <mat-select [(ngModel)]="form.tipo" name="tipo">
+          <mat-select formControlName="tipo">
             <mat-option value="PREVENTIVA">Preventiva</mat-option>
             <mat-option value="CORRETIVA">Corretiva</mat-option>
             <mat-option value="PREDITIVA">Preditiva</mat-option>
           </mat-select>
+          <mat-error *ngIf="campoInvalido('tipo')">Selecione o tipo da OS.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Técnico Responsável</mat-label>
-          <input matInput [(ngModel)]="form.tecnico" name="tecnico" placeholder="Nome do técnico" required />
+          <input matInput formControlName="tecnico" placeholder="Nome do técnico" required />
+          <mat-error *ngIf="campoInvalido('tecnico')">
+            {{ osForm.controls.tecnico.hasError('required') ? 'Técnico é obrigatório.' : 'Nome deve ter entre 2 e 100 caracteres.' }}
+          </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Descrição</mat-label>
-          <textarea matInput [(ngModel)]="form.descricao" name="descricao" rows="1" placeholder="Descreva o serviço..."></textarea>
+          <textarea matInput formControlName="descricao" rows="1" placeholder="Descreva o serviço..."></textarea>
+          <mat-error *ngIf="campoInvalido('descricao')">Máximo de 500 caracteres.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Tempo de execução (min)</mat-label>
-          <input matInput type="number" [(ngModel)]="form.tempoExecucaoMinutos" name="tempo" placeholder="Ex: 90" />
+          <input matInput type="number" formControlName="tempoExecucaoMinutos" placeholder="Ex: 90" />
+          <mat-error *ngIf="campoInvalido('tempoExecucaoMinutos')">Informe um tempo válido (min. 1).</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="dark-field">
           <mat-label>Custo mão de obra (R$)</mat-label>
-          <input matInput type="number" [(ngModel)]="form.custoMaoObra" name="custoMaoObra" placeholder="0.00" />
+          <input matInput type="number" formControlName="custoMaoObra" placeholder="0.00" />
+          <mat-error *ngIf="campoInvalido('custoMaoObra')">Informe um custo válido (≥ 0).</mat-error>
         </mat-form-field>
-      </div>
+      </form>
 
       <div class="pecas-section">
         <div class="pecas-head">Peças consumidas <small>(dão baixa no estoque)</small></div>

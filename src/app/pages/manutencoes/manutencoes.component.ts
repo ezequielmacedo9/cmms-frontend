@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,7 @@ import { EmptyStateComponent } from '../../components/empty-state.component';
   selector: 'app-manutencoes',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatTableModule, MatButtonModule,
+    CommonModule, FormsModule, ReactiveFormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatCardModule, MatProgressSpinnerModule,
     EmptyStateComponent
@@ -45,6 +45,7 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   private confirm = inject(ConfirmDialogService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private fb = inject(NonNullableFormBuilder);
   private subs = new Subscription();
 
   /** Source list straight from the API — the type dropdown narrows this. */
@@ -59,8 +60,16 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
 
   showForm = false;
   salvando = false;
-  maquinaIdSelecionada: number | null = null;
-  form: Manutencao = { tipo: '', tecnico: '' };
+
+  /** Reactive OS form with inline validation. */
+  readonly osForm = this.fb.group({
+    maquinaId: this.fb.control<number | null>(null, Validators.required),
+    tipo:      ['', Validators.required],
+    tecnico:   ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    descricao: ['', Validators.maxLength(500)],
+    tempoExecucaoMinutos: this.fb.control<number | null>(null, [Validators.min(1), Validators.max(100_000)]),
+    custoMaoObra:         this.fb.control<number | null>(null, [Validators.min(0), Validators.max(10_000_000)])
+  });
 
   /** Catalog of parts + the parts the user is adding to the current work order. */
   pecas: PecaResponse[] = [];
@@ -127,12 +136,20 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   }
 
   novoRegistro() {
-    this.form = { tipo: '', tecnico: '' };
-    this.maquinaIdSelecionada = null;
+    this.osForm.reset({
+      maquinaId: null, tipo: '', tecnico: '', descricao: '',
+      tempoExecucaoMinutos: null, custoMaoObra: null
+    });
     this.pecasConsumo = [];
     this.novaPecaId = null;
     this.novaPecaQtd = 1;
     this.showForm = true;
+  }
+
+  /** Convenience for the template's inline error hints. */
+  campoInvalido(nome: 'maquinaId' | 'tipo' | 'tecnico' | 'descricao' | 'tempoExecucaoMinutos' | 'custoMaoObra'): boolean {
+    const c = this.osForm.controls[nome];
+    return c.invalid && (c.touched || c.dirty);
   }
 
   addPeca() {
@@ -155,19 +172,25 @@ export class ManutencoesComponent implements OnInit, OnDestroy {
   }
 
   salvar() {
-    if (!this.maquinaIdSelecionada) {
-      this.notify.error('Selecione uma máquina!');
+    if (this.osForm.invalid) {
+      this.osForm.markAllAsTouched();
+      this.notify.error('Corrija os campos destacados.');
       return;
     }
     if (this.salvando) return;
     this.salvando = true;
+    const v = this.osForm.getRawValue();
     const payload: Manutencao = {
-      ...this.form,
+      tipo: v.tipo,
+      tecnico: v.tecnico.trim(),
+      descricao: v.descricao?.trim() || undefined,
+      tempoExecucaoMinutos: v.tempoExecucaoMinutos ?? undefined,
+      custoMaoObra: v.custoMaoObra ?? undefined,
       pecas: this.pecasConsumo.length
         ? this.pecasConsumo.map(p => ({ pecaId: p.pecaId, quantidade: p.quantidade }))
         : undefined
     };
-    const sub = this.manutencaoService.cadastrar(this.maquinaIdSelecionada, payload).subscribe({
+    const sub = this.manutencaoService.cadastrar(v.maquinaId!, payload).subscribe({
       next: (saved) => {
         this.salvando = false;
         this.showForm = false;
