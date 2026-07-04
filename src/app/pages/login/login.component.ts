@@ -97,7 +97,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         [res.twoFactorSetupRequired ? '/perfil' : '/dashboard'],
         res.twoFactorSetupRequired ? { queryParams: { setup2fa: 1 } } : {}),
       error: (err) => {
-        const code = err?.error?.errorCode;
+        // ApiError envelope: { status, error, code, message, ... }
+        const code = err?.error?.code;
         if (code === 'TOTP_REQUIRED') {
           // Password was accepted; ask for the authenticator code.
           this.totpRequired.set(true);
