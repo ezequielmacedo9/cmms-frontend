@@ -1,56 +1,56 @@
-<div class="relatorios-page printable">
+﻿<div class="relatorios-page printable">
   <div class="page-header">
     <div>
-      <div class="page-title">Relatórios</div>
-      <div class="page-sub">Exporte dados do sistema em PDF ou Excel</div>
+      <div class="page-title">{{ 'Relatórios' | t }}</div>
+      <div class="page-sub">{{ 'Exporte dados do sistema em PDF ou Excel' | t }}</div>
     </div>
     <button type="button" class="ui-btn ui-btn--secondary no-print" (click)="printPage()">
       <mat-icon>print</mat-icon>
-      Imprimir esta página
+      {{ 'Imprimir esta página' | t }}
     </button>
   </div>
 
   @if (!carregandoGerencial() && gerencial(); as g) {
     <section class="gerencial">
-      <h2 class="gerencial-title">Visão gerencial</h2>
+      <h2 class="gerencial-title">{{ 'Visão gerencial' | t }}</h2>
       <div class="kpi-grid">
         <div class="kpi">
-          <span class="kpi-label">Cumprimento de preventiva</span>
+          <span class="kpi-label">{{ 'Cumprimento de preventiva' | t }}</span>
           <span class="kpi-value">{{ g.cumprimentoPreventivaPct | number:'1.0-1' }}%</span>
         </div>
         <div class="kpi">
-          <span class="kpi-label">Disponibilidade</span>
+          <span class="kpi-label">{{ 'Disponibilidade' | t }}</span>
           <span class="kpi-value">{{ g.disponibilidade | number:'1.0-1' }}%</span>
         </div>
         <div class="kpi">
           <span class="kpi-label">MTBF</span>
-          <span class="kpi-value">{{ g.mtbfDias | number:'1.0-1' }} <small>dias</small></span>
+          <span class="kpi-value">{{ g.mtbfDias | number:'1.0-1' }} <small>{{ 'dias' | t }}</small></span>
         </div>
         <div class="kpi">
           <span class="kpi-label">MTTR</span>
-          <span class="kpi-value">{{ g.mttrDias | number:'1.0-1' }} <small>dias</small></span>
+          <span class="kpi-value">{{ g.mttrDias | number:'1.0-1' }} <small>{{ 'dias' | t }}</small></span>
         </div>
         <div class="kpi">
-          <span class="kpi-label">Preventivas vencidas</span>
+          <span class="kpi-label">{{ 'Preventivas vencidas' | t }}</span>
           <span class="kpi-value">{{ g.preventivasVencidas }}</span>
         </div>
         <div class="kpi">
-          <span class="kpi-label">Custo de manutenção</span>
+          <span class="kpi-label">{{ 'Custo de manutenção' | t }}</span>
           <span class="kpi-value">{{ formatBRL(g.custoTotalManutencoes) }}</span>
         </div>
         <div class="kpi">
-          <span class="kpi-label">Valor em estoque</span>
+          <span class="kpi-label">{{ 'Valor em estoque' | t }}</span>
           <span class="kpi-value">{{ formatBRL(g.valorTotalEstoque) }}</span>
         </div>
         <div class="kpi">
-          <span class="kpi-label">Manutenções (prev/corr)</span>
+          <span class="kpi-label">{{ 'Manutenções (prev/corr)' | t }}</span>
           <span class="kpi-value">{{ g.manutencoesPreventivas }}/{{ g.manutencoesCorretivas }}</span>
         </div>
       </div>
 
       @if (g.topOfensores.length) {
         <div class="ofensores">
-          <h3 class="ofensores-title">Top máquinas por corretivas</h3>
+          <h3 class="ofensores-title">{{ 'Top máquinas por corretivas' | t }}</h3>
           <ul class="ofensores-list">
             @for (o of g.topOfensores; track o.maquinaId) {
               <li><span>{{ o.maquinaNome }}</span><span class="ofensor-count">{{ o.corretivas }}</span></li>
@@ -68,8 +68,8 @@
           <mat-icon>{{ r.icon }}</mat-icon>
         </div>
         <div class="card-body">
-          <div class="card-title">{{ r.title }}</div>
-          <div class="card-desc">{{ r.description }}</div>
+          <div class="card-title">{{ r.title | t }}</div>
+          <div class="card-desc">{{ r.description | t }}</div>
         </div>
         <div class="card-actions">
           <button class="btn-format pdf" (click)="download(r.id, 'pdf')" [disabled]="!!downloading()">
@@ -96,8 +96,8 @@
   <div class="info-box">
     <mat-icon>info</mat-icon>
     <div>
-      <strong>Sobre os relatórios</strong><br>
-      Os relatórios são gerados em tempo real com os dados mais recentes do sistema. PDFs são ideais para impressão e arquivamento; Excel para análises e edição.
+      <strong>{{ 'Sobre os relatórios' | t }}</strong><br>
+      {{ 'Os relatórios são gerados em tempo real com os dados mais recentes do sistema. PDFs são ideais para impressão e arquivamento; Excel para análises e edição.' | t }}
     </div>
   </div>
 </div>

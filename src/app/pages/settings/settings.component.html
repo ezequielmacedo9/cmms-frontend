@@ -1,7 +1,7 @@
 <div class="settings-page">
   <div class="page-header">
-    <div class="page-title">Configurações</div>
-    <div class="page-sub">Personalize o comportamento do sistema</div>
+    <div class="page-title">{{ 'Configurações' | t }}</div>
+    <div class="page-sub">{{ 'Personalize o comportamento do sistema' | t }}</div>
   </div>
 
   @if (loading) {
@@ -11,13 +11,13 @@
     <!-- Sidebar -->
     <div class="sidebar-nav">
       <button class="nav-item" [class.active]="activeTab === 'geral'" (click)="setTab('geral')">
-        <mat-icon>business</mat-icon> Geral
+        <mat-icon>business</mat-icon> {{ 'Geral' | t }}
       </button>
       <button class="nav-item" [class.active]="activeTab === 'seguranca'" (click)="setTab('seguranca')">
-        <mat-icon>security</mat-icon> Segurança
+        <mat-icon>security</mat-icon> {{ 'Segurança' | t }}
       </button>
       <button class="nav-item" [class.active]="activeTab === 'notificacoes'" (click)="setTab('notificacoes')">
-        <mat-icon>notifications</mat-icon> Notificações
+        <mat-icon>notifications</mat-icon> {{ 'Notificações' | t }}
       </button>
     </div>
 
@@ -26,18 +26,18 @@
 
       @if (activeTab === 'geral') {
         <div class="section">
-          <div class="section-title"><mat-icon>business</mat-icon> Informações da Empresa</div>
+          <div class="section-title"><mat-icon>business</mat-icon> {{ 'Informações da Empresa' | t }}</div>
           <div class="form-group">
-            <label>Nome da empresa</label>
+            <label>{{ 'Nome da empresa' | t }}</label>
             <input type="text" [value]="get('empresa.nome')" (input)="set('empresa.nome', $any($event.target).value)" />
           </div>
           <div class="form-group">
-            <label>Descrição</label>
+            <label>{{ 'Descrição' | t }}</label>
             <input type="text" [value]="get('empresa.descricao')" (input)="set('empresa.descricao', $any($event.target).value)" />
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Fuso horário</label>
+              <label>{{ 'Fuso horário' | t }}</label>
               <select [value]="get('empresa.timezone')" (change)="set('empresa.timezone', $any($event.target).value)">
                 <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
                 <option value="America/Manaus">Manaus (UTC-4)</option>
@@ -48,7 +48,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Idioma</label>
+              <label>{{ 'Idioma' | t }}</label>
               <select [value]="get('empresa.idioma')" (change)="set('empresa.idioma', $any($event.target).value)">
                 <option value="pt-BR">Português (Brasil)</option>
                 <option value="en-US">English (US)</option>
@@ -61,30 +61,30 @@
 
       @if (activeTab === 'seguranca') {
         <div class="section">
-          <div class="section-title"><mat-icon>security</mat-icon> Política de Senha</div>
+          <div class="section-title"><mat-icon>security</mat-icon> {{ 'Política de Senha' | t }}</div>
           <div class="form-group">
-            <label>Comprimento mínimo da senha</label>
+            <label>{{ 'Comprimento mínimo da senha' | t }}</label>
             <input type="number" [value]="get('seguranca.senha.minLength')" min="6" max="32"
                    (input)="set('seguranca.senha.minLength', $any($event.target).value)" />
           </div>
-          <div class="section-title" style="margin-top:24px"><mat-icon>lock_clock</mat-icon> Bloqueio de Conta</div>
+          <div class="section-title" style="margin-top:24px"><mat-icon>lock_clock</mat-icon> {{ 'Bloqueio de Conta' | t }}</div>
           <div class="form-row">
             <div class="form-group">
-              <label>Tentativas antes do bloqueio</label>
+              <label>{{ 'Tentativas antes do bloqueio' | t }}</label>
               <input type="number" [value]="get('seguranca.lockout.tentativas')" min="3" max="20"
                      (input)="set('seguranca.lockout.tentativas', $any($event.target).value)" />
             </div>
             <div class="form-group">
-              <label>Duração do bloqueio (minutos)</label>
+              <label>{{ 'Duração do bloqueio (minutos)' | t }}</label>
               <input type="number" [value]="get('seguranca.lockout.minutos')" min="5" max="1440"
                      (input)="set('seguranca.lockout.minutos', $any($event.target).value)" />
             </div>
           </div>
-          <div class="section-title" style="margin-top:24px"><mat-icon>verified_user</mat-icon> Autenticação 2 Fatores</div>
+          <div class="section-title" style="margin-top:24px"><mat-icon>verified_user</mat-icon> {{ 'Autenticação 2 Fatores' | t }}</div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Exigir 2FA para todos os usuários</div>
-              <div class="toggle-sub">Usuários precisarão configurar 2FA no próximo login</div>
+              <div class="toggle-label">{{ 'Exigir 2FA para todos os usuários' | t }}</div>
+              <div class="toggle-sub">{{ 'Usuários precisarão configurar 2FA no próximo login' | t }}</div>
             </div>
             <label class="toggle">
               <input type="checkbox" [checked]="get('seguranca.2fa.obrigatorio') === 'true'"
@@ -97,11 +97,11 @@
 
       @if (activeTab === 'notificacoes') {
         <div class="section">
-          <div class="section-title"><mat-icon>mail</mat-icon> Notificações por Email</div>
+          <div class="section-title"><mat-icon>mail</mat-icon> {{ 'Notificações por Email' | t }}</div>
           <div class="toggle-row">
             <div>
-              <div class="toggle-label">Ativar notificações por email</div>
-              <div class="toggle-sub">Enviar alertas de manutenção vencida por email</div>
+              <div class="toggle-label">{{ 'Ativar notificações por email' | t }}</div>
+              <div class="toggle-sub">{{ 'Enviar alertas de manutenção vencida por email' | t }}</div>
             </div>
             <label class="toggle">
               <input type="checkbox" [checked]="get('notificacao.email.habilitado') === 'true'"
@@ -110,10 +110,10 @@
             </label>
           </div>
           <div class="form-group" style="margin-top:16px">
-            <label>Aviso prévio de manutenção preventiva (dias)</label>
+            <label>{{ 'Aviso prévio de manutenção preventiva (dias)' | t }}</label>
             <input type="number" [value]="get('notificacao.manutencao.diasAviso')" min="1" max="90"
                    (input)="set('notificacao.manutencao.diasAviso', $any($event.target).value)" />
-            <div class="hint">Você será notificado X dias antes da data prevista</div>
+            <div class="hint">{{ 'Você será notificado X dias antes da data prevista' | t }}</div>
           </div>
         </div>
       }
@@ -121,7 +121,7 @@
       <div class="save-bar">
         <button class="btn-primary" (click)="save()" [disabled]="saving">
           @if (saving) { <div class="spinner-sm"></div> }
-          {{ saving ? 'Salvando...' : 'Salvar Configurações' }}
+          {{ (saving ? 'Salvando...' : 'Salvar Configurações') | t }}
         </button>
       </div>
     </div>

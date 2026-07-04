@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReportService, ReportEntity, RelatorioGerencial } from '../../services/report.service';
 import { NotificationService } from '../../services/notification.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 interface ReportCard {
   id: string;
@@ -15,7 +16,7 @@ interface ReportCard {
 @Component({
   selector: 'app-relatorios',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslatePipe],
   templateUrl: './relatorios.component.html',
   styleUrl: './relatorios.component.css'
 })

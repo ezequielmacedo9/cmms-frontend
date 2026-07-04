@@ -11,6 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth.service';
 import { WakeupService } from '../../services/wakeup.service';
 import { environment } from '../../../environments/environment';
+import { AppLang, I18nService } from '../../i18n/i18n.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 // Global, injected by https://accounts.google.com/gsi/client when present.
 declare const google: any;
@@ -24,7 +26,7 @@ const MAX_RETRIES = 6;
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -37,6 +39,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly wakeup = inject(WakeupService);
   private readonly destroyRef = inject(DestroyRef);
+  readonly i18n = inject(I18nService);
 
   // ── form state ──────────────────────────────────────────────────────
   email = '';
@@ -121,6 +124,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
+
+  setLang(lang: string) { this.i18n.setLang(lang as AppLang); }
 
   togglePassword() {
     this.showPassword.update(v => !v);

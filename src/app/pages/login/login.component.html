@@ -4,7 +4,7 @@
   <div class="ambient-glow ambient-glow--2" aria-hidden="true"></div>
 
   <!-- Marketing column (hidden on mobile) -->
-  <section class="left" aria-label="Sobre o produto">
+  <section class="left" [attr.aria-label]="'Sobre o produto' | t">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true">
         <img src="/wolf.svg" alt="" />
@@ -14,45 +14,44 @@
     </div>
 
     <h1 class="hero-heading">
-      Indústria<br>
-      <span>sob controle.</span>
+      {{ 'Indústria' | t }}<br>
+      <span>{{ 'sob controle.' | t }}</span>
     </h1>
     <p class="hero-sub">
-      Disponibilidade, manutenções e estoque conectados em tempo real.
-      A plataforma que sua operação merece.
+      {{ 'Disponibilidade, manutenções e estoque conectados em tempo real. A plataforma que sua operação merece.' | t }}
     </p>
 
     <ul class="feature-list">
       <li class="feature">
         <span class="feature-icon"><mat-icon>insights</mat-icon></span>
         <div class="feature-text">
-          <strong>Dashboards em tempo real</strong>
-          <span>Disponibilidade, MTBF e alertas vivos.</span>
+          <strong>{{ 'Dashboards em tempo real' | t }}</strong>
+          <span>{{ 'Disponibilidade, MTBF e alertas vivos.' | t }}</span>
         </div>
       </li>
       <li class="feature">
         <span class="feature-icon"><mat-icon>build</mat-icon></span>
         <div class="feature-text">
-          <strong>Manutenções preventivas e corretivas</strong>
-          <span>Planeje, registre e audite cada intervenção.</span>
+          <strong>{{ 'Manutenções preventivas e corretivas' | t }}</strong>
+          <span>{{ 'Planeje, registre e audite cada intervenção.' | t }}</span>
         </div>
       </li>
       <li class="feature">
         <span class="feature-icon"><mat-icon>inventory_2</mat-icon></span>
         <div class="feature-text">
-          <strong>Estoque inteligente</strong>
-          <span>Peças, custos e consumo sob um único pano de vidro.</span>
+          <strong>{{ 'Estoque inteligente' | t }}</strong>
+          <span>{{ 'Peças, custos e consumo sob um único pano de vidro.' | t }}</span>
         </div>
       </li>
     </ul>
   </section>
 
   <!-- Auth column -->
-  <section class="right" aria-label="Acessar o sistema">
+  <section class="right" [attr.aria-label]="'Acessar o sistema' | t">
     <div class="card" #cardEl>
       <header class="card-head">
-        <h2 class="card-title">Entrar no sistema</h2>
-        <p class="card-sub">Use suas credenciais para continuar.</p>
+        <h2 class="card-title">{{ 'Entrar no sistema' | t }}</h2>
+        <p class="card-sub">{{ 'Use suas credenciais para continuar.' | t }}</p>
       </header>
 
       <!-- Server-status pill: only renders when there is something to say -->
@@ -64,10 +63,10 @@
              aria-live="polite">
           @if (serverStatus() === 'checking') {
             <mat-spinner diameter="14"></mat-spinner>
-            <span>Acordando o servidor… pode levar até 1 minuto na primeira chamada.</span>
+            <span>{{ 'Acordando o servidor… pode levar até 1 minuto na primeira chamada.' | t }}</span>
           } @else {
             <span class="ui-dot ui-dot--danger" aria-hidden="true"></span>
-            <span>Servidor iniciando — login ainda disponível.</span>
+            <span>{{ 'Servidor iniciando — login ainda disponível.' | t }}</span>
           }
         </div>
       }
@@ -90,7 +89,7 @@
         </div>
 
         <div class="field">
-          <label for="login-password">Senha</label>
+          <label for="login-password">{{ 'Senha' | t }}</label>
           <div class="input-wrap">
             <mat-icon class="input-icon" aria-hidden="true">lock</mat-icon>
             <input id="login-password"
@@ -106,21 +105,21 @@
             <button type="button"
                     class="input-action"
                     (click)="togglePassword()"
-                    [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
-                    [title]="showPassword() ? 'Ocultar' : 'Mostrar'">
+                    [attr.aria-label]="(showPassword() ? 'Ocultar senha' : 'Mostrar senha') | t"
+                    [title]="(showPassword() ? 'Ocultar' : 'Mostrar') | t">
               <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </div>
           @if (capsLockOn()) {
             <div class="field-hint field-hint--warning">
-              <mat-icon>keyboard_capslock</mat-icon> Caps Lock está ativado.
+              <mat-icon>keyboard_capslock</mat-icon> {{ 'Caps Lock está ativado.' | t }}
             </div>
           }
         </div>
 
         @if (totpRequired()) {
           <div class="field">
-            <label for="login-totp">Código do autenticador (2FA)</label>
+            <label for="login-totp">{{ 'Código do autenticador (2FA)' | t }}</label>
             <div class="input-wrap">
               <mat-icon class="input-icon" aria-hidden="true">shield</mat-icon>
               <input id="login-totp"
@@ -138,7 +137,7 @@
         }
 
         <div class="forgot-link">
-          <a routerLink="/forgot-password">Esqueceu a senha?</a>
+          <a routerLink="/forgot-password">{{ 'Esqueceu a senha?' | t }}</a>
         </div>
 
         <button class="btn-primary"
@@ -148,9 +147,9 @@
             <mat-spinner diameter="16"></mat-spinner>
           }
           <span>
-            {{ carregando() ? 'Entrando…'
+            {{ (carregando() ? 'Entrando…'
               : formBlocked ? 'Aguardando servidor…'
-              : 'Entrar' }}
+              : 'Entrar') | t }}
           </span>
           @if (!carregando() && !formBlocked) {
             <mat-icon>arrow_forward</mat-icon>
@@ -160,17 +159,17 @@
         @if (errorMessage()) {
           <div class="error-msg" role="alert">
             <mat-icon>error_outline</mat-icon>
-            <span>{{ errorMessage() }}</span>
+            <span>{{ errorMessage() | t }}</span>
           </div>
         }
       </form>
 
       <div class="forgot-link" style="margin-top:14px">
-        Não tem conta? <a routerLink="/cadastro">Criar conta</a>
+        {{ 'Não tem conta?' | t }} <a routerLink="/cadastro">{{ 'Criar conta' | t }}</a>
       </div>
 
       @if (googleEnabled) {
-        <div class="separator"><span>ou continue com</span></div>
+        <div class="separator"><span>{{ 'ou continue com' | t }}</span></div>
         <div id="google-btn" class="google-btn-wrap"></div>
       }
 
@@ -178,6 +177,12 @@
         <span>Industrial Suite · 2026</span>
         <span class="card-footer-dot">·</span>
         <span>v2.0</span>
+        <span class="card-footer-dot">·</span>
+        <select class="login-lang" [value]="i18n.lang" (change)="setLang($any($event.target).value)" aria-label="Idioma">
+          <option value="pt">PT</option>
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+        </select>
       </footer>
     </div>
   </section>

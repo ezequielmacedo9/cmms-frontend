@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ConfigItem, SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../services/notification.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 type Tab = 'geral' | 'seguranca' | 'notificacoes';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, TranslatePipe],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })

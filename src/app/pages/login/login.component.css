@@ -424,3 +424,7 @@
   .right { padding: var(--space-4); }
   .card  { padding: var(--space-5); border-radius: var(--radius-lg); }
 }
+
+/* Language mini-selector */
+.login-lang { background: transparent; border: none; color: rgba(255,255,255,0.35); font-size: 11px; font-family: inherit; cursor: pointer; outline: none; }
+.login-lang option { background: #12122a; color: #fafafa; }
