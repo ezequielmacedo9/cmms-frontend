@@ -14,15 +14,15 @@
     <mat-icon>{{ iconName }}</mat-icon>
   </div>
 
-  <h2 id="confirm-title" class="confirm-title">{{ title }}</h2>
+  <h2 id="confirm-title" class="confirm-title">{{ title | t }}</h2>
 
   @if (message) {
-    <p id="confirm-message" class="confirm-message">{{ message }}</p>
+    <p id="confirm-message" class="confirm-message">{{ message | t }}</p>
   }
 
   <div class="confirm-actions">
     <button type="button" class="ui-btn ui-btn--secondary" (click)="cancelled.emit()">
-      {{ cancelLabel }}
+      {{ cancelLabel | t }}
     </button>
     <button #confirmBtn
             type="button"
@@ -30,7 +30,7 @@
             [class.ui-btn--primary]="variant !== 'danger'"
             [class.ui-btn--danger]="variant === 'danger'"
             (click)="confirmed.emit()">
-      {{ confirmLabel }}
+      {{ confirmLabel | t }}
     </button>
   </div>
 </div>

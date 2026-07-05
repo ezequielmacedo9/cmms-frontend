@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { KeyboardShortcutsService, ShortcutBinding } from '../../services/keyboard-shortcuts.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 interface ShortcutGroup {
   group: string;
@@ -23,7 +24,7 @@ interface ShortcutGroup {
   selector: 'app-shortcuts-help',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslatePipe],
   template: `
     @if (open()) {
       <div class="sh-backdrop" (click)="close()" aria-hidden="true"></div>
@@ -36,10 +37,10 @@ interface ShortcutGroup {
 
         <header class="sh-head">
           <div>
-            <h2 id="sh-title" class="sh-title">Atalhos de teclado</h2>
-            <p class="sh-sub">Navegue mais rápido pelo sistema</p>
+            <h2 id="sh-title" class="sh-title">{{ 'Atalhos de teclado' | t }}</h2>
+            <p class="sh-sub">{{ 'Navegue mais rápido pelo sistema' | t }}</p>
           </div>
-          <button class="sh-close" type="button" (click)="close()" aria-label="Fechar atalhos">
+          <button class="sh-close" type="button" (click)="close()" [attr.aria-label]="'Fechar atalhos' | t">
             <mat-icon>close</mat-icon>
           </button>
         </header>
@@ -47,11 +48,11 @@ interface ShortcutGroup {
         <div class="sh-body">
           @for (g of groups(); track g.group) {
             <section class="sh-group">
-              <h3 class="sh-group-title">{{ g.group }}</h3>
+              <h3 class="sh-group-title">{{ g.group | t }}</h3>
               <ul class="sh-list">
                 @for (b of g.items; track b.description) {
                   <li class="sh-row">
-                    <span class="sh-desc">{{ b.description }}</span>
+                    <span class="sh-desc">{{ b.description | t }}</span>
                     <kbd class="sh-keys">{{ b.keys }}</kbd>
                   </li>
                 }
@@ -61,7 +62,7 @@ interface ShortcutGroup {
         </div>
 
         <footer class="sh-foot">
-          Pressione <kbd class="sh-keys">?</kbd> a qualquer momento para abrir esta ajuda.
+          {{ 'Pressione' | t }} <kbd class="sh-keys">?</kbd> {{ 'a qualquer momento para abrir esta ajuda.' | t }}
         </footer>
       </div>
     }

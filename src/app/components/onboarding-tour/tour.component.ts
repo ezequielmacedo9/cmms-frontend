@@ -6,6 +6,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TourStep } from './tour.model';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 /**
  * Tour overlay rendered by {@link OnboardingTourService}. Spotlight the
@@ -20,7 +21,7 @@ import { TourStep } from './tour.model';
   selector: 'app-onboarding-tour',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslatePipe],
   templateUrl: './tour.component.html',
   styleUrl: './tour.component.css'
 })

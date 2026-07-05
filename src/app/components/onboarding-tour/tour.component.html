@@ -1,4 +1,4 @@
-@if (step) {
+﻿@if (step) {
 
   <!--
     Backdrop com clip-path em forma de "donut": cobre toda a viewport
@@ -35,18 +35,18 @@
 
     <header class="tour-tooltip__head">
       <span class="tour-tooltip__progress">
-        Passo {{ current + 1 }} de {{ steps.length }}
+        {{ 'Passo' | t }} {{ current + 1 }} {{ 'de' | t }} {{ steps.length }}
       </span>
       <button class="tour-tooltip__close"
               type="button"
               (click)="skip.emit()"
-              aria-label="Pular tour">
+              [attr.aria-label]="'Pular tour' | t">
         <mat-icon>close</mat-icon>
       </button>
     </header>
 
-    <h3 id="tour-title-{{ current }}" class="tour-tooltip__title">{{ step.title }}</h3>
-    <p class="tour-tooltip__body">{{ step.description }}</p>
+    <h3 id="tour-title-{{ current }}" class="tour-tooltip__title">{{ step.title | t }}</h3>
+    <p class="tour-tooltip__body">{{ step.description | t }}</p>
 
     <!-- Progress dots -->
     <div class="tour-tooltip__dots" aria-hidden="true">
@@ -59,21 +59,21 @@
       <button class="ui-btn ui-btn--ghost ui-btn--sm"
               type="button"
               (click)="skip.emit()">
-        Pular
+        {{ 'Pular' | t }}
       </button>
       <div class="tour-tooltip__nav">
         <button class="ui-btn ui-btn--secondary ui-btn--sm"
                 type="button"
                 (click)="goBack.emit()"
                 [disabled]="isFirst">
-          Voltar
+          {{ 'Voltar' | t }}
         </button>
         @if (!isLast) {
           <button class="ui-btn ui-btn--primary ui-btn--sm"
                   type="button"
                   (click)="advance.emit()"
                   autofocus>
-            Próximo
+            {{ 'Próximo' | t }}
             <mat-icon>arrow_forward</mat-icon>
           </button>
         } @else {
@@ -82,7 +82,7 @@
                   (click)="complete.emit()"
                   autofocus>
             <mat-icon>check</mat-icon>
-            Concluir
+            {{ 'Concluir' | t }}
           </button>
         }
       </div>

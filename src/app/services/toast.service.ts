@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { I18nService } from '../i18n/i18n.service';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -10,12 +11,14 @@ export interface Toast {
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
+  private readonly i18n = inject(I18nService);
   private nextId = 0;
   toasts = signal<Toast[]>([]);
 
   show(message: string, type: ToastType = 'info') {
     const id = this.nextId++;
-    this.toasts.update(t => [...t, { id, message, type }].slice(-3));
+    // Single funnel for every toast — translate here so callers keep pt keys.
+    this.toasts.update(t => [...t, { id, message: this.i18n.t(message), type }].slice(-3));
     setTimeout(() => this.dismiss(id), 3500);
   }
 

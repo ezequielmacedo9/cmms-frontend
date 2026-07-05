@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { ToastService } from './toast.service';
+import { I18nService } from '../i18n/i18n.service';
 
 export interface AppNotification {
   id: string;
@@ -12,6 +13,7 @@ export interface AppNotification {
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private toast = inject(ToastService);
+  private i18n = inject(I18nService);
 
   private _items = signal<AppNotification[]>([]);
 
@@ -22,7 +24,8 @@ export class NotificationService {
     const n: AppNotification = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       type,
-      message,
+      // The bell panel renders this raw — translate at the storage boundary.
+      message: this.i18n.t(message),
       read: false,
       timestamp: new Date()
     };
