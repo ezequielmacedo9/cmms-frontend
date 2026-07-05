@@ -5,6 +5,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe } from '../i18n/translate.pipe';
 
 /**
  * In-app QR scanner: opens the device camera and decodes frames with jsQR
@@ -16,14 +17,14 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="scan-overlay" (click)="close()">
       <div class="scan-panel" (click)="$event.stopPropagation()">
         <div class="scan-head">
-          <div class="scan-title"><mat-icon>qr_code_scanner</mat-icon> Escanear QR code</div>
-          <button mat-icon-button class="scan-close" (click)="close()" aria-label="Fechar scanner">
+          <div class="scan-title"><mat-icon>qr_code_scanner</mat-icon> {{ 'Escanear QR code' | t }}</div>
+          <button mat-icon-button class="scan-close" (click)="close()" [attr.aria-label]="'Fechar scanner' | t">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -31,9 +32,9 @@ import { MatButtonModule } from '@angular/material/button';
           <video #video class="scan-video" playsinline muted></video>
           <div class="scan-frame" aria-hidden="true"></div>
         </div>
-        <div class="scan-hint" *ngIf="!error()">Aponte a câmera para o QR code da máquina.</div>
+        <div class="scan-hint" *ngIf="!error()">{{ 'Aponte a câmera para o QR code da máquina.' | t }}</div>
         <div class="scan-error" *ngIf="error()">
-          <mat-icon>videocam_off</mat-icon> {{ error() }}
+          <mat-icon>videocam_off</mat-icon> {{ error() | t }}
         </div>
       </div>
     </div>

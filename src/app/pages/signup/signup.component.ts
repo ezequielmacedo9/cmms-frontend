@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy, Component, DestroyRef, inject, signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -13,29 +13,31 @@ import { AuthService } from '../../services/auth.service';
  * Self-service onboarding: creates a company (tenant) + first admin in one
  * step and logs the user straight into their isolated workspace.
  */
+import { TranslatePipe } from '../../i18n/translate.pipe';
+
 @Component({
   selector: 'app-signup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatProgressSpinnerModule, TranslatePipe],
   template: `
     <div class="auth-wrap">
       <div class="auth-card ui-card">
         <div class="auth-head">
           <div class="auth-logo" aria-hidden="true"><mat-icon>precision_manufacturing</mat-icon></div>
-          <h1 class="auth-title">Crie sua conta</h1>
-          <p class="auth-sub">Comece agora — leva menos de um minuto.</p>
+          <h1 class="auth-title">{{ 'Crie sua conta' | t }}</h1>
+          <p class="auth-sub">{{ 'Comece agora — leva menos de um minuto.' | t }}</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
           <label class="auth-field">
-            <span class="auth-label">Nome da empresa</span>
+            <span class="auth-label">{{ 'Nome da empresa' | t }}</span>
             <input class="ui-input" type="text" name="empresaNome" [(ngModel)]="empresaNome"
                    placeholder="Ex: Indústria Acme Ltda" autocomplete="organization" required />
           </label>
 
           <label class="auth-field">
-            <span class="auth-label">Seu nome</span>
+            <span class="auth-label">{{ 'Seu nome' | t }}</span>
             <input class="ui-input" type="text" name="nome" [(ngModel)]="nome"
                    placeholder="Ex: Ana Souza" autocomplete="name" required />
           </label>
@@ -47,37 +49,37 @@ import { AuthService } from '../../services/auth.service';
           </label>
 
           <label class="auth-field">
-            <span class="auth-label">Senha</span>
+            <span class="auth-label">{{ 'Senha' | t }}</span>
             <div class="auth-pass">
               <input class="ui-input" [type]="showPassword() ? 'text' : 'password'"
-                     name="senha" [(ngModel)]="senha" placeholder="Mínimo 8 caracteres, com letras e números"
+                     name="senha" [(ngModel)]="senha" [placeholder]="'Mínimo 8 caracteres, com letras e números' | t"
                      autocomplete="new-password" required />
               <button type="button" class="auth-pass-toggle" (click)="togglePassword()"
-                      [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'">
+                      [attr.aria-label]="(showPassword() ? 'Ocultar senha' : 'Mostrar senha') | t">
                 <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
             </div>
             @if (senha && !senhaValida) {
-              <span class="auth-hint auth-hint--warn">A senha precisa de ao menos 8 caracteres, com letras e números.</span>
+              <span class="auth-hint auth-hint--warn">{{ 'A senha precisa de ao menos 8 caracteres, com letras e números.' | t }}</span>
             }
           </label>
 
           @if (errorMessage()) {
             <div class="auth-error" role="alert">
-              <mat-icon>error_outline</mat-icon> {{ errorMessage() }}
+              <mat-icon>error_outline</mat-icon> {{ errorMessage() | t }}
             </div>
           }
 
           <button type="submit" class="ui-btn ui-btn--primary ui-btn--lg auth-submit"
                   [disabled]="carregando() || !formValido">
-            @if (carregando()) { <mat-spinner diameter="18"></mat-spinner> Criando... }
-            @else { Criar conta }
+            @if (carregando()) { <mat-spinner diameter="18"></mat-spinner> {{ 'Criando...' | t }} }
+            @else { {{ 'Criar conta' | t }} }
           </button>
         </form>
 
         <p class="auth-foot">
-          Já tem uma conta?
-          <a routerLink="/login" class="auth-link">Entrar</a>
+          {{ 'Já tem uma conta?' | t }}
+          <a routerLink="/login" class="auth-link">{{ 'Entrar' | t }}</a>
         </p>
       </div>
     </div>

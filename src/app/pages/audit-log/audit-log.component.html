@@ -1,13 +1,13 @@
 <div class="audit-page">
   <div class="page-header">
     <div>
-      <div class="page-title">Log de Auditoria</div>
-      <div class="page-sub">Registro completo de ações do sistema</div>
+      <div class="page-title">{{ 'Log de Auditoria' | t }}</div>
+      <div class="page-sub">{{ 'Registro completo de ações do sistema' | t }}</div>
     </div>
     <div class="header-actions">
       <div class="search-wrap">
         <mat-icon>search</mat-icon>
-        <input type="text" [(ngModel)]="search" (input)="onSearch()" placeholder="Filtrar por email..." />
+        <input type="text" [(ngModel)]="search" (input)="onSearch()" [placeholder]="'Filtrar por email...' | t" />
       </div>
     </div>
   </div>
@@ -20,10 +20,10 @@
         <thead>
           <tr>
             <th>Timestamp</th>
-            <th>Usuário</th>
-            <th>Ação</th>
-            <th>Recurso</th>
-            <th>Detalhes</th>
+            <th>{{ 'Usuário' | t }}</th>
+            <th>{{ 'Ação' | t }}</th>
+            <th>{{ 'Recurso' | t }}</th>
+            <th>{{ 'Detalhes' | t }}</th>
             <th>IP</th>
           </tr>
         </thead>
@@ -38,7 +38,7 @@
               <td class="ip">{{ e.ip }}</td>
             </tr>
           } @empty {
-            <tr><td colspan="6" class="empty">Nenhum registro encontrado.</td></tr>
+            <tr><td colspan="6" class="empty">{{ 'Nenhum registro encontrado.' | t }}</td></tr>
           }
         </tbody>
       </table>
@@ -54,6 +54,6 @@
       </div>
     }
 
-    <div class="count-label">{{ total }} registro(s) no total</div>
+    <div class="count-label">{{ total }} {{ 'registro(s) no total' | t }}</div>
   }
 </div>

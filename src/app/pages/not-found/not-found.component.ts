@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,11 +10,13 @@ import { MatIconModule } from '@angular/material/icon';
  * to a URL that doesn't exist. The "go back" button uses the browser
  * history so navigating from a deep link still feels right.
  */
+import { TranslatePipe } from '../../i18n/translate.pipe';
+
 @Component({
   selector: 'app-not-found',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.css'
 })

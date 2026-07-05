@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,11 +12,13 @@ import { ROLE_LABELS, UserRole } from '../../models/user.model';
  * required — useful for support and for users mid-onboarding who haven't
  * been granted the right permissions yet.
  */
+import { TranslatePipe } from '../../i18n/translate.pipe';
+
 @Component({
   selector: 'app-forbidden',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
   templateUrl: './forbidden.component.html',
   styleUrls: ['../not-found/not-found.component.css', './forbidden.component.css']
 })

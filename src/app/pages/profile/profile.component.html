@@ -1,10 +1,10 @@
-<div class="profile-page">
+﻿<div class="profile-page">
   @if (loading) {
     <div class="loading-center"><div class="spinner"></div></div>
   } @else {
   <div class="page-header">
-    <div class="page-title">Meu Perfil</div>
-    <div class="page-sub">Gerencie suas informações pessoais, senha e segurança</div>
+    <div class="page-title">{{ 'Meu Perfil' | t }}</div>
+    <div class="page-sub">{{ 'Gerencie suas informações pessoais, senha e segurança' | t }}</div>
   </div>
 
   <div class="profile-layout">
@@ -17,7 +17,7 @@
         } @else {
           <div class="avatar-initials">{{ initial }}</div>
         }
-        <label class="avatar-edit" title="Trocar foto">
+        <label class="avatar-edit" [title]="'Trocar foto' | t">
           <mat-icon>photo_camera</mat-icon>
           <input type="file" accept="image/*" style="display:none" (change)="onAvatarChange($event)" [disabled]="uploadingAvatar" />
         </label>
@@ -35,7 +35,7 @@
         @if (profile.cargo) { <span>{{ profile.cargo }}</span> }
         @if (profile.departamento) { <span>{{ profile.departamento }}</span> }
         @if (profile.ultimoLogin) {
-          <span class="last-login">Último login: {{ profile.ultimoLogin | date:'dd/MM/yyyy HH:mm' }}</span>
+          <span class="last-login">{{ 'Último login:' | t }} {{ profile.ultimoLogin | date:'dd/MM/yyyy HH:mm' }}</span>
         }
       </div>
     </div>
@@ -44,10 +44,10 @@
     <div class="content-card">
       <div class="tabs">
         <button class="tab" [class.active]="activeTab === 'perfil'" (click)="setTab('perfil')">
-          <mat-icon>person</mat-icon> Informações
+          <mat-icon>person</mat-icon> {{ 'Informações' | t }}
         </button>
         <button class="tab" [class.active]="activeTab === 'seguranca'" (click)="setTab('seguranca')">
-          <mat-icon>lock</mat-icon> Segurança
+          <mat-icon>lock</mat-icon> {{ 'Segurança' | t }}
         </button>
         <button class="tab" [class.active]="activeTab === '2fa'" (click)="setTab('2fa')">
           <mat-icon>security</mat-icon> 2FA
@@ -59,8 +59,8 @@
       @if (activeTab === 'perfil') {
         <div class="tab-body">
           <div class="form-group">
-            <label>Nome completo</label>
-            <input type="text" [(ngModel)]="nome" placeholder="Seu nome" />
+            <label>{{ 'Nome completo' | t }}</label>
+            <input type="text" [(ngModel)]="nome" [placeholder]="'Seu nome' | t" />
           </div>
           <div class="form-group">
             <label>Email</label>
@@ -68,22 +68,22 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Telefone</label>
+              <label>{{ 'Telefone' | t }}</label>
               <input type="text" [(ngModel)]="telefone" placeholder="+55 (11) 9 0000-0000" />
             </div>
             <div class="form-group">
-              <label>Cargo</label>
+              <label>{{ 'Cargo' | t }}</label>
               <input type="text" [(ngModel)]="cargo" placeholder="Ex: Supervisor de Manutenção" />
             </div>
           </div>
           <div class="form-group">
-            <label>Departamento</label>
+            <label>{{ 'Departamento' | t }}</label>
             <input type="text" [(ngModel)]="departamento" placeholder="Ex: Engenharia Industrial" />
           </div>
           <div class="form-actions">
             <button class="btn-primary" (click)="saveProfile()" [disabled]="saving()">
               @if (saving()) { <div class="spinner-sm"></div> }
-              {{ saving() ? 'Salvando...' : 'Salvar Alterações' }}
+              {{ (saving() ? 'Salvando...' : 'Salvar Alterações') | t }}
             </button>
           </div>
         </div>
@@ -92,9 +92,9 @@
       <!-- ── Segurança Tab ───────────────────── -->
       @if (activeTab === 'seguranca') {
         <div class="tab-body">
-          <div class="section-title">Alterar Senha</div>
+          <div class="section-title">{{ 'Alterar Senha' | t }}</div>
           <div class="form-group">
-            <label>Senha atual</label>
+            <label>{{ 'Senha atual' | t }}</label>
             <div class="input-wrap">
               <input [type]="showSenhaAtual ? 'text' : 'password'" [(ngModel)]="senhaAtual" placeholder="••••••••" />
               <button type="button" class="eye-btn" (click)="showSenhaAtual = !showSenhaAtual">
@@ -104,7 +104,7 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Nova senha</label>
+              <label>{{ 'Nova senha' | t }}</label>
               <div class="input-wrap">
                 <input [type]="showNovaSenha ? 'text' : 'password'" [(ngModel)]="novaSenha" placeholder="••••••••" />
                 <button type="button" class="eye-btn" (click)="showNovaSenha = !showNovaSenha">
@@ -113,20 +113,20 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Confirmar nova senha</label>
+              <label>{{ 'Confirmar nova senha' | t }}</label>
               <input type="password" [(ngModel)]="confirmarSenha" placeholder="••••••••" />
             </div>
           </div>
           @if (novaSenha && confirmarSenha && novaSenha !== confirmarSenha) {
-            <div class="field-error">As senhas não coincidem</div>
+            <div class="field-error">{{ 'As senhas não coincidem' | t }}</div>
           }
           @if (novaSenha && novaSenha.length < 8) {
-            <div class="field-error">Mínimo 8 caracteres</div>
+            <div class="field-error">{{ 'Mínimo 8 caracteres' | t }}</div>
           }
           <div class="form-actions">
             <button class="btn-primary" (click)="savePassword()" [disabled]="savingPassword || !senhaAtual || !novaSenha || !confirmarSenha">
               @if (savingPassword) { <div class="spinner-sm"></div> }
-              {{ savingPassword ? 'Alterando...' : 'Alterar Senha' }}
+              {{ (savingPassword ? 'Alterando...' : 'Alterar Senha') | t }}
             </button>
           </div>
         </div>
@@ -139,15 +139,15 @@
             <div class="twofa-status disabled">
               <mat-icon>shield</mat-icon>
               <div>
-                <div class="twofa-title">Autenticação em 2 fatores desativada</div>
-                <div class="twofa-sub">Adicione uma camada extra de segurança à sua conta</div>
+                <div class="twofa-title">{{ 'Autenticação em 2 fatores desativada' | t }}</div>
+                <div class="twofa-sub">{{ 'Adicione uma camada extra de segurança à sua conta' | t }}</div>
               </div>
-              <button class="btn-primary" (click)="start2faSetup()">Ativar 2FA</button>
+              <button class="btn-primary" (click)="start2faSetup()">{{ 'Ativar 2FA' | t }}</button>
             </div>
             <div class="twofa-info">
-              <div class="info-item"><mat-icon>security</mat-icon><span>Use Google Authenticator, Authy ou similar</span></div>
-              <div class="info-item"><mat-icon>smartphone</mat-icon><span>Um código de 6 dígitos é gerado a cada 30 segundos</span></div>
-              <div class="info-item"><mat-icon>lock</mat-icon><span>Proteja sua conta contra acessos não autorizados</span></div>
+              <div class="info-item"><mat-icon>security</mat-icon><span>{{ 'Use Google Authenticator, Authy ou similar' | t }}</span></div>
+              <div class="info-item"><mat-icon>smartphone</mat-icon><span>{{ 'Um código de 6 dígitos é gerado a cada 30 segundos' | t }}</span></div>
+              <div class="info-item"><mat-icon>lock</mat-icon><span>{{ 'Proteja sua conta contra acessos não autorizados' | t }}</span></div>
             </div>
           }
 
@@ -155,28 +155,28 @@
             <div class="twofa-setup">
               <div class="setup-step">
                 <span class="step-num">1</span>
-                <span>Escaneie o QR code com seu app autenticador</span>
+                <span>{{ 'Escaneie o QR code com seu app autenticador' | t }}</span>
               </div>
               @if (totpQrCode) {
                 <img [src]="totpQrCode" alt="QR Code 2FA" class="qr-img" />
               }
               <div class="setup-step">
                 <span class="step-num">2</span>
-                <span>Ou insira a chave manualmente:</span>
+                <span>{{ 'Ou insira a chave manualmente:' | t }}</span>
               </div>
               <div class="manual-key">
                 <code>{{ totpSecret }}</code>
-                <button class="icon-btn" (click)="copySecret()" title="Copiar"><mat-icon>content_copy</mat-icon></button>
+                <button class="icon-btn" (click)="copySecret()" [title]="'Copiar' | t"><mat-icon>content_copy</mat-icon></button>
               </div>
               <div class="setup-step">
                 <span class="step-num">3</span>
-                <span>Digite o código gerado pelo app:</span>
+                <span>{{ 'Digite o código gerado pelo app:' | t }}</span>
               </div>
               <div class="code-input-wrap">
                 <input type="text" [(ngModel)]="totpCode" placeholder="000000" maxlength="6"
                        class="code-input" (keyup.enter)="verify2fa()" />
                 <button class="btn-primary" (click)="verify2fa()" [disabled]="verifying2fa">
-                  @if (verifying2fa) { <div class="spinner-sm"></div> } Verificar
+                  @if (verifying2fa) { <div class="spinner-sm"></div> } {{ 'Verificar' | t }}
                 </button>
               </div>
             </div>
@@ -186,19 +186,19 @@
             <div class="twofa-status enabled">
               <mat-icon>verified_user</mat-icon>
               <div>
-                <div class="twofa-title">2FA Ativado</div>
-                <div class="twofa-sub">Sua conta está protegida com autenticação em dois fatores</div>
+                <div class="twofa-title">{{ '2FA Ativado' | t }}</div>
+                <div class="twofa-sub">{{ 'Sua conta está protegida com autenticação em dois fatores' | t }}</div>
               </div>
             </div>
             <div class="disable-section">
-              <div class="section-title">Desativar 2FA</div>
-              <p class="disable-warn">Digite sua senha para confirmar a desativação.</p>
+              <div class="section-title">{{ 'Desativar 2FA' | t }}</div>
+              <p class="disable-warn">{{ 'Digite sua senha para confirmar a desativação.' | t }}</p>
               <div class="form-row">
                 <div class="form-group">
-                  <input type="password" [(ngModel)]="senhaParaDesativar" placeholder="Sua senha" />
+                  <input type="password" [(ngModel)]="senhaParaDesativar" [placeholder]="'Sua senha' | t" />
                 </div>
                 <button class="btn-danger" (click)="disable2fa()" [disabled]="disabling2fa || !senhaParaDesativar">
-                  @if (disabling2fa) { <div class="spinner-sm"></div> } Desativar
+                  @if (disabling2fa) { <div class="spinner-sm"></div> } {{ 'Desativar' | t }}
                 </button>
               </div>
             </div>

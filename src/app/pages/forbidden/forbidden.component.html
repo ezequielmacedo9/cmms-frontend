@@ -35,27 +35,26 @@
       </svg>
     </div>
 
-    <h1 class="error-title">Acesso negado.</h1>
+    <h1 class="error-title">{{ 'Acesso negado.' | t }}</h1>
     <p class="error-message">
-      Você não tem permissão para acessar esta área. Se precisar de acesso,
-      contate um administrador do sistema.
+      {{ 'Você não tem permissão para acessar esta área. Se precisar de acesso, contate um administrador do sistema.' | t }}
     </p>
 
     <div class="error-role-card">
       <div class="error-role-card__row">
-        <span class="error-role-card__label">Sua role atual</span>
-        <span class="ui-badge ui-badge--accent">{{ currentRoleLabel }}</span>
+        <span class="error-role-card__label">{{ 'Sua role atual' | t }}</span>
+        <span class="ui-badge ui-badge--accent">{{ currentRoleLabel | t }}</span>
       </div>
     </div>
 
     <div class="error-actions">
       <button type="button" class="ui-btn ui-btn--secondary" (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
-        Voltar
+        {{ 'Voltar' | t }}
       </button>
       <a class="ui-btn ui-btn--primary" routerLink="/dashboard">
         <mat-icon>dashboard</mat-icon>
-        Ir para o dashboard
+        {{ 'Ir para o dashboard' | t }}
       </a>
     </div>
 

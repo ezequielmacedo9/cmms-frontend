@@ -28,26 +28,25 @@
       </svg>
     </div>
 
-    <h1 class="error-title">Página não encontrada.</h1>
+    <h1 class="error-title">{{ 'Página não encontrada.' | t }}</h1>
     <p class="error-message">
-      O endereço acessado não existe ou foi movido. Verifique a URL ou
-      retorne ao painel.
+      {{ 'O endereço acessado não existe ou foi movido. Verifique a URL ou retorne ao painel.' | t }}
     </p>
 
     <div class="error-actions">
       <button type="button" class="ui-btn ui-btn--secondary" (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
-        Voltar
+        {{ 'Voltar' | t }}
       </button>
       <a class="ui-btn ui-btn--primary" routerLink="/dashboard">
         <mat-icon>dashboard</mat-icon>
-        Ir para o dashboard
+        {{ 'Ir para o dashboard' | t }}
       </a>
     </div>
 
     <p class="error-hint">
       <mat-icon>help_outline</mat-icon>
-      Se você acredita que isso é um erro, contate o suporte.
+      {{ 'Se você acredita que isso é um erro, contate o suporte.' | t }}
     </p>
   </article>
 </div>

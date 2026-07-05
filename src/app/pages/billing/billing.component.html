@@ -1,10 +1,10 @@
-<div class="billing-page">
+﻿<div class="billing-page">
 
   <!-- Header -->
   <div class="page-header">
     <div>
-      <h1 class="page-title">Assinatura</h1>
-      <p class="page-sub">Gerencie seu plano e cobrança</p>
+      <h1 class="page-title">{{ 'Assinatura' | t }}</h1>
+      <p class="page-sub">{{ 'Gerencie seu plano e cobrança' | t }}</p>
     </div>
   </div>
 
@@ -19,39 +19,39 @@
       @if (a.status === 'TRIAL' && a.trialAtivo) {
         <div class="banner banner-trial">
           <mat-icon>hourglass_top</mat-icon>
-          <span>Trial gratuito — <strong>{{ diasRestantes }} dias restantes</strong>. Escolha um plano para continuar após o período.</span>
+          <span>{{ 'Trial gratuito —' | t }} <strong>{{ diasRestantes }} {{ 'dias restantes' | t }}</strong>. {{ 'Escolha um plano para continuar após o período.' | t }}</span>
         </div>
       } @else if (a.status === 'INADIMPLENTE') {
         <div class="banner banner-warn">
           <mat-icon>warning</mat-icon>
-          <span>Sua assinatura está inadimplente. Regularize para continuar usando o sistema.</span>
+          <span>{{ 'Sua assinatura está inadimplente. Regularize para continuar usando o sistema.' | t }}</span>
         </div>
       } @else if (a.status === 'CANCELADA') {
         <div class="banner banner-error">
           <mat-icon>cancel</mat-icon>
-          <span>Assinatura cancelada. Selecione um plano abaixo para reativar.</span>
+          <span>{{ 'Assinatura cancelada. Selecione um plano abaixo para reativar.' | t }}</span>
         </div>
       }
 
       <!-- Current plan card -->
       <div class="current-card">
         <div class="current-left">
-          <div class="current-label">Plano atual</div>
+          <div class="current-label">{{ 'Plano atual' | t }}</div>
           <div class="current-plano">
             <mat-icon>{{ planoIcons[a.plano] }}</mat-icon>
             {{ a.plano }}
           </div>
           <div class="current-meta">
-            <span class="status-badge" [class]="statusCss(a.status)">{{ statusLabel(a.status) }}</span>
+            <span class="status-badge" [class]="statusCss(a.status)">{{ statusLabel(a.status) | t }}</span>
             @if (a.status === 'ATIVA') {
-              <span class="renova">Renova em {{ a.dataProximaCobranca | date:'dd/MM/yyyy' }}</span>
+              <span class="renova">{{ 'Renova em' | t }} {{ a.dataProximaCobranca | date:'dd/MM/yyyy' }}</span>
             }
           </div>
         </div>
         <div class="current-right">
-          <div class="current-valor">{{ formatVal(a.valorMensal) }}<span class="period">/mês</span></div>
+          <div class="current-valor">{{ formatVal(a.valorMensal) }}<span class="period">{{ '/mês' | t }}</span></div>
           @if (a.status === 'ATIVA') {
-            <button class="btn-cancel" (click)="cancelar()">Cancelar assinatura</button>
+            <button class="btn-cancel" (click)="cancelar()">{{ 'Cancelar assinatura' | t }}</button>
           }
         </div>
       </div>
@@ -59,61 +59,61 @@
 
     <!-- Plans grid -->
     <div class="plans-section">
-      <h2 class="plans-title">Escolha seu plano</h2>
+      <h2 class="plans-title">{{ 'Escolha seu plano' | t }}</h2>
       <div class="plans-grid">
         @for (plano of planos(); track plano.nome) {
           <div class="plan-card" [class.plan-current]="isCurrentPlano(plano.nome)" [class.plan-highlight]="plano.nome === 'PRO'">
             @if (plano.nome === 'PRO') {
-              <div class="popular-tag">Mais popular</div>
+              <div class="popular-tag">{{ 'Mais popular' | t }}</div>
             }
             <div class="plan-icon">
               <mat-icon>{{ planoIcons[plano.nome] }}</mat-icon>
             </div>
             <div class="plan-name">{{ plano.nome }}</div>
-            <div class="plan-desc">{{ planoDesc[plano.nome] }}</div>
+            <div class="plan-desc">{{ planoDesc[plano.nome] | t }}</div>
             <div class="plan-price">
               {{ formatVal(plano.valorMensal) }}
-              <span class="plan-period">/mês</span>
+              <span class="plan-period">{{ '/mês' | t }}</span>
             </div>
             <ul class="plan-features">
               <li>
                 <mat-icon>check</mat-icon>
-                <span>{{ plano.limiteAtivos }} ativos</span>
+                <span>{{ plano.limiteAtivos }} {{ 'ativos' | t }}</span>
               </li>
               <li>
                 <mat-icon>check</mat-icon>
-                <span>{{ plano.limiteUsuarios }} usuários</span>
+                <span>{{ plano.limiteUsuarios }} {{ 'usuários' | t }}</span>
               </li>
               <li>
                 <mat-icon>check</mat-icon>
-                <span>Manutenções ilimitadas</span>
+                <span>{{ 'Manutenções ilimitadas' | t }}</span>
               </li>
               <li>
                 <mat-icon>check</mat-icon>
-                <span>Estoque e peças</span>
+                <span>{{ 'Estoque e peças' | t }}</span>
               </li>
               @if (plano.nome === 'PRO' || plano.nome === 'BUSINESS' || plano.nome === 'ENTERPRISE') {
                 <li>
                   <mat-icon>check</mat-icon>
-                  <span>Relatórios avançados</span>
+                  <span>{{ 'Relatórios avançados' | t }}</span>
                 </li>
               }
               @if (plano.nome === 'BUSINESS' || plano.nome === 'ENTERPRISE') {
                 <li>
                   <mat-icon>check</mat-icon>
-                  <span>SLA & métricas de custo</span>
+                  <span>{{ 'SLA e métricas de custo' | t }}</span>
                 </li>
               }
               @if (plano.nome === 'ENTERPRISE') {
                 <li>
                   <mat-icon>check</mat-icon>
-                  <span>Suporte prioritário</span>
+                  <span>{{ 'Suporte prioritário' | t }}</span>
                 </li>
               }
             </ul>
 
             @if (isCurrentPlano(plano.nome)) {
-              <button class="plan-btn plan-btn-current" disabled>Plano atual</button>
+              <button class="plan-btn plan-btn-current" disabled>{{ 'Plano atual' | t }}</button>
             } @else if (assinatura()?.status === 'ATIVA') {
               <button class="plan-btn" [class.plan-btn-upgrade]="isUpgrade(plano.nome)"
                       [disabled]="actionBusy() !== null"
@@ -121,7 +121,7 @@
                 @if (actionBusy() === plano.nome) {
                   <span class="btn-spinner"></span>
                 } @else {
-                  {{ isUpgrade(plano.nome) ? 'Fazer upgrade' : 'Fazer downgrade' }}
+                  {{ (isUpgrade(plano.nome) ? 'Fazer upgrade' : 'Fazer downgrade') | t }}
                 }
               </button>
             } @else {
@@ -131,7 +131,7 @@
                 @if (actionBusy() === plano.nome) {
                   <span class="btn-spinner"></span>
                 } @else {
-                  Assinar agora
+                  {{ 'Assinar agora' | t }}
                 }
               </button>
             }
@@ -144,8 +144,8 @@
     @if (checkoutUrl()) {
       <div class="checkout-notice">
         <mat-icon>open_in_new</mat-icon>
-        <span>Link de pagamento aberto em nova aba. </span>
-        <a [href]="checkoutUrl()!" target="_blank">Abrir novamente</a>
+        <span>{{ 'Link de pagamento aberto em nova aba.' | t }} </span>
+        <a [href]="checkoutUrl()!" target="_blank">{{ 'Abrir novamente' | t }}</a>
       </div>
     }
 

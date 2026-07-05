@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+﻿import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -10,10 +10,12 @@ import {
 } from '../../services/billing.service';
 import { NotificationService } from '../../services/notification.service';
 
+import { TranslatePipe } from '../../i18n/translate.pipe';
+
 @Component({
   selector: 'app-billing',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslatePipe],
   templateUrl: './billing.component.html',
   styleUrl: './billing.component.css'
 })
