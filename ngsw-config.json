@@ -31,17 +31,6 @@
           "/*.webp"
         ]
       }
-    },
-    {
-      "name": "fonts-and-styles",
-      "installMode": "lazy",
-      "updateMode": "prefetch",
-      "resources": {
-        "urls": [
-          "https://fonts.googleapis.com/**",
-          "https://fonts.gstatic.com/**"
-        ]
-      }
     }
   ],
   "dataGroups": [],
