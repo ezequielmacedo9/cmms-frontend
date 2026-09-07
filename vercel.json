@@ -40,7 +40,7 @@
       ]
     },
     {
-      "source": "/(.+)\\.(?:js|css|woff2|woff|ttf|otf|svg|png|jpg|jpeg|gif|webp|avif|ico)",
+      "source": "/(.+\\.(?:js|css|woff2|woff|ttf|otf|svg|png|jpg|jpeg|gif|webp|avif|ico))",
       "headers": [
         {
           "key": "Cache-Control",
