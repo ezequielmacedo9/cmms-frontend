@@ -17,13 +17,7 @@ interface AuditEntry {
   timestamp: string;
 }
 
-interface Page<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-}
-
+import { PagedResponse } from '../../models/paged-response.model';
 import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
@@ -50,8 +44,9 @@ export class AuditLogComponent implements OnInit {
   load() {
     this.loading = true;
     const params: any = { page: this.page, size: this.size };
-    if (this.search.trim()) params.email = this.search.trim();
-    this.http.get<Page<AuditEntry>>(`${environment.apiUrl}/api/audit-logs`, { params }).subscribe({
+    // AuditLogController expoe o filtro como "q" (busca parcial por user_email).
+    if (this.search.trim()) params.q = this.search.trim();
+    this.http.get<PagedResponse<AuditEntry>>(`${environment.apiUrl}/api/audit`, { params }).subscribe({
       next: p => {
         this.entries = p.content;
         this.total = p.totalElements;

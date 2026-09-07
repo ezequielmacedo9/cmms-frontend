@@ -84,6 +84,9 @@ function logError(
 function shouldSuppressToast(url: string): boolean {
   return url.includes('/api/auth/validate-reset-token')
       || url.includes('/api/auth/logout')   // best-effort fire-and-forget
-      || url.includes('/api/wakeup')
+      // WakeupService.ping() bate em /api/health (nao existe /api/wakeup no
+      // backend). O ping falha de proposito durante o cold start do Render e
+      // a tela de login ja mostra "Servidor iniciando" — nao deve virar toast.
+      || url.includes('/api/health')
       || url.endsWith('/ping');
 }

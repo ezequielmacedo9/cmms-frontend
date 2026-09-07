@@ -66,20 +66,36 @@
       - crossorigin="anonymous" so credentials are not sent with the request.
   -->
   <!--
-    Fonts são carregadas async ("print" trick): o browser nao bloqueia
-    a renderizacao no link, mas o onload promove para 'all' e aplica
-    quando estiverem prontas. Fallback <noscript> garante para crawlers.
+    Fonts são carregadas async ("print" trick): media="print" faz o browser
+    buscar o CSS sem bloquear a renderizacao; ao terminar, promovemos para
+    media="all" e a folha passa a valer. Fallback <noscript> para crawlers.
+
+    A promocao NAO pode usar onload="..." inline: o CSP define
+    script-src-attr 'none', que bloqueia handlers em atributo (o console
+    reportava "Executing inline event handler violates ... script-src-attr").
+    Com o handler bloqueado as fontes nunca eram aplicadas. Fazemos a
+    promocao em um <script> de verdade, permitido por script-src
+    'unsafe-inline', preservando o hardening do CSP.
   -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/icon?family=Material+Icons"
         crossorigin="anonymous"
         media="print"
-        onload="this.media='all'">
+        data-async-style>
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap"
         crossorigin="anonymous"
         media="print"
-        onload="this.media='all'">
+        data-async-style>
+  <script>
+    // Promove as folhas assincronas para media="all". O teste em l.sheet cobre
+    // a corrida em que o CSS ja terminou de carregar antes deste script rodar
+    // (nesse caso o evento 'load' nunca mais dispararia).
+    for (const l of document.querySelectorAll('link[data-async-style]')) {
+      if (l.sheet) l.media = 'all';
+      else l.addEventListener('load', () => { l.media = 'all'; }, { once: true });
+    }
+  </script>
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" crossorigin="anonymous">
